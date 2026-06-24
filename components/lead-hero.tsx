@@ -115,7 +115,7 @@ export function LeadHero() {
 
   return (
     <section className="relative isolate overflow-hidden bg-background pt-20 md:pt-24 pb-10 md:pb-14">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
           {/* Фоновое фото */}
           <div className="absolute inset-0">
@@ -134,7 +134,7 @@ export function LeadHero() {
 
           {/* Контент */}
           <div className="relative grid min-h-[30rem] md:min-h-[34rem]">
-            <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-14 max-w-2xl">
+            <div className="flex flex-col justify-center px-5 py-9 sm:p-10 lg:p-14 max-w-2xl">
               {/* Индикатор шагов */}
               <div className="mb-6 flex items-center gap-2">
                 {[1, 2, 3].map((s) => (
