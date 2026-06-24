@@ -4,17 +4,23 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { IconSearch, IconMapPin } from "./icons"
+import { categories } from "@/lib/vacancies-data"
 
-const popularCards = [
-  { title: "Курьер", salary: "до 315 000 ₽", count: "4 810 вакансий" },
-  { title: "Водитель", salary: "25 000 – 370 000 ₽", count: "6 554 вакансии" },
-  { title: "Продавец", salary: "20 000 – 250 000 ₽", count: "14 057 вакансий" },
-  { title: "Кассир", salary: "20 000 – 155 000 ₽", count: "9 774 вакансии" },
-  { title: "Менеджер", salary: "до 500 000 ₽", count: "38 137 вакансий" },
-  { title: "Оператор", salary: "20 000 – 335 000 ₽", count: "7 633 вакансии" },
-  { title: "Складской персонал", salary: "от 40 000 ₽", count: "11 306 вакансий" },
-  { title: "Удалённая работа", salary: "до 500 000 ₽", count: "43 237 вакансий" },
-]
+function pluralVacancies(n: number): string {
+  const mod10 = n % 10
+  const mod100 = n % 100
+  if (mod10 === 1 && mod100 !== 11) return "вакансия"
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return "вакансии"
+  return "вакансий"
+}
+
+// Карточки "Популярное" формируются из единого каталога вакансий —
+// количество и зарплаты совпадают с тем, что показано на /vacancies.
+const popularCards = categories.map((c) => ({
+  title: c.title,
+  salary: c.salaryHint,
+  count: `${c.count} ${pluralVacancies(c.count)}`,
+}))
 
 export function SearchHero() {
   const router = useRouter()

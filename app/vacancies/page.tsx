@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import { Suspense } from "react"
 import { VacanciesPage } from "@/components/vacancies-page"
 import { siteConfig } from "@/lib/config"
 
@@ -17,5 +18,9 @@ export const metadata: Metadata = {
 }
 
 export default function Vacancies() {
-  return <VacanciesPage />
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <VacanciesPage />
+    </Suspense>
+  )
 }
