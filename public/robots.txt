@@ -1,0 +1,33 @@
+# КурьерХаб - robots.txt
+# https://ccourierhub.ru/robots.txt
+
+User-agent: *
+Allow: /
+
+# Запрещаем индексирование админки и API
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api/
+Disallow: /api/*
+
+# Запрещаем индексирование служебных файлов
+Disallow: /_next/
+Disallow: /*.json$
+
+# Разрешаем доступ к статическим файлам
+Allow: /manifest.json
+Allow: /*.jpg$
+Allow: /*.png$
+Allow: /*.svg$
+Allow: /*.ico$
+
+# Sitemap
+Sitemap: https://ccourierhub.ru/sitemap.xml
+
+# Crawl-delay для Яндекса
+User-agent: Yandex
+Crawl-delay: 1
+
+# Crawl-delay для остальных
+User-agent: Googlebot
+Crawl-delay: 0.5

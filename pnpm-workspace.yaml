@@ -1,0 +1,4 @@
+allowBuilds:
+  bcrypt: false
+  better-sqlite3: false
+  sharp: false
