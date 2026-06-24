@@ -47,12 +47,18 @@ export type Vacancy = {
   foreign: boolean
   city: string
   salary: string
+  salaryFrom: number
   schedule: string
   employment: string
+  experience: string
   description: string
+  responsibilities: string[]
   requirements: string[]
   perks: string[]
   postedLabel: string
+  // Деривативные флаги для разнообразия карточек (детерминированы по индексу)
+  hot: boolean
+  noExperience: boolean
 }
 
 export type Category = {
@@ -551,10 +557,22 @@ export const categories: Category[] = [
 ]
 
 const POSTED_LABELS = ["Сегодня", "Вчера", "2 дня назад", "3 дня назад", "На этой неделе"]
+const EXPERIENCE_LABELS = ["Без опыта", "Без опыта", "От 1 года", "От 3 лет"]
 
 function formatSalary(band: [number, number]): string {
   const fmt = (n: number) => `${n} 000`.replace(/\B(?=(\d{3})+(?!\d))/g, " ")
   return `от ${fmt(band[0])} до ${fmt(band[1])} ₽`
+}
+
+// Готовим список обязанностей: первые два пункта — общие для роли, остальные из требований.
+function buildResponsibilities(cat: Category, title: string): string[] {
+  const base = [
+    `Выполнять задачи по направлению «${title.toLowerCase()}»`,
+    "Соблюдать стандарты и регламенты компании",
+    "Поддерживать порядок на рабочем месте и отчётность",
+  ]
+  const extra = cat.requirements.slice(0, 2).map((r) => r.replace(/^[А-ЯA-Z]/, (c) => c.toLowerCase()))
+  return [...base, ...extra]
 }
 
 // Детерминированная генерация карточек: индекс задаёт компанию, роль, город, вилку и т.д.
@@ -568,6 +586,10 @@ function generateVacancies(cat: Category): Vacancy[] {
     const schedule = cat.schedules[i % cat.schedules.length]
     const employment = cat.employments[i % cat.employments.length]
     const posted = POSTED_LABELS[i % POSTED_LABELS.length]
+    const experience = EXPERIENCE_LABELS[(i * 2) % EXPERIENCE_LABELS.length]
+    const noExperience = experience === "Без опыта"
+    // «Срочно» — каждая третья вакансия, детерминированно
+    const hot = i % 3 === 0
 
     list.push({
       id: `${cat.key}-${i + 1}`,
@@ -579,12 +601,17 @@ function generateVacancies(cat: Category): Vacancy[] {
       foreign: Boolean(employer.foreign),
       city,
       salary: formatSalary(band),
+      salaryFrom: band[0],
       schedule,
       employment,
-      description: `${title} в компанию «${employer.name}» (${employer.kind.toLowerCase()}). ${cat.title} — подбор бесплатно для соискателя, официальное оформление.`,
+      experience,
+      description: `Компания «${employer.name}» (${employer.kind.toLowerCase()}) приглашает на позицию «${title.toLowerCase()}» в городе ${city}. Подбор бесплатный для соискателя, официальное оформление и сопровождение нашего специалиста до выхода на работу.`,
+      responsibilities: buildResponsibilities(cat, title),
       requirements: cat.requirements,
       perks: cat.perks,
       postedLabel: posted,
+      hot,
+      noExperience,
     })
   }
   return list
@@ -605,6 +632,28 @@ export function getCategoryBySlug(slug: string): Category | undefined {
 
 export function getVacancyById(id: string): Vacancy | undefined {
   return allVacancies.find((v) => v.id === id)
+}
+
+// Похожие вакансии (та же категория, кроме текущей) — для блока на детальной странице
+export function getRelatedVacancies(vacancy: Vacancy, count = 4): Vacancy[] {
+  return allVacancies
+    .filter((v) => v.categoryKey === vacancy.categoryKey && v.id !== vacancy.id)
+    .slice(0, count)
+}
+
+// Инициалы компании для аватара карточки
+export function getCompanyInitials(name: string): string {
+  const cleaned = name.replace(/["«»]/g, "").trim()
+  const words = cleaned.split(/\s+/).filter(Boolean)
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase()
+  return cleaned.slice(0, 2).toUpperCase()
+}
+
+// Детерминированный оттенок аватара в сине-бирюзовом диапазоне бренда (195–230)
+export function getCompanyHue(name: string): number {
+  let h = 0
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360
+  return 195 + (h % 36)
 }
 
 // Поиск: по названию, компании, городу, категории и ключевым словам
