@@ -54,21 +54,22 @@ export function SearchHero() {
 
         {/* Поисковая строка */}
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 flex items-center gap-3 bg-card border border-border rounded-2xl px-4 sm:px-5 h-14 focus-within:border-primary transition-colors">
+          <div className="flex min-w-0 flex-1 items-center gap-2.5 rounded-2xl border border-border bg-card px-4 sm:px-5 h-14 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-colors">
             <IconSearch className="w-5 h-5 text-muted-foreground shrink-0" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Профессия, должность или компания"
+              placeholder="Профессия или компания"
               aria-label="Поиск вакансий"
-              className="flex-1 min-w-0 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base"
+              className="min-w-0 flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base"
             />
           </div>
           <button
             type="submit"
-            className="inline-flex items-center justify-center gap-2 h-14 px-8 btn-primary font-semibold rounded-2xl shrink-0"
+            className="inline-flex h-14 w-full sm:w-auto items-center justify-center gap-2 px-8 btn-primary font-semibold rounded-2xl shrink-0"
           >
+            <IconSearch className="w-5 h-5 sm:hidden" />
             Найти
           </button>
         </form>

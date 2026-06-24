@@ -91,9 +91,12 @@
   html {
     scroll-behavior: smooth;
     color-scheme: light;
+    /* На мобильных декоративные элементы не должны вызывать горизонтальный скролл */
+    overflow-x: hidden;
   }
   body {
     @apply bg-background text-foreground antialiased;
+    overflow-x: hidden;
   }
   /* hh.ru — заголовки плотным sans-serif, без серифа */
   h1, h2, h3 {
