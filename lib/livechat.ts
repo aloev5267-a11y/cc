@@ -1,4 +1,5 @@
-// Хелпер для онлайн-чата Omnidesk (виджет charter-panel.com/livechat.js).
+// Хелпер для онлайн-чата Omnidesk. Виджет грузится first-party через прокси
+// /__support/livechat.js (см. next.config.mjs и components/support-chat.tsx).
 // Виджет подключается в app/layout.tsx и выставляет глобальный объект
 // window.OmnideskLiveChat с публичным API:
 //   OmnideskLiveChat.open({ name, subject, message })  // открыть + предзаполнить

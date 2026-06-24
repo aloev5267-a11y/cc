@@ -1118,11 +1118,126 @@ function UsersTab({ users, onRefresh }: { users: AdminUser[]; onRefresh: () => v
 
 // Settings Tab
 function SettingsTab() {
+  const [apiKey, setApiKey] = useState("")
+  const [enabled, setEnabled] = useState(true)
+  const [defaultKey, setDefaultKey] = useState("")
+  const [scriptPath, setScriptPath] = useState("/__support/livechat.js")
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await authFetch("/api/admin/settings")
+        if (res.ok) {
+          const data = await res.json()
+          setApiKey(data.settings.livechat_api_key || "")
+          setEnabled(Boolean(data.settings.livechat_enabled))
+          setDefaultKey(data.settings.default_api_key || "")
+          setScriptPath(data.settings.script_path || "/__support/livechat.js")
+        }
+      } catch {
+        // ignore
+      } finally {
+        setLoading(false)
+      }
+    }
+    void load()
+  }, [])
+
+  async function handleSave() {
+    setSaving(true)
+    setSaved(false)
+    setError("")
+    try {
+      const res = await authFetch("/api/admin/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ livechat_api_key: apiKey, livechat_enabled: enabled }),
+      })
+      if (res.ok) {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2500)
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || "Не удалось сохранить")
+      }
+    } catch {
+      setError("Ошибка соединения")
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-6">
       <h2 className="text-2xl font-bold mb-6">Настройки</h2>
 
       <div className="space-y-6 max-w-2xl">
+        <div className="bg-card border border-border rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold">Онлайн-чат</h3>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={enabled}
+              onClick={() => setEnabled((v) => !v)}
+              disabled={loading}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                enabled ? "bg-primary" : "bg-muted-foreground/30"
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
+                  enabled ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Виджет онлайн-чата подключается first-party (через прокси{" "}
+            <code className="font-mono text-xs">{scriptPath}</code>), поэтому в коде страницы нет ссылок на
+            сторонний домен. Секретный ключ виджета хранится в базе и применяется без передеплоя.
+          </p>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Ключ виджета</label>
+              <input
+                type="text"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                disabled={loading}
+                spellCheck={false}
+                autoComplete="off"
+                className="w-full px-4 py-3 bg-muted rounded-xl border border-border focus:border-primary focus:outline-none font-mono text-sm"
+                placeholder={defaultKey ? `${defaultKey} (по умолчанию)` : "lc_..."}
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                Формат: <span className="font-mono">lc_...</span>. Оставьте пустым, чтобы использовать ключ по
+                умолчанию.
+              </p>
+            </div>
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleSave}
+                disabled={saving || loading}
+                className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium disabled:opacity-60"
+              >
+                {saving ? "Сохранение..." : "Сохранить"}
+              </button>
+              {saved && (
+                <span className="flex items-center gap-1.5 text-sm text-green-600">
+                  <IconCheck className="w-4 h-4" />
+                  Сохранено
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="bg-card border border-border rounded-2xl p-6">
           <h3 className="font-bold mb-4">Telegram Bot</h3>
           <p className="text-sm text-muted-foreground mb-4">

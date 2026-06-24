@@ -62,6 +62,17 @@ export const siteConfig = {
     privacy: '/legal/privacy',
     offer: '/legal/offer',
   },
+  // Онлайн-чат (Omnidesk LiveChat). Скрипт грузится first-party через rewrite
+  // /__support/* → SUPPORT_SERVER_URL (см. next.config.mjs), поэтому в DOM нет
+  // прямого обращения к домену провайдера. Ключ редактируется в админке и
+  // хранится в БД (таблица app_settings, ключ livechat_api_key); значение ниже —
+  // лишь дефолт на случай пустой БД, чтобы чат не отвалился.
+  livechat: {
+    // Путь first-party прокси, с которого подгружается виджет.
+    scriptPath: '/__support/livechat.js',
+    // Дефолтный публичный ключ виджета (фолбэк, если в БД ничего не задано).
+    defaultApiKey: process.env.NEXT_PUBLIC_LIVECHAT_KEY || 'lc_64df096612564adc8bfd9b8a694b9e26',
+  },
   meta: {
     title: `${brandName} — кадровое агентство: подбор персонала и работа`,
     description: `${brandName} — кадровое агентство: помогаем соискателям найти работу, а работодателям — закрыть вакансии. Бесплатно для кандидатов, быстрый отклик, поддержка на всех этапах.`,

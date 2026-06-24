@@ -1,6 +1,6 @@
 import { StructuredData } from "@/components/structured-data"
 import { CookieConsent } from "@/components/cookie-consent"
-import Script from 'next/script'
+import { SupportChat } from "@/components/support-chat"
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
@@ -75,11 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <CookieConsent />
         <Toaster position="top-center" richColors />
-        <Script
-          src="https://charter-panel.com/livechat.js"
-          data-omnidesk-key="lc_64df096612564adc8bfd9b8a694b9e26"
-          strategy="afterInteractive"
-        />
+        <SupportChat />
       </body>
     </html>
   )
