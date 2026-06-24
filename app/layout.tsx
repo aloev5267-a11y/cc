@@ -1,4 +1,5 @@
 import { StructuredData } from "@/components/structured-data"
+import { CookieConsent } from "@/components/cookie-consent"
 import Script from 'next/script'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
@@ -72,6 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         {children}
+        <CookieConsent />
         <Toaster position="top-center" richColors />
         <Script
           src="https://charter-panel.com/livechat.js"
