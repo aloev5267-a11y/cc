@@ -5,15 +5,15 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { IconSearch, IconMapPin } from "./icons"
 
-const popularQueries = [
-  "Курьер",
-  "Водитель",
-  "Продавец",
-  "Кассир",
-  "Менеджер",
-  "Оператор",
-  "Склад",
-  "Удалённо",
+const popularCards = [
+  { title: "Курьер", salary: "до 315 000 ₽", count: "4 810 вакансий" },
+  { title: "Водитель", salary: "25 000 – 370 000 ₽", count: "6 554 вакансии" },
+  { title: "Продавец", salary: "20 000 – 250 000 ₽", count: "14 057 вакансий" },
+  { title: "Кассир", salary: "20 000 – 155 000 ₽", count: "9 774 вакансии" },
+  { title: "Менеджер", salary: "до 500 000 ₽", count: "38 137 вакансий" },
+  { title: "Оператор", salary: "20 000 – 335 000 ₽", count: "7 633 вакансии" },
+  { title: "Складской персонал", salary: "от 40 000 ₽", count: "11 306 вакансий" },
+  { title: "Удалённая работа", salary: "до 500 000 ₽", count: "43 237 вакансий" },
 ]
 
 export function SearchHero() {
@@ -65,17 +65,19 @@ export function SearchHero() {
           </span>
         </div>
 
-        {/* Популярные запросы */}
-        <div className="mt-7">
-          <p className="text-sm font-semibold text-muted-foreground mb-3">Популярное</p>
-          <div className="flex flex-wrap gap-2">
-            {popularQueries.map((q) => (
+        {/* Популярное */}
+        <div className="mt-10">
+          <h2 className="text-lg font-bold text-foreground mb-5">Популярное</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {popularCards.map((card) => (
               <Link
-                key={q}
-                href={`/vacancies?q=${encodeURIComponent(q)}`}
-                className="px-4 py-2 rounded-full bg-secondary text-sm font-medium text-foreground/80 hover:bg-primary hover:text-primary-foreground transition-colors"
+                key={card.title}
+                href={`/vacancies?q=${encodeURIComponent(card.title)}`}
+                className="group flex flex-col bg-card border border-border rounded-2xl p-5 hover:border-primary/40 hover:shadow-sm transition-all"
               >
-                {q}
+                <span className="font-bold text-foreground text-balance">{card.title}</span>
+                <span className="mt-1 text-sm font-semibold text-foreground/80 tabular-nums">{card.salary}</span>
+                <span className="mt-6 text-sm text-muted-foreground tabular-nums">{card.count}</span>
               </Link>
             ))}
           </div>
