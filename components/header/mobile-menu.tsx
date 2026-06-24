@@ -1,168 +1,101 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { IconPhone, IconClose } from "../icons"
-import { navItems, serviceItems, type NavItem } from "./nav-config"
+import { IconPhone, IconMail, IconArrowUpRight } from "../icons"
+import { navItems } from "./nav-config"
+import { MessengerPill } from "./messenger-pill"
 import { siteConfig } from "@/lib/config"
 
 interface MobileMenuProps {
   isOpen: boolean
   onClose: () => void
-  onCalculatorClick: (e: React.MouseEvent) => void
 }
 
-function MobileNavItem({ 
-  item, 
-  index, 
-  onClose, 
-  onCalculatorClick,
-  isService = false 
-}: { 
-  item: NavItem
-  index: number
-  onClose: () => void
-  onCalculatorClick: (e: React.MouseEvent) => void
-  isService?: boolean
-}) {
-  const Icon = item.icon
-  const isCalculator = item.label === "Калькулятор"
-  
-  const iconContainerClass = isService 
-    ? "w-9 h-9 rounded-lg bg-muted flex items-center justify-center"
-    : "w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center"
-  
-  const iconClass = isService 
-    ? "w-4 h-4 text-foreground/70"
-    : "w-4 h-4 text-primary"
-  
-  const textClass = isService 
-    ? "font-medium text-foreground/80"
-    : "font-medium"
-  
-  const content = (
-    <>
-      <div className={iconContainerClass}>
-        <Icon className={iconClass} />
-      </div>
-      <span className={textClass}>{item.label}</span>
-    </>
-  )
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
-    >
-      {isCalculator ? (
-        <button
-          onClick={onCalculatorClick}
-          className="flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors w-full"
-        >
-          {content}
-        </button>
-      ) : (
-        <Link
-          href={item.href}
-          onClick={onClose}
-          className="flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors"
-        >
-          {content}
-        </Link>
-      )}
-    </motion.div>
-  )
-}
-
-export function MobileMenu({ isOpen, onClose, onCalculatorClick }: MobileMenuProps) {
+export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
-          />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-40 bg-background lg:hidden flex flex-col pt-16"
+        >
+          <div className="flex-1 overflow-y-auto px-5 py-8 flex flex-col">
+            {/* Big nav links */}
+            <nav className="flex flex-col">
+              {navItems.map((item, i) => {
+                const Icon = item.icon
+                return (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.06 + i * 0.05 }}
+                  >
+                    <Link
+                      href={item.href}
+                      onClick={onClose}
+                      className="group flex items-center justify-between gap-4 py-4 border-b border-border"
+                    >
+                      <span className="flex items-center gap-4">
+                        <span className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center">
+                          <Icon className="w-5 h-5 text-primary" />
+                        </span>
+                        <span className="text-xl font-bold text-foreground">{item.label}</span>
+                      </span>
+                      <IconArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </Link>
+                  </motion.div>
+                )
+              })}
+            </nav>
 
-          {/* Menu */}
-          <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 bottom-0 w-[280px] bg-background border-l border-border shadow-2xl z-50 flex flex-col"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <Link href="/" className="flex items-center gap-2" onClick={onClose}>
-                <div className="relative w-8 h-8 rounded-lg overflow-hidden">
-                  <Image src="/logo.png" alt={siteConfig.name} fill className="object-cover" />
-                </div>
-                <span className="text-sm font-bold">
-                  {siteConfig.brandPrefix}<span className="text-primary">{siteConfig.brandSuffix}</span>
-                </span>
-              </Link>
-              <button
+            {/* CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.06 + navItems.length * 0.05 }}
+              className="mt-8"
+            >
+              <Link
+                href="/#find"
                 onClick={onClose}
-                className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center"
-                aria-label="Закрыть меню"
+                className="flex items-center justify-center gap-2 w-full py-4 btn-primary text-primary-foreground font-bold rounded-2xl btn-shine"
               >
-                <IconClose className="w-4 h-4" />
-              </button>
-            </div>
+                Подобрать работу
+              </Link>
+            </motion.div>
 
-            {/* Navigation */}
-            <div className="flex-1 overflow-y-auto py-4">
-              <div className="px-4 mb-2">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Навигация
-                </span>
-              </div>
-              {navItems.map((item, i) => (
-                <MobileNavItem 
-                  key={item.href} 
-                  item={item} 
-                  index={i} 
-                  onClose={onClose}
-                  onCalculatorClick={onCalculatorClick}
-                />
-              ))}
-
-              <div className="px-4 mt-6 mb-2">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Услуги
-                </span>
-              </div>
-              {serviceItems.map((item, i) => (
-                <MobileNavItem 
-                  key={item.href} 
-                  item={item} 
-                  index={navItems.length + i} 
-                  onClose={onClose}
-                  onCalculatorClick={onCalculatorClick}
-                  isService
-                />
-              ))}
-            </div>
-
-            {/* Footer */}
-            <div className="p-4 border-t border-border">
+            {/* Contacts */}
+            <div className="mt-auto pt-10 space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Свяжитесь с нами</p>
               <a
                 href={siteConfig.contact.phoneHref}
-                className="flex items-center justify-center gap-2 w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl"
+                className="flex items-center gap-3 text-foreground font-bold"
               >
-                <IconPhone className="w-4 h-4" />
-                Позвонить
+                <span className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                  <IconPhone className="w-4 h-4 text-primary" />
+                </span>
+                {siteConfig.contact.phone}
               </a>
+              <a
+                href={siteConfig.contact.emailHref}
+                className="flex items-center gap-3 text-foreground/80"
+              >
+                <span className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                  <IconMail className="w-4 h-4 text-primary" />
+                </span>
+                {siteConfig.contact.email}
+              </a>
+              <div className="pt-2">
+                <MessengerPill />
+              </div>
             </div>
-          </motion.div>
-        </>
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
   )
