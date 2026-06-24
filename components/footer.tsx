@@ -17,7 +17,7 @@ const footerColumns = [
     title: siteConfig.name,
     links: [
       { label: "О компании", href: "/about" },
-      { label: "Вакансии", href: "/vacancies" },
+      { label: "Подобрать вакансию", href: "/#lead" },
       { label: "Работодателям", href: "/partners" },
       { label: "Как это работает", href: "/#how" },
       { label: "Поддержка", href: "/support" },
@@ -26,10 +26,10 @@ const footerColumns = [
   {
     title: "Соискателям",
     links: [
+      { label: "Подобрать вакансию", href: "/#lead" },
       { label: "Найти работу", href: "/#find" },
-      { label: "Открытые вакансии", href: "/vacancies" },
+      { label: "Как это работает", href: "/#how" },
       { label: "Частые вопросы", href: "/support" },
-      { label: "Подобрать вакансию", href: "/#find" },
     ],
   },
   {

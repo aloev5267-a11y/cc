@@ -14,14 +14,14 @@ export type NavItem = {
 }
 
 export const navItems: NavItem[] = [
-  { href: "/vacancies", label: "Вакансии", icon: IconUserPlus },
+  { href: "/#lead", label: "Подобрать вакансию", icon: IconUserPlus },
   { href: "/#how", label: "Как это работает", icon: IconBriefcase },
   { href: "/about", label: "О нас", icon: IconUsers },
   { href: "/partners", label: "Работодателям", icon: IconHandshake },
 ]
 
 export const serviceItems: NavItem[] = [
-  { href: "/vacancies", label: "Открытые вакансии", icon: IconUserPlus },
+  { href: "/#lead", label: "Подобрать вакансию", icon: IconUserPlus },
   { href: "/#how", label: "Соискателям", icon: IconHeart },
   { href: "/partners", label: "Работодателям", icon: IconHandshake },
   { href: "/support", label: "Поддержка", icon: IconHeadphones },

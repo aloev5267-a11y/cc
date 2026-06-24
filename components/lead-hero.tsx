@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
 import {
@@ -15,6 +15,7 @@ import {
 import { PromoMessengers, type PromoMessengersOptions } from "./promo/promo-messengers"
 import { useRegion } from "@/hooks/use-geo"
 import { siteConfig } from "@/lib/config"
+import { LEAD_ANCHOR_ID, LEAD_PREFILL_EVENT, type LeadPrefillDetail } from "@/lib/lead"
 
 const POPULAR_CITIES = [
   "Москва",
@@ -76,6 +77,18 @@ export function LeadHero() {
   const [experience, setExperience] = useState<string | null>(null)
   const [schedule, setSchedule] = useState<string | null>(null)
 
+  // Предвыбор сферы работы из секции «Работа по направлениям».
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<LeadPrefillDetail>).detail
+      if (detail?.field && FIELDS.some((f) => f.id === detail.field)) {
+        setField(detail.field)
+      }
+    }
+    window.addEventListener(LEAD_PREFILL_EVENT, handler)
+    return () => window.removeEventListener(LEAD_PREFILL_EVENT, handler)
+  }, [])
+
   // Подставляем определённый по гео город как значение по умолчанию.
   const effectiveCity = city || (ready ? detectedCity : "")
 
@@ -114,7 +127,10 @@ export function LeadHero() {
   }, [name, effectiveCity, fieldLabel, experienceLabel, scheduleLabel])
 
   return (
-    <section className="relative isolate overflow-hidden bg-background pt-20 md:pt-24 pb-10 md:pb-14">
+    <section
+      id={LEAD_ANCHOR_ID}
+      className="relative isolate overflow-hidden bg-background pt-20 md:pt-24 pb-10 md:pb-14 scroll-mt-20"
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
           {/* Фоновое фото */}
