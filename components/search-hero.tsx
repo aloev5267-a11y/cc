@@ -17,6 +17,7 @@ function pluralVacancies(n: number): string {
 // Карточки "Популярное" формируются из единого каталога вакансий —
 // количество и зарплаты совпадают с тем, что показано на /vacancies.
 const popularCards = categories.map((c) => ({
+  slug: c.key,
   title: c.title,
   salary: c.salaryHint,
   count: `${c.count} ${pluralVacancies(c.count)}`,
@@ -28,8 +29,20 @@ export function SearchHero() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const params = query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ""
-    router.push(`/vacancies${params}`)
+    const q = query.trim()
+    if (!q) {
+      router.push("/vacancies")
+      return
+    }
+    // Если запрос точно совпадает с категорией — ведём на человекочитаемый путь.
+    const matched = categories.find(
+      (c) => c.title.toLowerCase() === q.toLowerCase() || c.searchTerms.includes(q.toLowerCase()),
+    )
+    if (matched) {
+      router.push(`/vacancies/${matched.key}`)
+      return
+    }
+    router.push(`/vacancies?q=${encodeURIComponent(q)}`)
   }
 
   return (
@@ -77,8 +90,8 @@ export function SearchHero() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {popularCards.map((card) => (
               <Link
-                key={card.title}
-                href={`/vacancies?q=${encodeURIComponent(card.title)}`}
+                key={card.slug}
+                href={`/vacancies/${card.slug}`}
                 className="group flex flex-col bg-card border border-border rounded-2xl p-5 hover:border-primary/40 hover:shadow-sm transition-all"
               >
                 <span className="font-bold text-foreground text-balance">{card.title}</span>

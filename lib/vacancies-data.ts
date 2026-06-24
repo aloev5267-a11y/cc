@@ -597,6 +597,12 @@ export function getCategory(key: CategoryKey): Category | undefined {
   return categories.find((c) => c.key === key)
 }
 
+// Категории доступны по человекочитаемому слагу (= ключ категории, латиницей):
+// /vacancies/courier, /vacancies/driver и т.д.
+export function getCategoryBySlug(slug: string): Category | undefined {
+  return categories.find((c) => c.key === slug)
+}
+
 export function getVacancyById(id: string): Vacancy | undefined {
   return allVacancies.find((v) => v.id === id)
 }

@@ -19,23 +19,24 @@ import {
 
 const PAGE_SIZE = 12
 
-export function VacanciesPage() {
+export function VacanciesPage({ initialCategory }: { initialCategory?: CategoryKey }) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
   const [query, setQuery] = useState("")
-  const [activeCat, setActiveCat] = useState<CategoryKey | "all">("all")
+  const [activeCat, setActiveCat] = useState<CategoryKey | "all">(initialCategory ?? "all")
   const [limit, setLimit] = useState(PAGE_SIZE)
   const [selected, setSelected] = useState<Vacancy | null>(null)
 
-  // Инициализация из URL (?q=...)
+  // Базовый путь страницы зависит от выбранной категории — ссылки человекочитаемые:
+  // /vacancies или /vacancies/courier (+ ?q=… для свободного текста).
+  const basePath = initialCategory ? `/vacancies/${initialCategory}` : "/vacancies"
+
+  // Свободный текст берём из URL (?q=…); категорию — из сегмента пути (initialCategory).
   useEffect(() => {
-    const q = searchParams.get("q") ?? ""
-    setQuery(q)
-    // Если запрос совпадает с названием категории — активируем её фильтр
-    const matched = categories.find((c) => c.title.toLowerCase() === q.trim().toLowerCase())
-    setActiveCat(matched ? matched.key : "all")
-  }, [searchParams])
+    setQuery(searchParams.get("q") ?? "")
+    setActiveCat(initialCategory ?? "all")
+  }, [searchParams, initialCategory])
 
   // Фильтрация: сначала поиск по строке, затем по категории
   const results = useMemo(() => {
@@ -46,17 +47,23 @@ export function VacanciesPage() {
 
   const visible = results.slice(0, limit)
 
+  // Свободный текст синхронизируем в ?q= на текущем пути (категория сохраняется, без перезагрузки).
   const updateQuery = (q: string) => {
     setQuery(q)
     setLimit(PAGE_SIZE)
     const params = new URLSearchParams()
     if (q.trim()) params.set("q", q.trim())
-    router.replace(`/vacancies${params.toString() ? `?${params}` : ""}`, { scroll: false })
+    router.replace(`${basePath}${params.toString() ? `?${params}` : ""}`, { scroll: false })
   }
 
+  // Категория меняет сегмент пути: /vacancies/<slug>, «Все» → /vacancies. Текст поиска сохраняем.
   const selectCategory = (key: CategoryKey | "all") => {
     setActiveCat(key)
     setLimit(PAGE_SIZE)
+    const params = new URLSearchParams()
+    if (query.trim()) params.set("q", query.trim())
+    const path = key === "all" ? "/vacancies" : `/vacancies/${key}`
+    router.push(`${path}${params.toString() ? `?${params}` : ""}`, { scroll: false })
   }
 
   return (
