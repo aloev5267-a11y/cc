@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { siteConfig } from "@/lib/config"
+import { Logo } from "../logo"
 import { HamburgerIcon } from "./hamburger-icon"
 import { MobileMenu } from "./mobile-menu"
 import { MessengerPill } from "./messenger-pill"
@@ -26,15 +27,9 @@ export function Header() {
       <header className="fixed inset-x-0 top-0 z-50 bg-background border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center gap-3 sm:gap-5">
-            {/* Logo — красный круг-марк + вордмарк */}
-            <Link href="/" className="flex items-center gap-2.5 shrink-0 group" aria-label={siteConfig.name}>
-              <span className="w-9 h-9 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-black text-sm lowercase tracking-tight">
-                {siteConfig.brandPrefix.slice(0, 2)}
-              </span>
-              <span className="hidden sm:inline text-lg font-extrabold tracking-tight text-foreground">
-                {siteConfig.brandPrefix}
-                <span className="text-accent">{siteConfig.brandSuffix}</span>
-              </span>
+            {/* Logo — фирменная марка + вордмарк */}
+            <Link href="/" className="flex items-center shrink-0 group" aria-label={siteConfig.name}>
+              <Logo size={36} wordmarkClassName="text-lg hidden sm:inline" />
             </Link>
 
             {/* Сегментированный переключатель — как на hh */}

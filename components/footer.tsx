@@ -10,6 +10,7 @@ import {
   IconMapPin,
 } from "./icons"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
+import { LogoMark } from "./logo"
 
 const footerColumns = [
   {
@@ -139,9 +140,7 @@ export function Footer() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
             <div className="flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-black text-xs lowercase">
-                {siteConfig.brandPrefix.slice(0, 2)}
-              </span>
+              <LogoMark size={28} />
               <span className="text-xs text-muted-foreground">
                 © {siteConfig.stats.yearFounded} {siteConfig.company.name}. Все права защищены.
               </span>

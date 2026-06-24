@@ -17,18 +17,20 @@
   --secondary-foreground: oklch(0.28 0.012 260);
   --muted: oklch(0.972 0.003 255);
   --muted-foreground: oklch(0.52 0.012 262);
-  --accent: oklch(0.58 0.221 24);
-  --accent-foreground: oklch(0.99 0 0);
+  /* accent теперь в единой синей гамме (мягкий светло-синий фон + синий текст),
+     destructive оставляем красным только для ошибок/удаления */
+  --accent: oklch(0.95 0.03 256);
+  --accent-foreground: oklch(0.45 0.18 256);
   --destructive: oklch(0.58 0.221 24);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.918 0.004 255);
   --input: oklch(0.918 0.004 255);
   --ring: oklch(0.58 0.196 256);
   --chart-1: oklch(0.58 0.196 256);
-  --chart-2: oklch(0.58 0.221 24);
-  --chart-3: oklch(0.65 0.14 200);
-  --chart-4: oklch(0.7 0.13 145);
-  --chart-5: oklch(0.62 0.15 300);
+  --chart-2: oklch(0.66 0.15 250);
+  --chart-3: oklch(0.65 0.14 230);
+  --chart-4: oklch(0.72 0.12 270);
+  --chart-5: oklch(0.5 0.17 260);
   --radius: 0.875rem;
   --sidebar: oklch(0.99 0.002 255);
   --sidebar-foreground: oklch(0.20 0.012 260);
@@ -170,15 +172,17 @@
   -webkit-text-fill-color: currentColor;
 }
 
-/* Кнопки — плоская заливка primary, без блеска */
+/* Кнопки — лёгкая полупрозрачная заливка primary для индивидуальности */
 .btn-primary {
-  background: var(--primary);
+  background: oklch(0.58 0.196 256 / 0.92);
   color: var(--primary-foreground);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-primary:hover {
-  background: oklch(0.52 0.2 256);
+  background: oklch(0.54 0.2 256);
   box-shadow: 0 6px 18px oklch(0.58 0.196 256 / 0.28);
   transform: translateY(-1px);
 }
