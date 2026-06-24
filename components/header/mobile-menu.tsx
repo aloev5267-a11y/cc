@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { IconMail, IconArrowUpRight } from "../icons"
 import { navItems } from "./nav-config"
 import { MessengerPill } from "./messenger-pill"
+import { RegionPicker } from "./region-picker"
 import { siteConfig } from "@/lib/config"
 
 interface MobileMenuProps {
@@ -71,25 +72,20 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               })}
             </nav>
 
-            {/* CTA */}
+            {/* Регион */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.06 + navItems.length * 0.05 }}
               className="mt-8"
             >
-              <Link
-                href="/#find"
-                onClick={onClose}
-                className="flex items-center justify-center gap-2 w-full py-4 bg-foreground text-background font-semibold rounded-full"
-              >
-                Оставить заявку
-              </Link>
+              <RegionPicker />
             </motion.div>
 
             {/* Contacts */}
             <div className="mt-auto pt-10 space-y-4">
-              <p className="eyebrow text-muted-foreground">Свяжитесь с нами</p>
+              <p className="eyebrow text-muted-foreground">Напишите нам в мессенджер</p>
+              <MessengerPill />
               <a
                 href={siteConfig.contact.emailHref}
                 className="flex items-center gap-3 text-foreground/80"
@@ -99,9 +95,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 </span>
                 {siteConfig.contact.email}
               </a>
-              <div className="pt-2">
-                <MessengerPill />
-              </div>
             </div>
           </div>
         </motion.div>

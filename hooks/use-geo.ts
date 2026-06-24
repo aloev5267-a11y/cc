@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 
+type GeoResponse = { country?: string | null; city?: string | null; isRussia?: boolean }
+
 // Определяет, заходит ли посетитель из России (по IP).
 // Возвращает: null — пока неизвестно, true/false — после ответа сервера.
 // Нужно, чтобы предупредить о блокировках мессенджеров и предложить VPN.
@@ -12,7 +14,7 @@ export function useIsRussianIp() {
     let cancelled = false
     fetch("/api/geo")
       .then((res) => res.json())
-      .then((data: { isRussia?: boolean }) => {
+      .then((data: GeoResponse) => {
         if (!cancelled) setIsRussia(Boolean(data.isRussia))
       })
       .catch(() => {
@@ -24,4 +26,66 @@ export function useIsRussianIp() {
   }, [])
 
   return isRussia
+}
+
+const REGION_STORAGE_KEY = "user-region"
+
+// Определяет город посетителя по IP и хранит выбор пользователя.
+// Логика как на hh.ru: автоматически определяем регион и спрашиваем «Ваш город — такой-то?».
+export function useRegion(defaultCity = "Москва") {
+  const [city, setCity] = useState<string>(defaultCity)
+  // detectedCity — то, что определил сервер (для подсказки), confirmed — подтвердил ли пользователь.
+  const [detectedCity, setDetectedCity] = useState<string | null>(null)
+  const [confirmed, setConfirmed] = useState(true)
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+
+    // Если пользователь уже выбирал город ранее — берём его и не спрашиваем снова.
+    const saved = typeof window !== "undefined" ? window.localStorage.getItem(REGION_STORAGE_KEY) : null
+    if (saved) {
+      setCity(saved)
+      setConfirmed(true)
+      setReady(true)
+      return
+    }
+
+    fetch("/api/geo")
+      .then((res) => res.json())
+      .then((data: GeoResponse) => {
+        if (cancelled) return
+        const found = data.city?.trim()
+        if (found && found.toLowerCase() !== defaultCity.toLowerCase()) {
+          // Город отличается от дефолтного — показываем подтверждение.
+          setDetectedCity(found)
+          setCity(found)
+          setConfirmed(false)
+        }
+        setReady(true)
+      })
+      .catch(() => {
+        if (!cancelled) setReady(true)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [defaultCity])
+
+  // Пользователь подтвердил предложенный город.
+  const confirm = () => {
+    setConfirmed(true)
+    if (typeof window !== "undefined") window.localStorage.setItem(REGION_STORAGE_KEY, city)
+  }
+
+  // Пользователь выбрал другой город вручную.
+  const selectCity = (next: string) => {
+    setCity(next)
+    setDetectedCity(null)
+    setConfirmed(true)
+    if (typeof window !== "undefined") window.localStorage.setItem(REGION_STORAGE_KEY, next)
+  }
+
+  return { city, detectedCity, confirmed, ready, confirm, selectCity }
 }

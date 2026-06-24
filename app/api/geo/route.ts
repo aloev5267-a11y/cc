@@ -24,29 +24,30 @@ function getClientIp(req: NextRequest): string | null {
   return null
 }
 
-// Кэш страны по IP в памяти процесса, чтобы не дёргать внешний гео-сервис
+// Кэш гео-данных по IP в памяти процесса, чтобы не дёргать внешний гео-сервис
 // на каждый заход одного и того же посетителя. TTL — 24 часа.
 const GEO_CACHE_TTL_MS = 24 * 60 * 60 * 1000
 const GEO_CACHE_MAX = 5000
-const geoCache = new Map<string, { country: string | null; expires: number }>()
+type GeoData = { country: string | null; city: string | null }
+const geoCache = new Map<string, { data: GeoData; expires: number }>()
 
-function getCachedCountry(ip: string): string | null | undefined {
+function getCachedGeo(ip: string): GeoData | undefined {
   const hit = geoCache.get(ip)
   if (!hit) return undefined
   if (hit.expires < Date.now()) {
     geoCache.delete(ip)
     return undefined
   }
-  return hit.country
+  return hit.data
 }
 
-function setCachedCountry(ip: string, country: string | null): void {
+function setCachedGeo(ip: string, data: GeoData): void {
   // Простейшая защита от безграничного роста: чистим самые старые записи.
   if (geoCache.size >= GEO_CACHE_MAX) {
     const oldestKey = geoCache.keys().next().value
     if (oldestKey !== undefined) geoCache.delete(oldestKey)
   }
-  geoCache.set(ip, { country, expires: Date.now() + GEO_CACHE_TTL_MS })
+  geoCache.set(ip, { data, expires: Date.now() + GEO_CACHE_TTL_MS })
 }
 
 // Приватные/локальные адреса — гео-сервис для них спрашивать бессмысленно.
@@ -63,8 +64,26 @@ function isPrivateIp(ip: string): boolean {
   )
 }
 
-async function lookupCountry(ip: string): Promise<string | null> {
-  // api.country.is — бесплатно, без ключа, по HTTPS, простой и быстрый ответ {ip, country}.
+async function lookupGeo(ip: string): Promise<GeoData> {
+  // Основной сервис: freeipapi.com (бесплатно, без ключа, по HTTPS) — отдаёт и страну, и город.
+  try {
+    const res = await fetch(`https://freeipapi.com/api/json/${ip}`, {
+      signal: AbortSignal.timeout(2500),
+    })
+    if (res.ok) {
+      const data = (await res.json()) as { countryCode?: string; cityName?: string }
+      if (data.countryCode && /^[A-Z]{2}$/i.test(data.countryCode)) {
+        return {
+          country: data.countryCode.toUpperCase(),
+          city: data.cityName?.trim() || null,
+        }
+      }
+    }
+  } catch {
+    // основной сервис недоступен — пробуем запасной
+  }
+
+  // Запасной сервис: api.country.is — только страна, без города.
   try {
     const res = await fetch(`https://api.country.is/${ip}`, {
       signal: AbortSignal.timeout(2500),
@@ -72,37 +91,24 @@ async function lookupCountry(ip: string): Promise<string | null> {
     if (res.ok) {
       const data = (await res.json()) as { country?: string }
       if (data.country && /^[A-Z]{2}$/i.test(data.country)) {
-        return data.country.toUpperCase()
-      }
-    }
-  } catch {
-    // основной сервис недоступен — пробуем запасной
-  }
-
-  // Запасной сервис: freeipapi.com (бесплатно, без ключа, по HTTPS).
-  try {
-    const res = await fetch(`https://freeipapi.com/api/json/${ip}`, {
-      signal: AbortSignal.timeout(2500),
-    })
-    if (res.ok) {
-      const data = (await res.json()) as { countryCode?: string }
-      if (data.countryCode && /^[A-Z]{2}$/i.test(data.countryCode)) {
-        return data.countryCode.toUpperCase()
+        return { country: data.country.toUpperCase(), city: null }
       }
     }
   } catch {
     // оба HTTPS-сервиса недоступны
   }
 
-  return null
+  return { country: null, city: null }
 }
 
 export async function GET(request: NextRequest) {
-  // 1) Если перед сайтом всё же стоит Cloudflare — используем его заголовок (мгновенно, без запросов).
+  // 1) Если перед сайтом всё же стоит Cloudflare — используем его заголовки (мгновенно, без запросов).
   const cfCountry = request.headers.get("cf-ipcountry")
+  const cfCity = request.headers.get("cf-ipcity")
   if (cfCountry && cfCountry !== "XX" && /^[A-Z]{2}$/i.test(cfCountry)) {
     const country = cfCountry.toUpperCase()
-    return NextResponse.json({ country, isRussia: country === "RU" })
+    const city = cfCity ? decodeURIComponent(cfCity) : null
+    return NextResponse.json({ country, city, isRussia: country === "RU" })
   }
 
   // 2) Иначе берём реальный IP клиента и спрашиваем гео-сервис.
@@ -110,21 +116,21 @@ export async function GET(request: NextRequest) {
 
   if (!ip || isPrivateIp(ip)) {
     // Локальная разработка или IP не определить — считаем, что не Россия.
-    return NextResponse.json({ country: null, isRussia: false })
+    return NextResponse.json({ country: null, city: null, isRussia: false })
   }
 
   // Отдаём из кэша, если IP уже спрашивали недавно.
-  const cached = getCachedCountry(ip)
+  const cached = getCachedGeo(ip)
   if (cached !== undefined) {
-    return NextResponse.json({ country: cached, isRussia: cached === "RU" })
+    return NextResponse.json({ ...cached, isRussia: cached.country === "RU" })
   }
 
-  const country = await lookupCountry(ip)
+  const geo = await lookupGeo(ip)
   // Кэшируем только успешный ответ. Если оба сервиса временно недоступны
   // (country === null), не запоминаем сбой — чтобы при следующем заходе
   // попробовать снова, а не считать посетителя «не из РФ» сутки.
-  if (country !== null) {
-    setCachedCountry(ip, country)
+  if (geo.country !== null) {
+    setCachedGeo(ip, geo)
   }
-  return NextResponse.json({ country, isRussia: country === "RU" })
+  return NextResponse.json({ ...geo, isRussia: geo.country === "RU" })
 }

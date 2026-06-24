@@ -4,15 +4,10 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { siteConfig } from "@/lib/config"
-import { IconArrow, IconMapPin } from "../icons"
 import { HamburgerIcon } from "./hamburger-icon"
 import { MobileMenu } from "./mobile-menu"
-
-const navLinks = [
-  { href: "/vacancies", label: "Вакансии" },
-  { href: "/about", label: "О нас" },
-  { href: "/support", label: "Помощь" },
-]
+import { MessengerPill } from "./messenger-pill"
+import { RegionPicker } from "./region-picker"
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -23,7 +18,6 @@ export function Header() {
     setMobileMenuOpen(false)
   }, [pathname])
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/")
   // Переключатель режимов: соискатель (главная) / работодатель (partners)
   const employerMode = pathname.startsWith("/partners")
 
@@ -63,35 +57,17 @@ export function Header() {
               </Link>
             </div>
 
-            {/* Текстовая навигация */}
-            <nav className="hidden lg:flex items-center gap-1">
-              {navLinks.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`px-3 py-2 text-sm font-semibold rounded-lg transition-colors ${
-                    isActive(item.href) ? "text-primary" : "text-foreground/80 hover:text-foreground"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-
             {/* Right actions */}
-            <div className="flex items-center gap-2 sm:gap-3 ml-auto">
-              <span className="hidden lg:inline-flex items-center gap-1.5 text-sm font-medium text-foreground/80">
-                <IconMapPin className="w-4 h-4 text-muted-foreground" />
-                Москва
-              </span>
+            <div className="flex items-center gap-2 sm:gap-4 ml-auto">
+              {/* Автоопределение региона + выбор города (как на hh.ru) */}
+              <div className="hidden md:block">
+                <RegionPicker />
+              </div>
 
-              <Link
-                href="/#find"
-                className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-foreground text-background text-sm font-semibold rounded-full hover:opacity-90 transition-opacity"
-              >
-                Оставить заявку
-                <IconArrow className="w-4 h-4" />
-              </Link>
+              {/* Мессенджеры — единый стиль с остальным сайтом */}
+              <div className="hidden sm:block">
+                <MessengerPill />
+              </div>
 
               {/* Mobile hamburger */}
               <div className="lg:hidden">
