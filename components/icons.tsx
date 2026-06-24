@@ -262,6 +262,18 @@ export const IconArrowUpRight = ({ className = "w-6 h-6" }: { className?: string
   </svg>
 )
 
+export const IconChevronDown = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="1.5">
+    <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+export const IconSort = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="1.5">
+    <path d="M3 6h13M3 12h9M3 18h5M17 18V8m0 10l3-3m-3 3l-3-3" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
 // Admin icons
 export const IconChart = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="1.5">

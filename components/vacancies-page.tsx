@@ -24,9 +24,29 @@ import {
   IconCheck,
   IconStar,
   IconArrowUpRight,
+  IconChevronDown,
+  IconSort,
 } from "./icons"
 
 const PAGE_SIZE = 12
+
+type SortKey = "relevance" | "salary_desc" | "salary_asc" | "fresh"
+
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: "relevance", label: "По соответствию" },
+  { key: "fresh", label: "Сначала новые" },
+  { key: "salary_desc", label: "Доход: по убыванию" },
+  { key: "salary_asc", label: "Доход: по возрастанию" },
+]
+
+// Ранг свежести по тексту метки публикации (меньше — новее)
+const FRESHNESS_RANK: Record<string, number> = {
+  Сегодня: 0,
+  Вчера: 1,
+  "2 дня назад": 2,
+  "3 дня назад": 3,
+  "На этой неделе": 4,
+}
 
 export function VacanciesPage({ initialCategory }: { initialCategory?: CategoryKey }) {
   const searchParams = useSearchParams()
@@ -34,6 +54,7 @@ export function VacanciesPage({ initialCategory }: { initialCategory?: CategoryK
 
   const [query, setQuery] = useState("")
   const [activeCat, setActiveCat] = useState<CategoryKey | "all">(initialCategory ?? "all")
+  const [sort, setSort] = useState<SortKey>("relevance")
   const [limit, setLimit] = useState(PAGE_SIZE)
   const [selected, setSelected] = useState<Vacancy | null>(null)
 
@@ -48,8 +69,16 @@ export function VacanciesPage({ initialCategory }: { initialCategory?: CategoryK
   const results = useMemo(() => {
     let list = searchVacancies(query)
     if (activeCat !== "all") list = list.filter((v) => v.categoryKey === activeCat)
+    if (sort !== "relevance") {
+      list = [...list].sort((a, b) => {
+        if (sort === "salary_desc") return b.salaryFrom - a.salaryFrom
+        if (sort === "salary_asc") return a.salaryFrom - b.salaryFrom
+        // fresh
+        return (FRESHNESS_RANK[a.postedLabel] ?? 99) - (FRESHNESS_RANK[b.postedLabel] ?? 99)
+      })
+    }
     return list
-  }, [query, activeCat])
+  }, [query, activeCat, sort])
 
   const visible = results.slice(0, limit)
   const hasMore = limit < results.length
@@ -79,6 +108,11 @@ export function VacanciesPage({ initialCategory }: { initialCategory?: CategoryK
     const params = new URLSearchParams()
     if (q.trim()) params.set("q", q.trim())
     router.replace(`${basePath}${params.toString() ? `?${params}` : ""}`, { scroll: false })
+  }
+
+  const changeSort = (key: SortKey) => {
+    setSort(key)
+    setLimit(PAGE_SIZE)
   }
 
   const selectCategory = (key: CategoryKey | "all") => {
@@ -146,6 +180,17 @@ export function VacanciesPage({ initialCategory }: { initialCategory?: CategoryK
 
         {/* Результаты */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-3xl">
+          {/* Панель сортировки — счётчик слева, выбор сортировки справа */}
+          {results.length > 0 && (
+            <div className="mb-4 sm:mb-5 flex items-center justify-between gap-3">
+              <p className="min-w-0 truncate text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{results.length.toLocaleString("ru-RU")}</span>{" "}
+                {pluralVacancies(results.length)}
+              </p>
+              <SortMenu value={sort} onChange={changeSort} />
+            </div>
+          )}
+
           {visible.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
@@ -201,6 +246,80 @@ function CategoryChip({ label, active, onClick }: { label: string; active: boole
     >
       {label}
     </button>
+  )
+}
+
+function SortMenu({ value, onChange }: { value: SortKey; onChange: (key: SortKey) => void }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement | null>(null)
+  const current = SORT_OPTIONS.find((o) => o.key === value) ?? SORT_OPTIONS[0]
+
+  useEffect(() => {
+    if (!open) return
+    const onPointer = (e: MouseEvent | TouchEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    document.addEventListener("mousedown", onPointer)
+    document.addEventListener("touchstart", onPointer)
+    document.addEventListener("keydown", onKey)
+    return () => {
+      document.removeEventListener("mousedown", onPointer)
+      document.removeEventListener("touchstart", onPointer)
+      document.removeEventListener("keydown", onKey)
+    }
+  }, [open])
+
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={`Сортировка: ${current.label}`}
+        className="inline-flex items-center gap-2 rounded-xl border border-border bg-card pl-3 pr-2.5 h-10 text-sm font-medium text-foreground transition-colors hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+      >
+        <IconSort className="w-4 h-4 text-muted-foreground shrink-0" />
+        <span className="hidden sm:inline text-muted-foreground">Сортировка:</span>
+        <span className="max-w-[9.5rem] truncate">{current.label}</span>
+        <IconChevronDown
+          className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <div
+          role="listbox"
+          aria-label="Сортировка вакансий"
+          className="absolute right-0 z-30 mt-2 w-60 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-border bg-card p-1.5 shadow-xl shadow-foreground/5"
+        >
+          {SORT_OPTIONS.map((opt) => {
+            const active = opt.key === value
+            return (
+              <button
+                key={opt.key}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => {
+                  onChange(opt.key)
+                  setOpen(false)
+                }}
+                className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
+                  active ? "bg-primary/10 font-semibold text-primary" : "text-foreground hover:bg-secondary"
+                }`}
+              >
+                <span>{opt.label}</span>
+                {active && <IconCheck className="w-4 h-4 shrink-0" />}
+              </button>
+            )
+          })}
+        </div>
+      )}
+    </div>
   )
 }
 
