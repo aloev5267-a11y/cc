@@ -1,6 +1,5 @@
 import { MetadataRoute } from 'next'
-
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ccourierhub.ru'
+import { siteUrl as baseUrl } from '@/lib/config'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date().toISOString()

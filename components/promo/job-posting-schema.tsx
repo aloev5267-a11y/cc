@@ -1,6 +1,5 @@
 import type { PromoRole } from "@/lib/promo-config"
-
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ccourierhub.ru"
+import { siteUrl } from "@/lib/config"
 
 // Извлекаем число из строки вида "от 10 000 ₽" → 10000
 function parseSalary(earn: string): number | null {

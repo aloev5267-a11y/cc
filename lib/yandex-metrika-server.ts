@@ -6,7 +6,9 @@
 //
 // Документация: Management API → offline_conversions/upload (client_id_type=CLIENT_ID).
 
-const COUNTER_ID = process.env.YANDEX_METRIKA_COUNTER_ID || '109455099'
+import { metrikaCounterId } from './config'
+
+const COUNTER_ID = process.env.YANDEX_METRIKA_COUNTER_ID || metrikaCounterId
 const OAUTH_TOKEN = process.env.YANDEX_OAUTH_TOKEN
 // Идентификатор цели офлайн-конверсии в Метрике (создаётся один раз в настройках счётчика).
 const TARGET = process.env.YANDEX_CONVERSION_TARGET || 'messenger_lead'

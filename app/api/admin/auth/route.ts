@@ -9,6 +9,7 @@ import {
   deleteSession,
   validateSession 
 } from '@/lib/auth'
+import { rateLimit, rateLimitConfigs, getClientIp } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,6 +17,17 @@ export async function POST(request: NextRequest) {
     
     if (!username || !password) {
       return NextResponse.json({ error: 'Username and password required' }, { status: 400 })
+    }
+
+    // Throttle brute-force attempts per IP + username before hitting bcrypt.
+    const ip = getClientIp(request)
+    const limit = rateLimit(`admin-login:${ip}:${String(username).toLowerCase()}`, rateLimitConfigs.adminLogin)
+    if (!limit.success) {
+      const retryAfter = Math.max(0, Math.ceil((limit.resetTime - Date.now()) / 1000))
+      return NextResponse.json(
+        { error: 'Too many login attempts. Try again later.' },
+        { status: 429, headers: { 'Retry-After': String(retryAfter) } }
+      )
     }
 
     const user = getAdminUserByUsername(username) as { 

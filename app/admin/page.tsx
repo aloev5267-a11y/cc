@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { metrikaCounterId, siteUrl } from "@/lib/config"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
@@ -354,13 +355,13 @@ export default function AdminPage() {
 
 // Promo Pages Tab — справочник для запуска кампаний в Яндекс.Директе:
 // быстрые ссылки, UTM, ключевые слова, тексты объявлений и общий фид.
-const METRIKA_COUNTER_ID = "109455099"
+const METRIKA_COUNTER_ID = metrikaCounterId
 const PROMO_GOAL = "promo_messenger"
 
 function PromoPagesTab() {
   const [copied, setCopied] = useState<string | null>(null)
   const baseUrl =
-    (typeof window !== "undefined" && window.location.origin) || "https://ccourierhub.ru"
+    (typeof window !== "undefined" && window.location.origin) || siteUrl
 
   function fullUrl(path: string) {
     return `${baseUrl.replace(/\/$/, "")}${path}`

@@ -90,6 +90,9 @@ export const rateLimitConfigs = {
   
   // Admin endpoints (stricter)
   admin: { windowMs: 60 * 1000, maxRequests: 10 },
+
+  // Admin login (very strict to slow down brute-force on passwords)
+  adminLogin: { windowMs: 5 * 60 * 1000, maxRequests: 5 }, // 5 attempts per 5 minutes
   
   // Contact form
   contact: { windowMs: 60 * 1000, maxRequests: 3 }, // 3 submissions per minute
@@ -98,19 +101,25 @@ export const rateLimitConfigs = {
   telegramWebhook: { windowMs: 60 * 1000, maxRequests: 100 },
 } as const
 
-// Helper to get client IP from request
+// Helper to get client IP from request.
+// On a VPS behind nginx, configure the reverse proxy to set a trusted header
+// (e.g. `proxy_set_header X-Real-IP $remote_addr;`). We prefer X-Real-IP because
+// it is set by the trusted proxy from the real connection and cannot be spoofed
+// by the client, unlike X-Forwarded-For which the client can prepend to.
 export function getClientIp(request: Request): string {
-  // Check common headers for proxied requests
+  const realIp = request.headers.get('x-real-ip')
+  if (realIp) {
+    return realIp.trim()
+  }
+
+  // Fallback: take the left-most entry of X-Forwarded-For. Note this is
+  // spoofable unless a trusted proxy overwrites the header, so X-Real-IP above
+  // should always be preferred in production.
   const forwardedFor = request.headers.get('x-forwarded-for')
   if (forwardedFor) {
     return forwardedFor.split(',')[0].trim()
   }
-  
-  const realIp = request.headers.get('x-real-ip')
-  if (realIp) {
-    return realIp
-  }
-  
+
   // Fallback to a default identifier
   return 'unknown'
 }

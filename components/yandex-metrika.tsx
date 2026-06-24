@@ -3,8 +3,9 @@
 import Script from "next/script"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, Suspense } from "react"
+import { metrikaCounterId } from "@/lib/config"
 
-const METRIKA_ID = 109455099
+const METRIKA_ID = Number(metrikaCounterId)
 
 // Declare ym function type for TypeScript
 declare global {

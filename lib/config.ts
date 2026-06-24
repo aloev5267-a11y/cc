@@ -1,6 +1,13 @@
 // Централизованный конфиг сайта
 // Все контактные данные и настройки в одном месте
 
+// Базовый URL сайта. Единый источник истины — переменная окружения NEXT_PUBLIC_APP_URL.
+// Фолбэк используется только в локальной разработке, если переменная не задана.
+export const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ccourierhub.ru'
+
+// ID счётчика Яндекс.Метрики. Задаётся через NEXT_PUBLIC_YANDEX_METRIKA_ID.
+export const metrikaCounterId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || '109455099'
+
 export const siteConfig = {
   name: "КурьерХаб",
   company: {

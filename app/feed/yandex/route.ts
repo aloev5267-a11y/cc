@@ -1,6 +1,5 @@
 import { promoPages } from "@/lib/promo-pages"
-
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ccourierhub.ru"
+import { siteUrl } from "@/lib/config"
 
 // Экранирование спецсимволов для XML
 function esc(str: string): string {

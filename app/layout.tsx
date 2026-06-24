@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { YandexMetrika } from '@/components/yandex-metrika'
 import { Toaster } from '@/components/ui/sonner'
+import { siteUrl } from '@/lib/config'
 import './globals.css'
 
 const inter = Inter({
@@ -16,8 +17,6 @@ const jetbrains = JetBrains_Mono({
   variable: '--font-jetbrains',
   display: 'swap'
 })
-
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ccourierhub.ru'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

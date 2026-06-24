@@ -1,4 +1,4 @@
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ccourierhub.ru'
+import { siteUrl } from '@/lib/config'
 
 const organizationSchema = {
   "@context": "https://schema.org",
