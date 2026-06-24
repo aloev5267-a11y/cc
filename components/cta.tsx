@@ -6,40 +6,49 @@ import { IconArrow } from "./icons"
 
 export function CTA() {
   return (
-    <section className="relative py-16 md:py-20 lg:py-24 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl" aria-hidden="true" />
-
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <section className="relative py-16 md:py-24">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-3xl mx-auto text-center"
+          className="relative overflow-hidden rounded-[2rem] bg-foreground text-background px-6 py-14 sm:px-12 md:px-16 md:py-20"
         >
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black tracking-tight mb-3 sm:mb-4 text-foreground text-balance">
-            Готовы начать поиск работы?
-          </h2>
+          {/* decorative wordmark */}
+          <div
+            aria-hidden="true"
+            className="absolute -right-6 -bottom-10 font-display text-background/[0.05] text-[14rem] leading-none select-none pointer-events-none"
+          >
+            ✦
+          </div>
 
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-6 md:mb-10 max-w-xl mx-auto text-pretty">
-            Посмотрите актуальные вакансии или напишите нам — подберём вариант под ваш опыт и график.
-          </p>
+          <div className="relative max-w-2xl">
+            <p className="eyebrow text-background/50 mb-5">Начните сегодня</p>
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl leading-[1.06] text-balance">
+              Готовы начать{" "}
+              <span className="italic text-primary-foreground/90 underline decoration-primary decoration-2 underline-offset-[6px]">
+                поиск работы?
+              </span>
+            </h2>
+            <p className="mt-5 text-background/70 text-base md:text-lg max-w-xl text-pretty leading-relaxed">
+              Посмотрите актуальные вакансии или напишите нам — подберём вариант под ваш опыт и график. Для соискателей бесплатно.
+            </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/vacancies"
-              className="group w-full sm:w-auto px-8 py-4 btn-primary text-primary-foreground font-bold rounded-xl btn-shine flex items-center justify-center gap-2"
-            >
-              Смотреть вакансии
-              <IconArrow className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-
-            <Link
-              href="#find"
-              className="w-full sm:w-auto px-8 py-4 bg-card border-2 border-border text-foreground font-bold rounded-xl transition-all hover:border-primary/50 hover:shadow-lg flex items-center justify-center"
-            >
-              Написать в мессенджер
-            </Link>
+            <div className="mt-9 flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/vacancies"
+                className="group inline-flex items-center justify-center gap-2 px-7 py-4 bg-background text-foreground font-semibold rounded-full transition-transform hover:scale-[1.02]"
+              >
+                Смотреть вакансии
+                <IconArrow className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                href="#find"
+                className="inline-flex items-center justify-center gap-2 px-7 py-4 border border-background/25 text-background font-semibold rounded-full transition-colors hover:bg-background/10"
+              >
+                Написать в мессенджер
+              </Link>
+            </div>
           </div>
         </motion.div>
       </div>

@@ -28,26 +28,25 @@ const advantages = [
 
 export function Advantages() {
   return (
-    <section className="relative py-16 md:py-24">
+    <section className="relative py-16 md:py-28 border-t border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-10 md:mb-14"
+          className="max-w-3xl mb-12 md:mb-16"
         >
-          <span className="inline-block px-4 py-1.5 bg-primary/10 rounded-full text-sm font-semibold text-primary mb-4">
-            Почему нам доверяют
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight mb-3 text-balance">
-            Помогаем найти работу честно и спокойно
+          <p className="eyebrow text-primary mb-5">Почему нам доверяют</p>
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-foreground text-balance leading-[1.08]">
+            Помогаем найти работу{" "}
+            <span className="italic text-primary">честно и спокойно</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-pretty">
+          <p className="mt-5 text-muted-foreground max-w-xl text-pretty leading-relaxed">
             Мы на стороне соискателя: подбираем вакансии под ваши навыки и сопровождаем до выхода на работу.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
           {advantages.map((item, index) => (
             <motion.div
               key={item.title}
@@ -55,12 +54,15 @@ export function Advantages() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.08 }}
-              className="card-elevated rounded-2xl p-6"
+              className="group relative pt-6 border-t-2 border-foreground/15 transition-colors hover:border-primary"
             >
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+              <div className="flex items-center justify-between mb-6">
+                <span className="font-display text-2xl text-muted-foreground/60 tabular-nums">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <item.icon className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-bold text-lg text-foreground mb-2 text-balance">{item.title}</h3>
+              <h3 className="font-semibold text-lg text-foreground mb-2.5 text-balance">{item.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed text-pretty">{item.description}</p>
             </motion.div>
           ))}

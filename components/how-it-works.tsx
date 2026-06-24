@@ -28,21 +28,20 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how" className="relative py-16 md:py-24 scroll-mt-24">
+    <section id="how" className="relative py-16 md:py-28 scroll-mt-24 border-t border-border gradient-soft">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-10 md:mb-14"
+          className="max-w-3xl mb-12 md:mb-16"
         >
-          <span className="inline-block px-4 py-1.5 bg-primary/10 rounded-full text-sm font-semibold text-primary mb-4">
-            Как это работает
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight mb-3 text-balance">
-            Четыре простых шага до новой работы
+          <p className="eyebrow text-primary mb-5">Как это работает</p>
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-foreground text-balance leading-[1.08]">
+            Четыре простых шага{" "}
+            <span className="italic text-primary">до новой работы</span>
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto text-pretty">
+          <p className="mt-5 text-muted-foreground max-w-xl text-pretty leading-relaxed">
             Без долгих анкет и оплат — только живое общение и реальные вакансии.
           </p>
         </motion.div>
@@ -55,15 +54,15 @@ export function HowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.08 }}
-              className="relative bg-card border border-border rounded-2xl p-6"
+              className="group relative bg-card border border-border rounded-2xl p-6 transition-colors hover:border-primary/40"
             >
               <div className="flex items-center justify-between mb-5">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
                   <step.icon className="w-6 h-6" />
                 </div>
-                <span className="text-4xl font-black text-primary/15">{index + 1}</span>
+                <span className="font-display text-4xl text-muted-foreground/40 tabular-nums">{String(index + 1).padStart(2, "0")}</span>
               </div>
-              <h3 className="font-bold text-lg text-foreground mb-2 text-balance">{step.title}</h3>
+              <h3 className="font-semibold text-lg text-foreground mb-2 text-balance">{step.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed text-pretty">{step.description}</p>
             </motion.div>
           ))}

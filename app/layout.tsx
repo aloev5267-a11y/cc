@@ -1,7 +1,7 @@
 import { StructuredData } from "@/components/structured-data"
 import Script from 'next/script'
 import type { Metadata, Viewport } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Inter, Fraunces } from 'next/font/google'
 import { YandexMetrika } from '@/components/yandex-metrika'
 import { Toaster } from '@/components/ui/sonner'
 import { siteUrl, siteConfig } from '@/lib/config'
@@ -13,10 +13,12 @@ const inter = Inter({
   display: 'swap'
 })
 
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin", "cyrillic"],
-  variable: '--font-jetbrains',
-  display: 'swap'
+// Серифный дисплейный шрифт для крупных заголовков — editorial-характер
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: '--font-fraunces',
+  display: 'swap',
+  axes: ['opsz', 'SOFT', 'WONK'],
 })
 
 export const metadata: Metadata = {
@@ -30,7 +32,7 @@ export const metadata: Metadata = {
   authors: [{ name: siteConfig.company.name, url: siteUrl }],
   creator: siteConfig.name,
   publisher: siteConfig.company.name,
-  formatDetection: { email: true, address: true, telephone: true },
+  formatDetection: { email: true, address: true, telephone: false },
   alternates: { canonical: '/', languages: { 'ru-RU': '/' } },
   icons: {
     icon: [{ url: '/logo.png', type: 'image/png' }],
@@ -58,7 +60,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0f9b6c',
+  themeColor: '#1a4d3a',
   width: 'device-width', initialScale: 1, maximumScale: 5, userScalable: true, colorScheme: 'light',
 }
 
@@ -76,7 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
         <StructuredData />
       </head>
-      <body className={`${inter.variable} ${jetbrains.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${fraunces.variable} font-sans antialiased`}>
         <YandexMetrika />
         {children}
         <Toaster position="top-center" richColors />

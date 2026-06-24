@@ -38,8 +38,6 @@ export const siteConfig = {
     address: process.env.NEXT_PUBLIC_COMPANY_ADDRESS || 'г. Москва',
   },
   contact: {
-    phone: process.env.NEXT_PUBLIC_CONTACT_PHONE || '8 (800) 500-70-30',
-    phoneHref: `tel:${(process.env.NEXT_PUBLIC_CONTACT_PHONE || '88005007030').replace(/[^0-9+]/g, '')}`,
     email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || `info@${siteDomain}`,
     emailHref: `mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || `info@${siteDomain}`}`,
   },

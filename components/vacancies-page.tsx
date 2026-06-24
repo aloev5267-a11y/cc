@@ -22,7 +22,7 @@ import {
   IconMessage,
   IconClose,
   IconArrow,
-  IconPhone,
+  IconMail,
   IconCheck,
   IconTelegram,
   IconWhatsapp,
@@ -508,15 +508,15 @@ export function VacanciesPage() {
                 <h3 className="font-bold text-xl mb-6">Или свяжитесь напрямую</h3>
 
                 <a 
-                  href={siteConfig.contact.phoneHref}
+                  href={siteConfig.contact.emailHref}
                   className="flex items-center gap-4 p-5 bg-card rounded-2xl border border-border hover:border-primary/50 transition-colors"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                    <IconPhone className="w-6 h-6 text-green-500" />
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                    <IconMail className="w-6 h-6 text-blue-500" />
                   </div>
                   <div>
-                    <div className="font-bold">{siteConfig.contact.phone}</div>
-                    <div className="text-sm text-muted-foreground">Бесплатно по России</div>
+                    <div className="font-bold">{siteConfig.contact.email}</div>
+                    <div className="text-sm text-muted-foreground">Ответим в течение рабочего дня</div>
                   </div>
                 </a>
 

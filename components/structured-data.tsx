@@ -1,7 +1,5 @@
 import { siteUrl, siteConfig } from '@/lib/config'
 
-const phone = siteConfig.contact.phone.replace(/[^0-9+]/g, '')
-
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": ["Organization", "EmploymentAgency"],
@@ -21,7 +19,7 @@ const organizationSchema = {
   },
   "contactPoint": [{
     "@type": "ContactPoint",
-    "telephone": phone,
+    "email": siteConfig.contact.email,
     "contactType": "customer service",
     "availableLanguage": "Russian",
     "areaServed": "RU",

@@ -4,7 +4,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { siteConfig } from "@/lib/config"
 import {
-  IconPhone,
   IconMapPin,
   IconTelegram,
   IconWhatsapp,
@@ -121,7 +120,7 @@ export function Footer() {
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <Link
                 href="/#find"
-                className="group inline-flex items-center justify-center gap-2 px-7 py-4 btn-primary text-primary-foreground font-bold rounded-2xl btn-shine"
+                className="group inline-flex items-center justify-center gap-2 px-7 py-4 btn-primary font-semibold rounded-full"
               >
                 Подобрать работу
                 <IconArrow className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -155,10 +154,6 @@ export function Footer() {
             </p>
 
             <div className="space-y-3 mb-7">
-              <a href={siteConfig.contact.phoneHref} className="group flex items-center gap-3 text-background/80 hover:text-primary transition-colors">
-                <span className="w-10 h-10 bg-background/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors"><IconPhone className="w-4 h-4" /></span>
-                <span className="text-sm font-bold tabular-nums">{siteConfig.contact.phone}</span>
-              </a>
               <a href={siteConfig.contact.emailHref} className="group flex items-center gap-3 text-background/80 hover:text-primary transition-colors">
                 <span className="w-10 h-10 bg-background/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors"><IconMail className="w-4 h-4" /></span>
                 <span className="text-sm font-medium">{siteConfig.contact.email}</span>

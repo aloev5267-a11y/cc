@@ -4,97 +4,108 @@ import { IconArrow, IconCheck } from "./icons"
 import { siteConfig } from "@/lib/config"
 
 const highlights = [
-  "Помощь бесплатна для соискателей",
+  "Бесплатно для соискателей",
   "Проверенные работодатели",
-  "Быстрый отклик — обычно в тот же день",
+  "Отклик обычно в тот же день",
+]
+
+const stats = [
+  { value: siteConfig.stats.candidatesPlaced, label: "трудоустроено" },
+  { value: `${siteConfig.stats.partners}+`, label: "работодателей" },
+  { value: `${siteConfig.stats.cities}+`, label: "городов" },
 ]
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <Image fetchPriority="high" loading="eager" sizes="100vw"
-          src="/hero-bg.png"
-          alt=""
-          fill
-          className="object-cover object-center"
-          priority
-          quality={75}
-        />
-        {/* Overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/92 to-background/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
-      </div>
+    <section className="relative overflow-hidden gradient-hero">
+      <div className="absolute inset-0 grid-pattern opacity-60" aria-hidden="true" />
 
-      {/* Main content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        <div className="max-w-3xl">
-          <div className="animate-fade-in-up">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full mb-5">
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 pt-28 md:pt-36 pb-16 md:pb-24">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-10 items-center">
+          {/* Left — editorial copy */}
+          <div className="lg:col-span-7 animate-fade-in-up">
+            <div className="inline-flex items-center gap-2.5 mb-7">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
+                <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 animate-ping" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
-              <span className="text-sm font-semibold text-primary">{siteConfig.tagline}</span>
+              <span className="eyebrow text-muted-foreground">{siteConfig.tagline}</span>
             </div>
 
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-foreground mb-4 md:mb-6 text-balance">
+            <h1 className="font-display text-[2.6rem] leading-[1.04] xs:text-5xl sm:text-6xl md:text-7xl lg:text-[5.2rem] text-foreground text-balance">
               Найдём работу,{" "}
-              <span className="gradient-text">которая вам подходит</span>
+              <span className="italic text-primary">которая вам&nbsp;подходит</span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl mb-6 leading-relaxed text-pretty">
+            <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed text-pretty">
               {siteConfig.name} — кадровое агентство, которое связывает соискателей с
               надёжными работодателями. Подберём вакансию под ваш опыт и график,
               а работодателям поможем закрыть позиции.
             </p>
 
-            <ul className="space-y-2.5 mb-8">
+            <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-3">
               {highlights.map((item) => (
-                <li key={item} className="flex items-center gap-3 text-sm sm:text-base text-foreground">
-                  <span className="w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
-                    <IconCheck className="w-3.5 h-3.5 text-primary" />
+                <li key={item} className="flex items-center gap-2.5 text-sm sm:text-[15px] text-foreground">
+                  <span className="w-5 h-5 rounded-full bg-primary/12 flex items-center justify-center shrink-0">
+                    <IconCheck className="w-3 h-3 text-primary" />
                   </span>
                   {item}
                 </li>
               ))}
             </ul>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-10">
+            <div className="mt-9 flex flex-col sm:flex-row gap-3">
               <Link
                 href="#find"
-                className="group px-6 md:px-8 py-3.5 md:py-4 btn-primary text-primary-foreground font-bold text-sm md:text-base rounded-xl btn-shine flex items-center justify-center gap-2 transition-transform hover:scale-105"
+                className="group inline-flex items-center justify-center gap-2 px-7 py-4 btn-primary font-semibold text-sm md:text-base rounded-full"
               >
                 Подобрать работу
-                <IconArrow className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" />
+                <IconArrow className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
-
               <Link
                 href="/partners"
-                className="group px-6 md:px-8 py-3.5 md:py-4 bg-card/80 backdrop-blur-sm border-2 border-border text-foreground font-bold text-sm md:text-base rounded-xl transition-all hover:border-primary/50 hover:bg-card flex items-center justify-center gap-2"
+                className="inline-flex items-center justify-center gap-2 px-7 py-4 border border-foreground/20 text-foreground font-semibold text-sm md:text-base rounded-full transition-colors hover:border-foreground/40 hover:bg-foreground/[0.03]"
               >
                 Я работодатель
               </Link>
             </div>
+          </div>
 
-            {/* Stats row */}
-            <div className="flex flex-wrap gap-6 md:gap-10 pt-8 border-t border-border/50">
-              <div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground">{siteConfig.stats.candidatesPlaced}</div>
-                <div className="text-xs sm:text-sm text-muted-foreground">трудоустроено</div>
+          {/* Right — framed image with floating stat */}
+          <div className="lg:col-span-5">
+            <div className="relative animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
+              <div className="relative aspect-[4/5] rounded-[1.75rem] overflow-hidden border border-border shadow-[0_24px_60px_-30px_oklch(0.22_0.015_70/0.5)]">
+                <Image
+                  fetchPriority="high"
+                  loading="eager"
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  src="/hero-bg.png"
+                  alt="Соискатели и работодатели находят друг друга с ElWork"
+                  fill
+                  className="object-cover object-center"
+                  priority
+                  quality={80}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/35 via-transparent to-transparent" />
               </div>
-              <div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-black text-primary">{siteConfig.stats.partners}+</div>
-                <div className="text-xs sm:text-sm text-muted-foreground">работодателей</div>
-              </div>
-              <div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground">{siteConfig.stats.cities}+</div>
-                <div className="text-xs sm:text-sm text-muted-foreground">городов</div>
+
+              {/* Floating stat card */}
+              <div className="absolute -bottom-5 -left-3 sm:-left-5 bg-card border border-border rounded-2xl px-5 py-4 shadow-[0_16px_40px_-20px_oklch(0.22_0.015_70/0.4)]">
+                <div className="font-display text-3xl text-primary leading-none">{siteConfig.stats.avgPlacementDays}</div>
+                <div className="text-xs text-muted-foreground mt-1.5">средний срок<br />до выхода на работу</div>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="mt-16 md:mt-20 pt-8 border-t border-border grid grid-cols-3 gap-4 max-w-2xl">
+          {stats.map((s) => (
+            <div key={s.label}>
+              <div className="font-display text-3xl sm:text-4xl md:text-5xl text-foreground leading-none">{s.value}</div>
+              <div className="mt-2 text-xs sm:text-sm text-muted-foreground">{s.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

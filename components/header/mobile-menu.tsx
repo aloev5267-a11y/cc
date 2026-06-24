@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { IconPhone, IconMail, IconArrowUpRight } from "../icons"
+import { IconMail, IconArrowUpRight } from "../icons"
 import { navItems } from "./nav-config"
 import { MessengerPill } from "./messenger-pill"
 import { siteConfig } from "@/lib/config"
@@ -63,7 +63,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               <Link
                 href="/#find"
                 onClick={onClose}
-                className="flex items-center justify-center gap-2 w-full py-4 btn-primary text-primary-foreground font-bold rounded-2xl btn-shine"
+                className="flex items-center justify-center gap-2 w-full py-4 btn-primary font-semibold rounded-full"
               >
                 Подобрать работу
               </Link>
@@ -71,16 +71,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
             {/* Contacts */}
             <div className="mt-auto pt-10 space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Свяжитесь с нами</p>
-              <a
-                href={siteConfig.contact.phoneHref}
-                className="flex items-center gap-3 text-foreground font-bold"
-              >
-                <span className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                  <IconPhone className="w-4 h-4 text-primary" />
-                </span>
-                {siteConfig.contact.phone}
-              </a>
+              <p className="eyebrow text-muted-foreground">Свяжитесь с нами</p>
               <a
                 href={siteConfig.contact.emailHref}
                 className="flex items-center gap-3 text-foreground/80"

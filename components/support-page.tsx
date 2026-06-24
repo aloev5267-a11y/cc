@@ -7,7 +7,6 @@ import { Footer } from "./footer"
 import { siteConfig } from "@/lib/config"
 import { faqItems } from "@/lib/faq"
 import { 
-  IconPhone, 
   IconMail, 
   IconTelegram, 
   IconWhatsapp,
@@ -67,9 +66,8 @@ export function SupportPage() {
         {/* Contact options */}
         <section className="py-12 border-t border-b border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid sm:grid-cols-3 gap-4">
               {[
-                { icon: IconPhone, label: "Телефон", value: siteConfig.contact.phone, href: siteConfig.contact.phoneHref, color: "text-green-500" },
                 { icon: IconMail, label: "Email", value: siteConfig.contact.email, href: siteConfig.contact.emailHref, color: "text-blue-500" },
                 { icon: IconTelegram, label: "Telegram", value: siteConfig.social.telegram, href: siteConfig.social.telegramUrl, color: "text-sky-500" },
                 { icon: IconWhatsapp, label: "WhatsApp", value: "Написать", href: siteConfig.social.whatsappUrl, color: "text-green-500" },
@@ -77,7 +75,7 @@ export function SupportPage() {
                 <motion.a
                   key={contact.label}
                   href={contact.href}
-                  target={contact.label !== "Телефон" && contact.label !== "Email" ? "_blank" : undefined}
+                  target={contact.label !== "Email" ? "_blank" : undefined}
                   rel="noopener noreferrer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -255,7 +253,7 @@ export function SupportPage() {
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Мы стараемся отвечать на все обращения в течение рабочего дня. 
-                  По срочным вопросам звоните на горячую линию.
+                  По срочным вопросам пишите нам в мессенджеры.
                 </p>
               </div>
             </motion.div>

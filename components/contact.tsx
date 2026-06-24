@@ -8,12 +8,6 @@ import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messen
 
 const contactInfo = [
   {
-    icon: IconPhone,
-    title: "Телефон",
-    value: siteConfig.contact.phone,
-    description: "Бесплатно по России",
-  },
-  {
     icon: IconMail,
     title: "Email",
     value: siteConfig.contact.email,

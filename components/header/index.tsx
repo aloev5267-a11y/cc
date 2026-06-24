@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { siteConfig } from "@/lib/config"
-import { IconPhone, IconArrow } from "../icons"
+import { IconArrow } from "../icons"
 import { navItems } from "./nav-config"
 import { MessengerPill } from "./messenger-pill"
 import { HamburgerIcon } from "./hamburger-icon"
@@ -80,23 +80,13 @@ export function Header() {
 
             {/* Right actions */}
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="hidden xl:flex">
+              <div className="hidden lg:flex">
                 <MessengerPill />
               </div>
 
-              <a
-                href={siteConfig.contact.phoneHref}
-                className="hidden lg:flex items-center gap-2 text-sm font-bold text-foreground hover:text-primary transition-colors"
-              >
-                <span className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                  <IconPhone className="w-4 h-4 text-primary" />
-                </span>
-                <span className="tabular-nums">{siteConfig.contact.phone}</span>
-              </a>
-
               <Link
                 href="/#find"
-                className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 btn-primary text-primary-foreground text-sm font-bold rounded-full btn-shine transition-transform hover:scale-105"
+                className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 btn-primary text-sm font-semibold rounded-full transition-transform hover:scale-[1.02]"
               >
                 Подобрать работу
                 <IconArrow className="w-4 h-4" />
