@@ -9,7 +9,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const managers = getAllManagers()
+    const managers = await getAllManagers()
     return NextResponse.json({ success: true, managers })
   } catch (error) {
     console.error('Get managers error:', error)
@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
     }
 
     const id = `manager_${Date.now()}`
-    addManager(id, telegram_id, name, order_index || 0)
-    logActivity('manager_created', 'manager', id, adminId, JSON.stringify({ telegram_id, name }))
+    await addManager(id, telegram_id, name, order_index || 0)
+    await logActivity('manager_created', 'manager', id, adminId, JSON.stringify({ telegram_id, name }))
 
     return NextResponse.json({ success: true, id })
   } catch (error) {
@@ -54,8 +54,8 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Manager ID required' }, { status: 400 })
     }
 
-    updateManager(id, data)
-    logActivity('manager_updated', 'manager', id, adminId, JSON.stringify(data))
+    await updateManager(id, data)
+    await logActivity('manager_updated', 'manager', id, adminId, JSON.stringify(data))
 
     return NextResponse.json({ success: true })
   } catch (error) {
@@ -78,8 +78,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Manager ID required' }, { status: 400 })
     }
 
-    deleteManager(id)
-    logActivity('manager_deleted', 'manager', id, adminId)
+    await deleteManager(id)
+    await logActivity('manager_deleted', 'manager', id, adminId)
 
     return NextResponse.json({ success: true })
   } catch (error) {

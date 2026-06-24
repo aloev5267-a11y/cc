@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   const { code } = parsed.data
 
   // 3. Находим заявку
-  const lead = getLeadByCode(code)
+  const lead = await getLeadByCode(code)
   if (!lead) {
     return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
   }
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
   // 5. Помечаем подтверждение (если ещё не подтверждена)
   if (!alreadyConverted) {
-    confirmLeadByCode(code)
+    await confirmLeadByCode(code)
   }
 
   // 6. Грузим офлайн-конверсию в Метрику. Безопасно к ошибкам — заявка остаётся
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     uploaded = res.ok
     uploadReason = res.reason
     if (res.ok) {
-      markLeadUploaded(code)
+      await markLeadUploaded(code)
     }
   } else {
     uploaded = true

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getNextMessengerAccount, peekMessengerAccount, createLead, createLeadWithCode } from '@/lib/db'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
+import { generateClientId } from '@/lib/server-utils'
 
 // Validation schema
 // 'chat' — переход в онлайн-чат (например, когда возраст не подошёл под вакансию).
@@ -17,11 +18,6 @@ const messengerRequestSchema = z.object({
   // ClientID Яндекс.Метрики для серверной офлайн-конверсии.
   ymClientId: z.string().max(64).optional(),
 })
-
-// Генерация client ID
-function generateClientId(): string {
-  return `client_${Date.now()}_${Math.random().toString(36).substring(7)}`
-}
 
 // GET - получить аккаунт без создания lead (при загрузке страницы)
 export async function GET(request: NextRequest) {
@@ -45,7 +41,7 @@ export async function GET(request: NextRequest) {
     // Показываем менеджера, который СЕЙЧАС стоит в очереди — без сдвига очереди
     // и без создания привязки. Реальный сдвиг происходит только при клике (POST),
     // поэтому каждый следующий клик уходит следующему менеджеру по кругу.
-    const account = peekMessengerAccount(messengerType)
+    const account = await peekMessengerAccount(messengerType)
 
     if (!account) {
       return NextResponse.json({ error: 'No active accounts available' }, { status: 404 })
@@ -54,8 +50,8 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       account: {
-        id: (account as { account_id: string }).account_id,
-        name: (account as { account_name: string }).account_name,
+        id: account.account_id,
+        name: account.account_name,
       },
       clientId,
     })
@@ -98,12 +94,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Для онлайн-чата аккаунт мессенджера не требуется — это отдельный канал.
-    type Acct = { id: string; account_id: string; account_name: string }
-    let account: Acct | null = null
+    let account: Awaited<ReturnType<typeof getNextMessengerAccount>> = null
     if (messengerType !== 'chat') {
       // КАЖДЫЙ клик сдвигает очередь round-robin и уходит следующему менеджеру.
       // Привязка клиента к одному менеджеру больше не используется.
-      account = getNextMessengerAccount(messengerType) as unknown as Acct | null
+      account = await getNextMessengerAccount(messengerType)
     }
 
     // Создаём lead при КАЖДОМ клике — даже если аккаунт мессенджера не настроен
@@ -114,7 +109,7 @@ export async function POST(request: NextRequest) {
 
     if (code) {
       // Заявка с номером и ClientID — ждёт подтверждения сообщения для засчёта конверсии.
-      createLeadWithCode({
+      await createLeadWithCode({
         code,
         clientId,
         ymClientId,
@@ -124,7 +119,7 @@ export async function POST(request: NextRequest) {
       })
     } else {
       // Обычный лид без конверсионной связки (например, переход в онлайн-чат).
-      createLead(clientId, source || messengerType, undefined, account?.id, metadataJson)
+      await createLead(clientId, source || messengerType, undefined, account?.id, metadataJson)
     }
 
     const response = NextResponse.json({

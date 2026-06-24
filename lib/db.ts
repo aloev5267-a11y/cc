@@ -143,8 +143,16 @@ async function ensureSchema(): Promise<void> {
       );
 
       CREATE INDEX IF NOT EXISTS idx_leads_code ON leads(code);
+      CREATE INDEX IF NOT EXISTS idx_leads_client_id ON leads(client_id);
+      CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
+      CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
       CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
       CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
+      CREATE INDEX IF NOT EXISTS idx_chats_client_id ON chats(client_id);
+      CREATE INDEX IF NOT EXISTS idx_chats_manager_status ON chats(manager_id, status);
+      CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);
+      CREATE INDEX IF NOT EXISTS idx_client_bindings_client_id ON client_bindings(client_id);
+      CREATE INDEX IF NOT EXISTS idx_messenger_accounts_type ON messenger_accounts(messenger_type);
     `)
 
     // Инициализация очереди менеджеров
@@ -307,18 +315,46 @@ export async function getMessages(chatId: string): Promise<Message[]> {
 
 // ============ Manager Functions ============
 export async function getNextManager(): Promise<Manager | null> {
-  const queue = await queryOne<{ current_index: number }>('SELECT current_index FROM manager_queue LIMIT 1')
-  const managers = await query<Manager>('SELECT * FROM managers WHERE is_available = 1 ORDER BY order_index')
+  // Атомарный round-robin: блокируем строку очереди (FOR UPDATE), чтобы при
+  // одновременных заявках двум клиентам не достался один и тот же менеджер
+  // и индекс не «перепрыгивал».
+  await ensureSchema()
+  const client = await getPool().connect()
+  try {
+    await client.query('BEGIN')
 
-  if (!queue || managers.length === 0) return null
+    const queueRes = await client.query<{ id: number; current_index: number }>(
+      'SELECT id, current_index FROM manager_queue ORDER BY id LIMIT 1 FOR UPDATE',
+    )
+    const queue = queueRes.rows[0]
 
-  const nextIndex = queue.current_index % managers.length
-  const manager = managers[nextIndex]
+    const managersRes = await client.query<Manager>(
+      'SELECT * FROM managers WHERE is_available = 1 ORDER BY order_index',
+    )
+    const managers = managersRes.rows
 
-  await query('UPDATE manager_queue SET current_index = $1', [(queue.current_index + 1) % managers.length])
-  await query('UPDATE managers SET last_assigned = NOW() WHERE id = $1', [manager.id])
+    if (!queue || managers.length === 0) {
+      await client.query('COMMIT')
+      return null
+    }
 
-  return manager
+    const nextIndex = queue.current_index % managers.length
+    const manager = managers[nextIndex]
+
+    await client.query('UPDATE manager_queue SET current_index = $1 WHERE id = $2', [
+      (queue.current_index + 1) % managers.length,
+      queue.id,
+    ])
+    await client.query('UPDATE managers SET last_assigned = NOW() WHERE id = $1', [manager.id])
+
+    await client.query('COMMIT')
+    return manager
+  } catch (err) {
+    await client.query('ROLLBACK')
+    throw err
+  } finally {
+    client.release()
+  }
 }
 
 export async function getManagerByClientBinding(clientId: string): Promise<Manager | null> {
@@ -349,29 +385,28 @@ export async function addManager(id: string, telegramId: string, name: string, o
   )
 }
 
-const MANAGER_ALLOWED_COLUMNS = new Set(['telegram_id', 'name', 'is_available', 'order_index'])
-
 export async function updateManager(
   id: string,
   data: { telegram_id?: string; name?: string; is_available?: boolean; order_index?: number },
 ) {
+  // Имена колонок захардкожены (не из пользовательского ввода), значения параметризованы.
   const updates: string[] = []
   const values: (string | number)[] = []
   let i = 1
 
-  if (data.telegram_id !== undefined && MANAGER_ALLOWED_COLUMNS.has('telegram_id')) {
+  if (data.telegram_id !== undefined) {
     updates.push(`telegram_id = $${i++}`)
     values.push(data.telegram_id)
   }
-  if (data.name !== undefined && MANAGER_ALLOWED_COLUMNS.has('name')) {
+  if (data.name !== undefined) {
     updates.push(`name = $${i++}`)
     values.push(data.name)
   }
-  if (data.is_available !== undefined && MANAGER_ALLOWED_COLUMNS.has('is_available')) {
+  if (data.is_available !== undefined) {
     updates.push(`is_available = $${i++}`)
     values.push(data.is_available ? 1 : 0)
   }
-  if (data.order_index !== undefined && MANAGER_ALLOWED_COLUMNS.has('order_index')) {
+  if (data.order_index !== undefined) {
     updates.push(`order_index = $${i++}`)
     values.push(data.order_index)
   }
@@ -406,28 +441,50 @@ export async function getChatByManagerTelegramId(telegramId: string): Promise<Ch
 
 // ============ Messenger Account Functions ============
 export async function getNextMessengerAccount(messengerType: string): Promise<MessengerAccountType | null> {
-  const queue = await queryOne<{ current_index: number }>(
-    'SELECT current_index FROM messenger_queue WHERE messenger_type = $1',
-    [messengerType],
-  )
-  if (!queue) return null
+  // Атомарный round-robin по типу мессенджера: блокируем строку очереди (FOR UPDATE),
+  // чтобы одновременные клики распределялись по аккаунтам без коллизий индекса.
+  await ensureSchema()
+  const client = await getPool().connect()
+  try {
+    await client.query('BEGIN')
 
-  const accounts = await query<MessengerAccountType>(
-    'SELECT * FROM messenger_accounts WHERE messenger_type = $1 AND is_active = 1 ORDER BY order_index',
-    [messengerType],
-  )
-  if (accounts.length === 0) return null
+    const queueRes = await client.query<{ current_index: number }>(
+      'SELECT current_index FROM messenger_queue WHERE messenger_type = $1 FOR UPDATE',
+      [messengerType],
+    )
+    const queue = queueRes.rows[0]
+    if (!queue) {
+      await client.query('COMMIT')
+      return null
+    }
 
-  const nextIndex = queue.current_index % accounts.length
-  const account = accounts[nextIndex]
+    const accountsRes = await client.query<MessengerAccountType>(
+      'SELECT * FROM messenger_accounts WHERE messenger_type = $1 AND is_active = 1 ORDER BY order_index',
+      [messengerType],
+    )
+    const accounts = accountsRes.rows
+    if (accounts.length === 0) {
+      await client.query('COMMIT')
+      return null
+    }
 
-  await query('UPDATE messenger_queue SET current_index = $1 WHERE messenger_type = $2', [
-    (queue.current_index + 1) % accounts.length,
-    messengerType,
-  ])
-  await query('UPDATE messenger_accounts SET total_leads = total_leads + 1 WHERE id = $1', [account.id])
+    const nextIndex = queue.current_index % accounts.length
+    const account = accounts[nextIndex]
 
-  return account
+    await client.query('UPDATE messenger_queue SET current_index = $1 WHERE messenger_type = $2', [
+      (queue.current_index + 1) % accounts.length,
+      messengerType,
+    ])
+    await client.query('UPDATE messenger_accounts SET total_leads = total_leads + 1 WHERE id = $1', [account.id])
+
+    await client.query('COMMIT')
+    return account
+  } catch (err) {
+    await client.query('ROLLBACK')
+    throw err
+  } finally {
+    client.release()
+  }
 }
 
 // Возвращает аккаунт, который СЕЙЧАС стоит в очереди, НЕ сдвигая её и не накручивая счётчик.
@@ -490,29 +547,28 @@ export async function addMessengerAccount(
   )
 }
 
-const MESSENGER_ALLOWED_COLUMNS = new Set(['account_id', 'account_name', 'is_active', 'order_index'])
-
 export async function updateMessengerAccount(
   id: string,
   data: { account_id?: string; account_name?: string; is_active?: boolean; order_index?: number },
 ) {
+  // Имена колонок захардкожены (не из пользовательского ввода), значения параметризованы.
   const updates: string[] = []
   const values: (string | number)[] = []
   let i = 1
 
-  if (data.account_id !== undefined && MESSENGER_ALLOWED_COLUMNS.has('account_id')) {
+  if (data.account_id !== undefined) {
     updates.push(`account_id = $${i++}`)
     values.push(data.account_id)
   }
-  if (data.account_name !== undefined && MESSENGER_ALLOWED_COLUMNS.has('account_name')) {
+  if (data.account_name !== undefined) {
     updates.push(`account_name = $${i++}`)
     values.push(data.account_name)
   }
-  if (data.is_active !== undefined && MESSENGER_ALLOWED_COLUMNS.has('is_active')) {
+  if (data.is_active !== undefined) {
     updates.push(`is_active = $${i++}`)
     values.push(data.is_active ? 1 : 0)
   }
-  if (data.order_index !== undefined && MESSENGER_ALLOWED_COLUMNS.has('order_index')) {
+  if (data.order_index !== undefined) {
     updates.push(`order_index = $${i++}`)
     values.push(data.order_index)
   }
@@ -573,33 +629,32 @@ export async function countAdminUsers(): Promise<number> {
   return Number(row?.count ?? 0)
 }
 
-const ADMIN_ALLOWED_COLUMNS = new Set(['username', 'password_hash', 'role', 'telegram_id', 'is_active'])
-
 export async function updateAdminUser(
   id: string,
   data: { username?: string; password_hash?: string; role?: string; telegram_id?: string; is_active?: boolean },
 ) {
+  // Имена колонок захардкожены (не из пользовательского ввода), значения параметризованы.
   const updates: string[] = []
   const values: (string | number)[] = []
   let i = 1
 
-  if (data.username !== undefined && ADMIN_ALLOWED_COLUMNS.has('username')) {
+  if (data.username !== undefined) {
     updates.push(`username = $${i++}`)
     values.push(data.username)
   }
-  if (data.password_hash !== undefined && ADMIN_ALLOWED_COLUMNS.has('password_hash')) {
+  if (data.password_hash !== undefined) {
     updates.push(`password_hash = $${i++}`)
     values.push(data.password_hash)
   }
-  if (data.role !== undefined && ADMIN_ALLOWED_COLUMNS.has('role')) {
+  if (data.role !== undefined) {
     updates.push(`role = $${i++}`)
     values.push(data.role)
   }
-  if (data.telegram_id !== undefined && ADMIN_ALLOWED_COLUMNS.has('telegram_id')) {
+  if (data.telegram_id !== undefined) {
     updates.push(`telegram_id = $${i++}`)
     values.push(data.telegram_id)
   }
-  if (data.is_active !== undefined && ADMIN_ALLOWED_COLUMNS.has('is_active')) {
+  if (data.is_active !== undefined) {
     updates.push(`is_active = $${i++}`)
     values.push(data.is_active ? 1 : 0)
   }

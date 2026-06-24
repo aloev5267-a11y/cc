@@ -10,7 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    const users = getAllAdminUsers()
+    const users = await getAllAdminUsers()
     return NextResponse.json({ success: true, users })
   } catch (error) {
     console.error('Get admin users error:', error)
@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
 
     const id = `user_${Date.now()}`
     const passwordHash = await hashPassword(password)
-    createAdminUser(id, username, passwordHash, role || 'operator', telegram_id)
-    logActivity('admin_user_created', 'admin_user', id, adminId, JSON.stringify({ username, role }))
+    await createAdminUser(id, username, passwordHash, role || 'operator', telegram_id)
+    await logActivity('admin_user_created', 'admin_user', id, adminId, JSON.stringify({ username, role }))
 
     return NextResponse.json({ success: true, id })
   } catch (error) {
@@ -61,8 +61,8 @@ export async function PUT(request: NextRequest) {
       updateData.password_hash = await hashPassword(password)
     }
 
-    updateAdminUser(id, updateData)
-    logActivity('admin_user_updated', 'admin_user', id, adminId, JSON.stringify(data))
+    await updateAdminUser(id, updateData)
+    await logActivity('admin_user_updated', 'admin_user', id, adminId, JSON.stringify(data))
 
     return NextResponse.json({ success: true })
   } catch (error) {
@@ -89,8 +89,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Cannot delete yourself' }, { status: 400 })
     }
 
-    deleteAdminUser(id)
-    logActivity('admin_user_deleted', 'admin_user', id, adminId)
+    await deleteAdminUser(id)
+    await logActivity('admin_user_deleted', 'admin_user', id, adminId)
 
     return NextResponse.json({ success: true })
   } catch (error) {

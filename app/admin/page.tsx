@@ -18,7 +18,6 @@ import {
   IconTrash,
   IconEdit,
   IconCheck,
-  IconClose,
   IconArrow,
   IconArrowUpRight,
   IconFileText,
@@ -208,7 +207,6 @@ export default function AdminPage() {
       else if (activeTab === "messengers") void loadMessengers()
       else if (activeTab === "users") void loadUsers()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, isAuthenticated])
 
   if (isLoading) {
@@ -358,6 +356,37 @@ export default function AdminPage() {
 const METRIKA_COUNTER_ID = metrikaCounterId
 const PROMO_GOAL = "promo_messenger"
 
+// Кнопка копирования. Определена на уровне модуля (а не внутри PromoPagesTab),
+// чтобы не пересоздавать компонент при каждом рендере. Состояние передаётся пропсами.
+function CopyBtn({
+  value,
+  id,
+  label,
+  copiedId,
+  onCopy,
+}: {
+  value: string
+  id: string
+  label?: string
+  copiedId: string | null
+  onCopy: (value: string, id: string) => void
+}) {
+  return (
+    <button
+      onClick={() => onCopy(value, id)}
+      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-muted"
+    >
+      {copiedId === id ? (
+        <>
+          <IconCheck className="h-3.5 w-3.5 text-green-500" /> Готово
+        </>
+      ) : (
+        label || "Копировать"
+      )}
+    </button>
+  )
+}
+
 function PromoPagesTab() {
   const [copied, setCopied] = useState<string | null>(null)
   const baseUrl =
@@ -384,23 +413,6 @@ function PromoPagesTab() {
     }
   }
 
-  function CopyBtn({ value, id, label }: { value: string; id: string; label?: string }) {
-    return (
-      <button
-        onClick={() => copy(value, id)}
-        className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-muted"
-      >
-        {copied === id ? (
-          <>
-            <IconCheck className="h-3.5 w-3.5 text-green-500" /> Готово
-          </>
-        ) : (
-          label || "Копировать"
-        )}
-      </button>
-    )
-  }
-
   const feedUrl = `${baseUrl.replace(/\/$/, "")}/feed/yandex`
 
   return (
@@ -420,21 +432,21 @@ function PromoPagesTab() {
           <div className="text-xs font-semibold uppercase text-muted-foreground">Счётчик Метрики</div>
           <div className="mt-1 flex items-center justify-between gap-2">
             <code className="font-mono text-sm font-bold">{METRIKA_COUNTER_ID}</code>
-            <CopyBtn value={METRIKA_COUNTER_ID} id="counter" />
+            <CopyBtn value={METRIKA_COUNTER_ID} id="counter" copiedId={copied} onCopy={copy} />
           </div>
         </div>
         <div>
           <div className="text-xs font-semibold uppercase text-muted-foreground">Цель (конверсия)</div>
           <div className="mt-1 flex items-center justify-between gap-2">
             <code className="font-mono text-sm font-bold">{PROMO_GOAL}</code>
-            <CopyBtn value={PROMO_GOAL} id="goal" />
+            <CopyBtn value={PROMO_GOAL} id="goal" copiedId={copied} onCopy={copy} />
           </div>
         </div>
         <div>
           <div className="text-xs font-semibold uppercase text-muted-foreground">Товарный фид (YML)</div>
           <div className="mt-1 flex items-center justify-between gap-2">
             <code className="truncate font-mono text-xs text-muted-foreground">{feedUrl}</code>
-            <CopyBtn value={feedUrl} id="feed" />
+            <CopyBtn value={feedUrl} id="feed" copiedId={copied} onCopy={copy} />
           </div>
         </div>
         <p className="lg:col-span-3 text-xs text-muted-foreground">
@@ -469,7 +481,7 @@ function PromoPagesTab() {
                 <code className="flex-1 break-all rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
                   {utmUrl(page.path, page.key)}
                 </code>
-                <CopyBtn value={utmUrl(page.path, page.key)} id={`utm-${page.key}`} />
+                <CopyBtn value={utmUrl(page.path, page.key)} id={`utm-${page.key}`} copiedId={copied} onCopy={copy} />
               </div>
             </div>
 
@@ -479,7 +491,7 @@ function PromoPagesTab() {
                 <span className="text-xs font-semibold uppercase text-muted-foreground">
                   Ключевые слова
                 </span>
-                <CopyBtn value={page.keywords.join("\n")} id={`kw-${page.key}`} label="Копировать все" />
+                <CopyBtn value={page.keywords.join("\n")} id={`kw-${page.key}`} label="Копировать все" copiedId={copied} onCopy={copy} />
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {page.keywords.map((kw) => (
@@ -496,7 +508,7 @@ function PromoPagesTab() {
                 <span className="text-xs font-semibold uppercase text-muted-foreground">
                   Заголовки объявлений
                 </span>
-                <CopyBtn value={page.adTitles.join("\n")} id={`titles-${page.key}`} label="Копировать все" />
+                <CopyBtn value={page.adTitles.join("\n")} id={`titles-${page.key}`} label="Копировать все" copiedId={copied} onCopy={copy} />
               </div>
               <ul className="space-y-1">
                 {page.adTitles.map((t) => (
@@ -514,7 +526,7 @@ function PromoPagesTab() {
                 <span className="text-xs font-semibold uppercase text-muted-foreground">
                   Тексты объявлений
                 </span>
-                <CopyBtn value={page.adTexts.join("\n")} id={`texts-${page.key}`} label="Копировать все" />
+                <CopyBtn value={page.adTexts.join("\n")} id={`texts-${page.key}`} label="Копировать все" copiedId={copied} onCopy={copy} />
               </div>
               <ul className="space-y-1">
                 {page.adTexts.map((t) => (
@@ -534,7 +546,7 @@ function PromoPagesTab() {
               >
                 Открыть <IconArrowUpRight className="h-4 w-4" />
               </Link>
-              <CopyBtn value={fullUrl(page.path)} id={`url-${page.key}`} label="Ссылка без UTM" />
+              <CopyBtn value={fullUrl(page.path)} id={`url-${page.key}`} label="Ссылка без UTM" copiedId={copied} onCopy={copy} />
             </div>
           </div>
         ))}

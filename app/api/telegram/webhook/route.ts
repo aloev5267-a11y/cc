@@ -22,13 +22,13 @@ export async function POST(request: NextRequest) {
 
       if (typeof data === 'string' && data.startsWith('connect_')) {
         const chatId = data.replace('connect_', '')
-        const chat = getChat(chatId) as { user_name: string, status: string } | undefined
+        const chat = await getChat(chatId)
 
         if (chat && chat.status === 'waiting') {
-          updateChatStatus(chatId, 'active', managerId)
+          await updateChatStatus(chatId, 'active', managerId)
           
           const managerName = from.first_name || 'менеджер'
-          addMessage(chatId, 'manager', `Добрый день! Меня зовут ${managerName}, я помогу вам с трудоустройством. Чем могу помочь?`)
+          await addMessage(chatId, 'manager', `Добрый день! Меня зовут ${managerName}, я помогу вам с трудоустройством. Чем могу помочь?`)
           
           await sendTelegramMessage(
             managerId,
@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
       if (typeof data === 'string' && data.startsWith('disconnect_')) {
         const chatId = data.replace('disconnect_', '')
         
-        updateChatStatus(chatId, 'closed')
-        addMessage(chatId, 'system', 'Диалог завершён. Спасибо за обращение!')
+        await updateChatStatus(chatId, 'closed')
+        await addMessage(chatId, 'system', 'Диалог завершён. Спасибо за обращение!')
         
         await sendTelegramMessage(
           managerId,
@@ -68,10 +68,10 @@ export async function POST(request: NextRequest) {
       }
 
       // Find active chat for this manager
-      const activeChat = getActiveChatByManagerTelegramId(managerId) as { id: string } | undefined
+      const activeChat = await getActiveChatByManagerTelegramId(managerId)
 
       if (activeChat) {
-        addMessage(activeChat.id, 'manager', text)
+        await addMessage(activeChat.id, 'manager', text)
       }
 
       return NextResponse.json({ ok: true })

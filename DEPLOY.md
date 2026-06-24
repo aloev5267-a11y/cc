@@ -38,6 +38,25 @@ sudo npm install -g pm2
 npm install -g pnpm
 ```
 
+### Установка и настройка PostgreSQL
+```bash
+# Установка
+sudo apt-get update
+sudo apt-get install -y postgresql postgresql-contrib
+
+# Создание базы и пользователя
+sudo -u postgres psql <<'SQL'
+CREATE DATABASE elwork;
+CREATE USER elwork_user WITH ENCRYPTED PASSWORD 'СменитеПароль';
+GRANT ALL PRIVILEGES ON DATABASE elwork TO elwork_user;
+SQL
+```
+
+Схема таблиц создаётся приложением автоматически при первом запросе
+(идемпотентно, через `CREATE TABLE IF NOT EXISTS`). Строку подключения
+укажите в `DATABASE_URL` (см. ниже). Локальному Postgres на той же VPS
+SSL обычно не нужен — оставьте `DATABASE_SSL=false`.
+
 ---
 
 ## Настройка переменных окружения
@@ -55,11 +74,15 @@ nano .env
 NODE_ENV=production
 NEXT_PUBLIC_APP_URL=https://kurierhub.ru
 
+# База данных PostgreSQL (ОБЯЗАТЕЛЬНО)
+DATABASE_URL=postgres://user:password@localhost:5432/elwork
+DATABASE_SSL=false
+
 # Безопасность админки (ОБЯЗАТЕЛЬНО ИЗМЕНИТЕ!)
 ADMIN_SECRET=ваш_секретный_ключ_минимум_32_символа
 
-# JWT секрет для сессий (ОБЯЗАТЕЛЬНО ИЗМЕНИТЕ!)
-JWT_SECRET=ваш_jwt_секрет_минимум_32_символа
+# Секрет вебхука подтверждения конверсий
+CONVERSION_WEBHOOK_SECRET=ваш_секрет_вебхука
 
 # Telegram Bot (создайте через @BotFather)
 TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrsTUVwxyz
@@ -68,12 +91,12 @@ TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrsTUVwxyz
 NEXT_PUBLIC_YANDEX_METRIKA_ID=109455099
 ```
 
+> Сессии админки хранятся в таблице `sessions` в PostgreSQL (не JWT),
+> поэтому отдельный секрет для сессий не нужен.
+
 ### Генерация секретных ключей
 ```bash
-# Для ADMIN_SECRET
-openssl rand -base64 32
-
-# Для JWT_SECRET
+# Для ADMIN_SECRET и CONVERSION_WEBHOOK_SECRET
 openssl rand -base64 32
 ```
 
@@ -553,22 +576,21 @@ curl -X POST "https://kurierhub.ru/api/admin/managers" \
 
 **Защита от атак:**
 - Rate limiting: 5 попыток входа в минуту
-- SQL Injection: параметризованные запросы + whitelist колонок
+- SQL Injection: параметризованные запросы (pg)
 - XSS: заголовки безопасности в Nginx и Next.js
 - CSRF: проверка Origin/Referer (рекомендуется добавить токены)
 
-### Бэкап базы данных
+### Бэкап базы данных (PostgreSQL)
 
 ```bash
-# Ручной бэкап
-cp /var/www/kurierhub/data/chat.db /backup/chat_$(date +%Y%m%d_%H%M%S).db
+# Ручной бэкап (pg_dump использует переменные из DATABASE_URL)
+pg_dump "$DATABASE_URL" -Fc -f /backup/elwork_$(date +%Y%m%d_%H%M%S).dump
 
-# Автоматический бэкап (cron)
-# Добавьте в crontab -e:
-0 3 * * * cp /var/www/kurierhub/data/chat.db /backup/chat_$(date +\%Y\%m\%d).db
+# Автоматический бэкап (cron). Добавьте в crontab -e:
+0 3 * * * pg_dump "postgres://user:password@localhost:5432/elwork" -Fc -f /backup/elwork_$(date +\%Y\%m\%d).dump
 
-# С Docker
-docker cp kurierhub:/app/data/chat.db /backup/chat_$(date +%Y%m%d_%H%M%S).db
+# Восстановление
+pg_restore -d "$DATABASE_URL" --clean /backup/elwork_YYYYMMDD.dump
 ```
 
 ### Мониторинг
@@ -613,30 +635,33 @@ docker-compose logs -f kurierhub
 # Проверьте порт
 sudo lsof -i :3000
 
-# Проверьте права на папку data
-ls -la /var/www/kurierhub/data/
-sudo chown -R www-data:www-data /var/www/kurierhub/data/
+# Проверьте доступность БД
+psql "$DATABASE_URL" -c "SELECT 1;"
+
+# Проверьте health-эндпойнт (он реально пингует БД)
+curl -s http://localhost:3000/api/health
 ```
 
-### Ошибка "better-sqlite3" при сборке
+### Ошибка подключения к PostgreSQL
 
 ```bash
-# Пересоберите native модули
-npm rebuild better-sqlite3
+# Проверьте, что переменная окружения задана и доступна процессу
+echo "$DATABASE_URL"
 
-# Или удалите и переустановите
-rm -rf node_modules
-pnpm install
+# Проверьте, что Postgres запущен и принимает подключения
+sudo systemctl status postgresql
+psql "$DATABASE_URL" -c "SELECT version();"
 ```
 
 ### Ошибка доступа к админке
 
 ```bash
-# Пересоздайте администратора
-node scripts/create-admin.mjs newadmin НовыйПароль123! admin
+# Пересоздайте администратора (требуется DATABASE_URL в окружении)
+DATABASE_URL="postgres://user:password@localhost:5432/elwork" \
+  node scripts/create-admin.mjs newadmin НовыйПароль123! admin
 
 # Проверьте базу данных
-sqlite3 data/chat.db "SELECT id, username, role FROM admin_users;"
+psql "$DATABASE_URL" -c "SELECT id, username, role FROM admin_users;"
 ```
 
 ### SSL сертификат не обновляется

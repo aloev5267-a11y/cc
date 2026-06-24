@@ -1,11 +1,11 @@
 import { cookies } from 'next/headers'
-import { db } from './db'
+import { dbQueryOne } from './db'
 import { validateSession } from './auth'
 
 /**
  * Check if the current request has a valid admin session.
  * Validates the session token from cookies against the database.
- * 
+ *
  * @returns User ID if authenticated, null otherwise
  */
 export async function checkAdminAuth(): Promise<string | null> {
@@ -17,8 +17,7 @@ export async function checkAdminAuth(): Promise<string | null> {
       return null
     }
 
-    const database = db()
-    const session = validateSession(database, sessionToken)
+    const session = await validateSession(sessionToken)
 
     if (!session) {
       return null
@@ -33,7 +32,7 @@ export async function checkAdminAuth(): Promise<string | null> {
 
 /**
  * Check if the current request has admin role (not just operator).
- * 
+ *
  * @returns User ID if admin, null otherwise
  */
 export async function checkAdminRole(): Promise<string | null> {
@@ -45,16 +44,18 @@ export async function checkAdminRole(): Promise<string | null> {
       return null
     }
 
-    const database = db()
-    const session = validateSession(database, sessionToken)
+    const session = await validateSession(sessionToken)
 
     if (!session) {
       return null
     }
 
     // Check if user has admin role
-    const user = database.prepare('SELECT role FROM admin_users WHERE id = ? AND is_active = 1').get(session.userId) as { role: string } | undefined
-    
+    const user = await dbQueryOne<{ role: string }>(
+      'SELECT role FROM admin_users WHERE id = $1 AND is_active = 1',
+      [session.userId],
+    )
+
     if (!user || user.role !== 'admin') {
       return null
     }

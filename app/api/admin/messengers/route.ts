@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const messengerType = searchParams.get('type')
 
-    const accounts = getAllMessengerAccounts(messengerType || undefined)
+    const accounts = await getAllMessengerAccounts(messengerType || undefined)
     return NextResponse.json({ success: true, accounts })
   } catch (error) {
     console.error('Get messenger accounts error:', error)
@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
     }
 
     const id = `${messenger_type}_${Date.now()}`
-    addMessengerAccount(id, messenger_type, account_id, account_name, order_index || 0)
-    logActivity('messenger_account_created', 'messenger', id, adminId, JSON.stringify({ messenger_type, account_id, account_name }))
+    await addMessengerAccount(id, messenger_type, account_id, account_name, order_index || 0)
+    await logActivity('messenger_account_created', 'messenger', id, adminId, JSON.stringify({ messenger_type, account_id, account_name }))
 
     return NextResponse.json({ success: true, id })
   } catch (error) {
@@ -61,8 +61,8 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Account ID required' }, { status: 400 })
     }
 
-    updateMessengerAccount(id, data)
-    logActivity('messenger_account_updated', 'messenger', id, adminId, JSON.stringify(data))
+    await updateMessengerAccount(id, data)
+    await logActivity('messenger_account_updated', 'messenger', id, adminId, JSON.stringify(data))
 
     return NextResponse.json({ success: true })
   } catch (error) {
@@ -85,8 +85,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Account ID required' }, { status: 400 })
     }
 
-    deleteMessengerAccount(id)
-    logActivity('messenger_account_deleted', 'messenger', id, adminId)
+    await deleteMessengerAccount(id)
+    await logActivity('messenger_account_deleted', 'messenger', id, adminId)
 
     return NextResponse.json({ success: true })
   } catch (error) {

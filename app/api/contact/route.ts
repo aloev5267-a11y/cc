@@ -4,17 +4,7 @@ import { createLead } from '@/lib/db'
 import { checkRateLimit, rateLimitConfigs, getClientIp } from '@/lib/rate-limit'
 import { sendTelegramMessage } from '@/lib/telegram'
 import { contactRequestSchema } from '@/lib/validations'
-
-function generateClientId(): string {
-  return `client_${Date.now()}_${Math.random().toString(36).substring(7)}`
-}
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-}
+import { generateClientId, escapeHtml } from '@/lib/server-utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Сохраняем лид в БД (источник — форма)
-    createLead(clientId, 'form')
+    await createLead(clientId, 'form')
 
     // Уведомление менеджеру в Telegram (если настроен чат)
     const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID

@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         // создаёт только ПЕРВОГО админа. Дальнейшее управление пользователями —
         // через защищённую сессией админку (/api/admin/users), а не через этот
         // эндпойнт на общем секрете. Это закрывает риск, если ADMIN_SECRET утечёт.
-        if (countAdminUsers() > 0) {
+        if ((await countAdminUsers()) > 0) {
           return NextResponse.json(
             { error: 'Setup already completed. Manage admins from the authenticated admin panel.' },
             { status: 403 }
@@ -41,14 +41,14 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Username and password required' }, { status: 400 })
         }
 
-        const existing = getAdminUserByUsername(username)
+        const existing = await getAdminUserByUsername(username)
         if (existing) {
           return NextResponse.json({ error: 'User already exists' }, { status: 400 })
         }
 
         const id = `admin_${Date.now()}`
         const passwordHash = await hashPassword(password)
-        createAdminUser(id, username, passwordHash, 'admin')
+        await createAdminUser(id, username, passwordHash, 'admin')
 
         return NextResponse.json({ success: true, message: 'Admin user created', id })
       }
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
         for (let i = 0; i < managers.length; i++) {
           const m = managers[i]
-          addManager(m.id || `manager_${Date.now()}_${i}`, m.telegramId, m.name, i)
+          await addManager(m.id || `manager_${Date.now()}_${i}`, m.telegramId, m.name, i)
         }
         return NextResponse.json({ success: true, count: managers.length })
       }

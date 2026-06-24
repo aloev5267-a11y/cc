@@ -9,13 +9,16 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const leadStats = getLeadStats()
-    const conversions = getConversionStats()
-    const chats = getAllChats() as Array<{ status: string }>
-    const managers = getAllManagers() as Array<{ is_available: number }>
-    const messengerAccounts = getAllMessengerAccounts() as Array<{ messenger_type: string; is_active: number }>
-    const recentActivity = getActivityLog(20)
-    const recentLeads = getRecentLeads(30)
+    const [leadStats, conversions, chats, managers, messengerAccounts, recentActivity, recentLeads] =
+      await Promise.all([
+        getLeadStats(),
+        getConversionStats(),
+        getAllChats(),
+        getAllManagers(),
+        getAllMessengerAccounts(),
+        getActivityLog(20),
+        getRecentLeads(30),
+      ])
 
     const stats = {
       leads: leadStats,

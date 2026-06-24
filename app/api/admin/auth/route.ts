@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminUserByUsername, db } from '@/lib/db'
+import { getAdminUserByUsername } from '@/lib/db'
 import { cookies } from 'next/headers'
 import { 
   verifyPassword, 
@@ -30,13 +30,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const user = getAdminUserByUsername(username) as { 
-      id: string
-      username: string
-      password_hash: string
-      role: string 
-    } | undefined
-    
+    const user = await getAdminUserByUsername(username)
+
     if (!user) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
@@ -50,9 +45,8 @@ export async function POST(request: NextRequest) {
     // Create secure session token and store in database
     const sessionToken = generateSessionToken()
     const expiresAt = generateSessionExpiry(24) // 24 hours
-    
-    const database = db()
-    createSession(database, user.id, sessionToken, expiresAt)
+
+    await createSession(user.id, sessionToken, expiresAt)
 
     const response = NextResponse.json({
       success: true,
@@ -86,8 +80,7 @@ export async function DELETE() {
     const sessionToken = cookieStore.get('admin_session')?.value
     
     if (sessionToken) {
-      const database = db()
-      deleteSession(database, sessionToken)
+      await deleteSession(sessionToken)
     }
     
     cookieStore.delete('admin_session')
@@ -109,9 +102,8 @@ export async function GET() {
       return NextResponse.json({ authenticated: false }, { status: 401 })
     }
     
-    const database = db()
-    const session = validateSession(database, sessionToken)
-    
+    const session = await validateSession(sessionToken)
+
     if (!session) {
       cookieStore.delete('admin_session')
       return NextResponse.json({ authenticated: false }, { status: 401 })
