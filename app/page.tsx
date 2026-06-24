@@ -1,9 +1,10 @@
 import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
+import { Advantages } from "@/components/advantages"
+import { JobCategories } from "@/components/job-categories"
 import { HowItWorks } from "@/components/how-it-works"
-import { DeliveryForm } from "@/components/delivery-form"
-import { CargoSearch } from "@/components/cargo-search"
 import { Careers } from "@/components/careers"
+import { ForEmployers } from "@/components/for-employers"
 import { CTA } from "@/components/cta"
 import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
@@ -13,10 +14,11 @@ export default function Home() {
     <main className="min-h-screen">
       <Header />
       <Hero />
+      <Advantages />
+      <JobCategories />
       <HowItWorks />
-      <DeliveryForm />
-      <CargoSearch />
       <Careers />
+      <ForEmployers />
       <CTA />
       <Contact />
       <Footer />

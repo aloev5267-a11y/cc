@@ -1,5 +1,9 @@
-// Конфигурация промо-страниц вакансий
-// Каждая роль = отдельная промо-страница с опросником и переходом в мессенджеры
+// Конфигурация промо-страниц вакансий ElWork (кадровое агентство)
+// Каждая роль = отдельная промо-страница с анкетой и переходом в мессенджеры.
+// ВАЖНО (для модерации): без завышенных обещаний дохода, без возрастного ценза.
+// Доход указывается диапазоном "от работодателя" с дисклеймером.
+
+import { siteConfig } from "./config"
 
 export type PromoQuizOption = {
   label: string
@@ -9,17 +13,14 @@ export type PromoQuizOption = {
 export type PromoQuizQuestion = {
   id: string
   question: string
-  // Короткая подпись для сводки/сообщения (например, "Город", "Транспорт")
+  // Короткая подпись для сводки/сообщения (например, "Город", "Опыт")
   summaryLabel: string
-  // Тип вопроса: выбор из вариантов, свободный ввод (город) или возраст с порогом
-  type?: "select" | "input" | "age"
+  // Тип вопроса: выбор из вариантов или свободный ввод (город)
+  type?: "select" | "input"
   options?: PromoQuizOption[]
-  // Для type: "input" и "age"
+  // Для type: "input"
   placeholder?: string
   suggestions?: string[]
-  // Для type: "age" — допустимый диапазон (включительно)
-  minAge?: number
-  maxAge?: number
 }
 
 export type PromoRoleKey = "courier" | "warehouse" | "driver"
@@ -32,6 +33,7 @@ export type PromoRole = {
   badge: string
   title: string
   subtitle: string
+  // Диапазон дохода (формулировка нейтральная, от работодателя)
   earn: string
   earnNote: string
   benefits: string[]
@@ -43,50 +45,55 @@ export type PromoRole = {
   messageIntro: string
 }
 
+const cityQuestion: PromoQuizQuestion = {
+  id: "city",
+  question: "В каком городе ищете работу?",
+  summaryLabel: "Город",
+  type: "input",
+  placeholder: "Введите ваш город",
+  suggestions: ["Москва", "Санкт-Петербург", "Екатеринбург", "Новосибирск", "Казань"],
+}
+
+const startQuestion: PromoQuizQuestion = {
+  id: "start",
+  question: "Когда готовы приступить?",
+  summaryLabel: "Старт",
+  type: "select",
+  options: [
+    { label: "В ближайшие дни", value: "В ближайшие дни" },
+    { label: "В течение недели", value: "В течение недели" },
+    { label: "Пока присматриваюсь", value: "Присматриваюсь" },
+  ],
+}
+
 export const promoRoles: Record<PromoRoleKey, PromoRole> = {
   courier: {
     key: "courier",
     href: "/promo/courier",
     image: "/promo/courier-hero.png",
-    imageAlt: "Курьер КурьерХаб на электросамокате в городе на закате",
-    badge: "Набор открыт",
+    imageAlt: "Курьер с заказом в городе",
+    badge: "Открыт набор",
     title: "Курьер",
-    subtitle: "Доставляй заказы и забирай деньги каждый день",
-    earn: "от 10 000 ₽",
-    earnNote: "в день",
+    subtitle: "Подберём вакансию курьера у проверенного работодателя с удобным графиком",
+    earn: "от 60 000 ₽",
+    earnNote: "в месяц, по данным работодателей",
     benefits: [
-      "Выплаты каждый день",
-      "Свободный график",
-      "Старт за 1 день",
-      "Пешком, на велосипеде или авто",
+      "Свободный или сменный график",
+      "Выплаты от работодателя без задержек",
+      "Оформление по ТК РФ или самозанятость",
+      "Пешие, вело- и авто-вакансии",
     ],
     stats: [
-      { value: "1 день", label: "до первого заказа" },
-      { value: "300 000 ₽", label: "доход в месяц" },
-      { value: "14", label: "регионов" },
+      { value: "Бесплатно", label: "для соискателя" },
+      { value: "1–3 дня", label: "на подбор" },
+      { value: "30+", label: "городов" },
     ],
     quiz: [
-      {
-        id: "age",
-        question: "Сколько тебе лет?",
-        summaryLabel: "Возраст",
-        type: "age",
-        placeholder: "Введи свой возраст",
-        minAge: 18,
-        maxAge: 40,
-      },
-      {
-        id: "city",
-        question: "Из какого ты города?",
-        summaryLabel: "Город",
-        type: "input",
-        placeholder: "Введи свой город",
-        suggestions: ["Москва", "Санкт-Петербург", "Екатеринбург", "Новосибирск", "Казань"],
-      },
+      cityQuestion,
       {
         id: "transport",
-        question: "На чём планируешь работать?",
-        summaryLabel: "Транспорт",
+        question: "Как вам удобнее работать?",
+        summaryLabel: "Формат",
         type: "select",
         options: [
           { label: "Пешком", value: "Пешком" },
@@ -96,73 +103,47 @@ export const promoRoles: Record<PromoRoleKey, PromoRole> = {
       },
       {
         id: "hours",
-        question: "Сколько часов готов уделять в день?",
+        question: "Какая занятость вам подходит?",
         summaryLabel: "Занятость",
         type: "select",
         options: [
-          { label: "2–4 часа", value: "2–4 часа" },
-          { label: "4–8 часов", value: "4–8 часов" },
-          { label: "8+ часов", value: "8+ часов" },
+          { label: "Подработка", value: "Подработка" },
+          { label: "Частичная занятость", value: "Частичная занятость" },
+          { label: "Полная занятость", value: "Полная занятость" },
         ],
       },
-      {
-        id: "start",
-        question: "Когда хочешь начать?",
-        summaryLabel: "Старт",
-        type: "select",
-        options: [
-          { label: "Сегодня", value: "Сегодня" },
-          { label: "На этой неделе", value: "На этой неделе" },
-          { label: "Присматриваюсь", value: "Присматриваюсь" },
-        ],
-      },
+      startQuestion,
     ],
-    matchTitle: "Тебе подходит вакансия курьера!",
-    matchText: "Напиши нам в мессенджер — оформим за 5 минут и дадим первый заказ уже завтра.",
-    messageIntro: "Здравствуйте! Хочу работать курьером в КурьерХаб.",
+    matchTitle: "Отлично, у нас есть подходящие вакансии!",
+    matchText: "Напишите нам в мессенджер — специалист подберёт вариант под ваш город и график.",
+    messageIntro: `Здравствуйте! Ищу работу курьером через ${siteConfig.name}.`,
   },
   warehouse: {
     key: "warehouse",
     href: "/promo/warehouse",
     image: "/promo/warehouse-hero.png",
-    imageAlt: "Сотрудник склада КурьерХаб сканирует посылку в современном складском комплексе",
-    badge: "Нужны люди на склад",
+    imageAlt: "Сотрудник склада на современном складском комплексе",
+    badge: "Есть вакансии на склад",
     title: "Сотрудник склада",
-    subtitle: "Стабильная работа в тепле с понятными задачами",
-    earn: "до 80 000 ₽",
-    earnNote: "в месяц",
+    subtitle: "Стабильная работа на складе с официальным оформлением и понятными задачами",
+    earn: "от 55 000 ₽",
+    earnNote: "в месяц, по данным работодателей",
     benefits: [
-      "Официальное оформление",
-      "Сменный график 2/2",
-      "Аванс и стабильный оклад",
-      "Обучение с первого дня",
+      "Официальное оформление по ТК РФ",
+      "Сменный график, в том числе 2/2",
+      "Стабильный оклад и аванс",
+      "Обучение для новичков",
     ],
     stats: [
+      { value: "Бесплатно", label: "для соискателя" },
       { value: "2/2", label: "удобный график" },
-      { value: "80 000 ₽", label: "оклад в месяц" },
-      { value: "0 ₽", label: "вложений" },
+      { value: "Без опыта", label: "рассмотрим" },
     ],
     quiz: [
-      {
-        id: "age",
-        question: "Сколько тебе лет?",
-        summaryLabel: "Возраст",
-        type: "age",
-        placeholder: "Введи свой возраст",
-        minAge: 18,
-        maxAge: 40,
-      },
-      {
-        id: "city",
-        question: "Из какого ты города?",
-        summaryLabel: "Город",
-        type: "input",
-        placeholder: "Введи свой город",
-        suggestions: ["Москва", "Санкт-Петербург", "Екатеринбург", "Новосибирск", "Казань"],
-      },
+      cityQuestion,
       {
         id: "schedule",
-        question: "Какой график тебе удобнее?",
+        question: "Какой график вам удобнее?",
         summaryLabel: "График",
         type: "select",
         options: [
@@ -179,105 +160,69 @@ export const promoRoles: Record<PromoRoleKey, PromoRole> = {
         options: [
           { label: "Да, есть", value: "Опыт есть" },
           { label: "Немного", value: "Немного" },
-          { label: "Нет, готов учиться", value: "Без опыта" },
+          { label: "Нет, готов(а) учиться", value: "Без опыта" },
         ],
       },
-      {
-        id: "start",
-        question: "Когда готов выйти?",
-        summaryLabel: "Старт",
-        type: "select",
-        options: [
-          { label: "Сразу", value: "Сразу" },
-          { label: "На этой неделе", value: "На неделе" },
-          { label: "Присматриваюсь", value: "Думаю" },
-        ],
-      },
+      startQuestion,
     ],
-    matchTitle: "Тебе подходит работа на складе!",
-    matchText: "Напиши нам в мессенджер — расскажем про смены и оформим официально.",
-    messageIntro: "Здравствуйте! Хочу работать на складе в КурьерХаб.",
+    matchTitle: "Отлично, есть подходящие вакансии на склад!",
+    matchText: "Напишите нам в мессенджер — расскажем про смены и условия оформления.",
+    messageIntro: `Здравствуйте! Ищу работу на складе через ${siteConfig.name}.`,
   },
   driver: {
     key: "driver",
     href: "/promo/driver",
     image: "/promo/driver-hero.png",
-    imageAlt: "Перевозчик КурьерХаб с посылкой рядом с фургоном на закате",
-    badge: "Ищем водителей с авто",
-    title: "Перевозчик на авто",
-    subtitle: "Свой автомобиль? Превращай его в стабильный доход",
-    earn: "до 150 000 ₽",
-    earnNote: "в месяц",
+    imageAlt: "Водитель рядом с автомобилем",
+    badge: "Нужны водители",
+    title: "Водитель",
+    subtitle: "Вакансии водителя на личном или служебном авто с гибким графиком",
+    earn: "от 80 000 ₽",
+    earnNote: "в месяц, по данным работодателей",
     benefits: [
-      "Оплата топлива и пробега",
-      "Постоянный поток заказов",
+      "Вакансии на личном и служебном авто",
+      "Компенсация топлива у ряда работодателей",
       "Гибкий график и маршруты",
-      "Еженедельные выплаты",
+      "Регулярные выплаты",
     ],
     stats: [
-      { value: "150 000 ₽", label: "доход в месяц" },
-      { value: "7 дней", label: "выплаты раз в неделю" },
-      { value: "24/7", label: "поток заказов" },
+      { value: "Бесплатно", label: "для соискателя" },
+      { value: "Гибкий", label: "график" },
+      { value: "30+", label: "городов" },
     ],
     quiz: [
-      {
-        id: "age",
-        question: "Сколько тебе лет?",
-        summaryLabel: "Возраст",
-        type: "age",
-        placeholder: "Введи свой возраст",
-        minAge: 18,
-        maxAge: 40,
-      },
-      {
-        id: "city",
-        question: "Из какого ты города?",
-        summaryLabel: "Город",
-        type: "input",
-        placeholder: "Введи свой город",
-        suggestions: ["Москва", "Санкт-Петербург", "Екатеринбург", "Новосибирск", "Казань"],
-      },
+      cityQuestion,
       {
         id: "car",
-        question: "Какой у тебя автомобиль?",
+        question: "На каком авто планируете работать?",
         summaryLabel: "Авто",
         type: "select",
         options: [
-          { label: "Легковой", value: "Легковой" },
-          { label: "Каблук / минивэн", value: "Каблук" },
-          { label: "Грузовой", value: "Грузовой" },
+          { label: "Личный легковой", value: "Личный легковой" },
+          { label: "Личный грузовой / каблук", value: "Грузовой / каблук" },
+          { label: "Нужно служебное", value: "Служебное" },
         ],
       },
       {
         id: "load",
-        question: "Сколько готов работать?",
+        question: "Какая занятость вам подходит?",
         summaryLabel: "Занятость",
         type: "select",
         options: [
           { label: "Подработка", value: "Подработка" },
           { label: "Полный день", value: "Полный день" },
-          { label: "Максимум заказов", value: "Максимум" },
+          { label: "Максимальная загрузка", value: "Максимальная" },
         ],
       },
-      {
-        id: "start",
-        question: "Когда выходишь на линию?",
-        summaryLabel: "Старт",
-        type: "select",
-        options: [
-          { label: "Сегодня", value: "Сегодня" },
-          { label: "На этой неделе", value: "На неделе" },
-          { label: "Присматриваюсь", value: "Думаю" },
-        ],
-      },
+      startQuestion,
     ],
-    matchTitle: "Тебе подходит работа перевозчиком!",
-    matchText: "Напиши нам в мессенджер — подключим к заказам и рассчитаем доход под твоё авто.",
-    messageIntro: "Здравствуйте! Хочу работать перевозчиком в КурьерХаб.",
+    matchTitle: "Отлично, есть подходящие вакансии для водителей!",
+    matchText: "Напишите нам в мессенджер — подберём вариант под ваш город и тип авто.",
+    messageIntro: `Здравствуйте! Ищу работу водителем через ${siteConfig.name}.`,
   },
 }
 
-// Формирует предзаполненное сообщение для мессенджера из ответов опроса
+// Формирует предзаполненное сообщение для мессенджера из ответов анкеты
 export function buildLeadMessage(role: PromoRole, answers: Record<string, string>): string {
   const lines = [role.messageIntro]
   for (const q of role.quiz) {

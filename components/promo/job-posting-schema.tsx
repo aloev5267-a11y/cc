@@ -1,5 +1,5 @@
 import type { PromoRole } from "@/lib/promo-config"
-import { siteUrl } from "@/lib/config"
+import { siteUrl, siteConfig } from "@/lib/config"
 
 // Извлекаем число из строки вида "от 10 000 ₽" → 10000
 function parseSalary(earn: string): number | null {
@@ -30,16 +30,16 @@ export function JobPostingSchema({ role }: { role: PromoRole }) {
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "JobPosting",
-    title: `${role.title} — КурьерХаб`,
+    title: `${role.title} — ${siteConfig.name}`,
     description: `${role.subtitle}. ${role.benefits.join(". ")}.`,
     datePosted: now.toISOString().split("T")[0],
     validThrough: validThrough.toISOString().split("T")[0],
     employmentType: ["FULL_TIME", "PART_TIME", "CONTRACTOR"],
     hiringOrganization: {
       "@type": "Organization",
-      name: "КурьерХаб",
+      name: siteConfig.name,
       sameAs: siteUrl,
-      logo: `${siteUrl}/logo.jpg`,
+      logo: `${siteUrl}/logo.png`,
     },
     jobLocation: {
       "@type": "Place",

@@ -17,6 +17,7 @@ import {
   IconStar,
 } from "../icons"
 import { PromoMessengers, type PromoMessengersOptions } from "./promo-messengers"
+import { siteConfig } from "@/lib/config"
 import { promoRoles, type PromoRoleKey } from "@/lib/promo-config"
 
 const roleIcons: Record<PromoRoleKey, typeof IconCar> = {
@@ -110,7 +111,7 @@ export function JobsPromo() {
   const messengerOptions: PromoMessengersOptions = useMemo(() => {
     const intro = bestRole
       ? `Здравствуйте! Ищу работу, по подбору мне подходит вакансия «${bestRole.title}».`
-      : "Здравствуйте! Ищу работу в КурьерХаб, подскажите по актуальным вакансиям."
+      : `Здравствуйте! Ищу работу через ${siteConfig.name}, подскажите по актуальным вакансиям.`
     const lines = [intro]
     if (selectedPriorities.length) {
       const labels = priorities.filter((p) => selectedPriorities.includes(p.id)).map((p) => p.label)
@@ -144,11 +145,11 @@ export function JobsPromo() {
       {/* Шапка */}
       <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-8">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="relative h-9 w-9">
-            <Image src="/logo.webp" alt="КурьерХаб" fill className="object-contain" priority />
+          <div className="relative h-9 w-9 overflow-hidden rounded-lg">
+            <Image src="/logo.png" alt={siteConfig.name} fill className="object-cover" priority />
           </div>
           <span className="text-base font-extrabold tracking-tight">
-            Курьер<span className="text-primary">Хаб</span>
+            {siteConfig.brandPrefix}<span className="text-primary">{siteConfig.brandSuffix}</span>
           </span>
         </Link>
         <Link
@@ -167,7 +168,7 @@ export function JobsPromo() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
           </span>
-          Более 500 человек устроились за месяц
+          Кадровое агентство — бесплатно для соискателей
         </span>
 
         <h1 className="mx-auto mt-5 max-w-4xl text-balance text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
@@ -176,8 +177,8 @@ export function JobsPromo() {
         </h1>
 
         <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-white/70 sm:text-lg">
-          Стабильный доход, свободный график и старт без опыта уже завтра. Ответь на пару вопросов — подберём вакансию,
-          которая подходит именно тебе.
+          Удобный график и официальное оформление у проверенных работодателей. Ответьте на пару вопросов — подберём
+          вакансию, которая подходит именно вам. Бесплатно для соискателя.
         </p>
 
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
@@ -199,9 +200,9 @@ export function JobsPromo() {
         {/* Доверие */}
         <div className="mx-auto mt-9 grid max-w-2xl grid-cols-3 gap-3">
           {[
-            { value: "до 300 000 ₽", label: "доход в месяц" },
-            { value: "1 день", label: "до первого выхода" },
-            { value: "14", label: "регионов России" },
+            { value: "Бесплатно", label: "для соискателя" },
+            { value: "1–3 дня", label: "на подбор" },
+            { value: "30+", label: "городов России" },
           ].map((s) => (
             <div key={s.label} className="rounded-2xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-sm">
               <div className="text-lg font-black leading-none text-primary sm:text-2xl">{s.value}</div>
@@ -370,7 +371,7 @@ export function JobsPromo() {
       {/* Все вакансии */}
       <section id="vacancies" className="relative z-10 mx-auto max-w-6xl scroll-mt-6 px-4 py-12 sm:px-8">
         <h2 className="mb-2 text-balance text-3xl font-black sm:text-4xl">Открытые вакансии</h2>
-        <p className="mb-7 text-pretty text-white/60">Выбирай направление и начинай зарабатывать уже на этой неделе</p>
+        <p className="mb-7 text-pretty text-white/60">Выберите направление — подберём вакансию у проверенного работодателя</p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {roleOrder.map((k) => {
             const r = promoRoles[k]
@@ -435,10 +436,10 @@ export function JobsPromo() {
         <h2 className="mb-7 text-balance text-3xl font-black sm:text-4xl">Почему работают с нами</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { icon: IconWallet, t: "Выплаты без задержек", d: "Деньги каждый день или каждую неделю — выбираешь сам." },
-            { icon: IconClock, t: "Гибкий график", d: "Работай, когда удобно: подработка или полная занятость." },
-            { icon: IconShield, t: "Официально и честно", d: "Прозрачные условия, поддержка и оформление по закону." },
-            { icon: IconSend, t: "Старт за 1 день", d: "Без долгих собеседований — оформление за 5 минут в мессенджере." },
+            { icon: IconWallet, t: "Бесплатно для соискателя", d: "Услуги агентства для кандидатов бесплатны — оплачивает работодатель." },
+            { icon: IconClock, t: "Гибкий график", d: "Подберём вакансию под вас: подработка или полная занятость." },
+            { icon: IconShield, t: "Проверенные работодатели", d: "Прозрачные условия и официальное оформление по ТК РФ." },
+            { icon: IconSend, t: "Быстрый отклик", d: "Заполните анкету — специалист свяжется и подберёт варианты." },
           ].map((f) => {
             const FIcon = f.icon
             return (

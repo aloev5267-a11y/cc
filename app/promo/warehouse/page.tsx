@@ -1,17 +1,18 @@
 import type { Metadata } from "next"
 import { PromoPage } from "@/components/promo/promo-page"
 import { JobPostingSchema } from "@/components/promo/job-posting-schema"
+import { siteConfig } from "@/lib/config"
 import { promoRoles, getOtherRoles } from "@/lib/promo-config"
 
 export const metadata: Metadata = {
-  title: "Работа на складе — до 80 000 ₽ в месяц | КурьерХаб",
+  title: `Работа на складе — вакансии с официальным оформлением | ${siteConfig.name}`,
   description:
-    "Сотрудник склада в КурьерХаб: официальное оформление, график 2/2, стабильный оклад, обучение с первого дня. Пройди опрос и напиши нам.",
-  keywords: "работа на складе, вакансия комплектовщик, сотрудник склада, склад",
+    `${siteConfig.name} — кадровое агентство: подберём вакансию на складе с официальным оформлением и графиком 2/2. Рассмотрим и без опыта. Услуги для соискателей бесплатны. Заполните анкету и напишите нам.`,
+  keywords: "работа на складе, вакансия комплектовщик, сотрудник склада, склад, кадровое агентство",
   alternates: { canonical: "/promo/warehouse" },
   openGraph: {
-    title: "Работа на складе — до 80 000 ₽ в месяц",
-    description: "Официальное оформление, график 2/2, стабильный оклад.",
+    title: "Работа на складе — вакансии с официальным оформлением",
+    description: "Подберём вакансию на складе с графиком 2/2. Бесплатно для соискателей.",
     images: ["/promo/warehouse-hero.png"],
   },
 }

@@ -24,8 +24,8 @@ export function VpnNotice() {
           <p className="mt-1 text-pretty text-xs leading-relaxed text-white/70">
             Из-за блокировок Telegram и WhatsApp в России могут не открываться напрямую.
             Включите любой бесплатный VPN (или скачайте его из App Store / Google Play),
-            затем напишите нам в мессенджер — и получите уже сегодня{" "}
-            <span className="font-bold text-primary">1000 ₽ подъёмных</span>.
+            затем напишите нам в мессенджер — специалист{" "}
+            <span className="font-bold text-primary">ответит в течение рабочего дня</span>.
           </p>
         </div>
       </div>

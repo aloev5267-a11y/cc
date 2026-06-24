@@ -3,26 +3,25 @@
 import Link from "next/link"
 import Image from "next/image"
 import { siteConfig } from "@/lib/config"
-import { IconPhone, IconMapPin, IconSend, IconTelegram, IconWhatsapp, IconMail, IconMax, IconArrowUpRight } from "./icons"
+import { IconPhone, IconMapPin, IconTelegram, IconWhatsapp, IconMail, IconMax, IconArrowUpRight } from "./icons"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
 
 const footerLinks = {
-  services: [
-    { label: "Оформить доставку", href: "/#delivery" },
-    { label: "Биржа грузов", href: "/#cargo" },
-    { label: "Работа курьером", href: "/vacancies" },
-    { label: "Отследить груз", href: "/tracking" },
+  seekers: [
+    { label: "Найти работу", href: "/#find" },
+    { label: "Вакансии", href: "/vacancies" },
+    { label: "Как это работает", href: "/#how" },
+    { label: "Частые вопросы", href: "/support" },
   ],
   company: [
     { label: "О компании", href: "/about" },
+    { label: "Работодателям", href: "/partners" },
     { label: "Поддержка", href: "/support" },
-    { label: "Вакансии", href: "/vacancies" },
-    { label: "Партнёрам", href: "/partners" },
   ],
   legal: [
     { label: "Пользовательское соглашение", href: "/legal/terms" },
     { label: "Политика конфиденциальности", href: "/legal/privacy" },
-    { label: "Публичная оферта", href: "/legal/offer" },
+    { label: "Согласие на обработку данных", href: "/legal/offer" },
   ],
 }
 
@@ -83,21 +82,21 @@ export function Footer() {
           <div className="col-span-2 lg:col-span-4">
             <Link className="flex items-center gap-3 mb-6" href="/">
               <div className="w-12 h-12 rounded-xl overflow-hidden">
-                <Image alt="КурьерХаб" loading="lazy" width="48" height="48" decoding="async" className="w-full h-full object-cover" src="/logo.webp" />
+                <Image alt={siteConfig.name} loading="lazy" width="48" height="48" decoding="async" className="w-full h-full object-cover" src="/logo.png" />
               </div>
               <div>
-                <span className="text-2xl font-black text-background">Курьер<span className="text-primary">Хаб</span></span>
+                <span className="text-2xl font-black text-background">{siteConfig.brandPrefix}<span className="text-primary">{siteConfig.brandSuffix}</span></span>
               </div>
             </Link>
             <p className="text-background/60 mb-6 max-w-sm leading-relaxed text-sm">
-              Новая логистическая платформа для быстрой и надёжной доставки грузов по всей России. Запустились в 2025.
+              {siteConfig.tagline}. Помогаем соискателям найти подходящую работу, а работодателям — закрыть вакансии. Консультация бесплатна.
             </p>
             <div className="space-y-3 mb-6">
-              <a href={`tel:${siteConfig.contact.phone}`} className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors">
+              <a href={siteConfig.contact.phoneHref} className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors">
                 <div className="w-9 h-9 bg-background/10 rounded-lg flex items-center justify-center"><IconPhone className="w-4 h-4" /></div>
                 <span className="text-sm font-medium">{siteConfig.contact.phone}</span>
               </a>
-              <a href={`mailto:${siteConfig.contact.email}`} className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors">
+              <a href={siteConfig.contact.emailHref} className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors">
                 <div className="w-9 h-9 bg-background/10 rounded-lg flex items-center justify-center"><IconMail className="w-4 h-4" /></div>
                 <span className="text-sm font-medium">{siteConfig.contact.email}</span>
               </a>
@@ -109,9 +108,9 @@ export function Footer() {
             <FooterSocials />
           </div>
           <div className="col-span-1 lg:col-span-2 lg:col-start-6">
-            <h4 className="font-bold text-background mb-5 text-sm tracking-wide">Услуги</h4>
+            <h4 className="font-bold text-background mb-5 text-sm tracking-wide">Соискателям</h4>
             <ul className="space-y-3">
-              {footerLinks.services.map((link) => (
+              {footerLinks.seekers.map((link) => (
                 <li key={link.label}><Link href={link.href} className="text-background/60 hover:text-primary transition-colors text-sm flex items-center gap-1 group">{link.label}<IconArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" /></Link></li>
               ))}
             </ul>
@@ -124,7 +123,7 @@ export function Footer() {
               ))}
             </ul>
           </div>
-          <div className="col-span-2 lg:col-span-2">
+          <div className="col-span-2 lg:col-span-4">
             <h4 className="font-bold text-background mb-5 text-sm tracking-wide">Документы</h4>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
@@ -132,24 +131,16 @@ export function Footer() {
               ))}
             </ul>
           </div>
-          <div className="col-span-2 lg:col-span-2">
-            <h4 className="font-bold text-background mb-5 text-sm tracking-wide">Подписка на новости</h4>
-            <p className="text-background/60 text-sm mb-4">Получай информацию о скидках и акциях первым</p>
-            <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
-              <input type="email" placeholder="Ваш email" className="flex-1 px-4 py-2.5 bg-background/10 border border-background/20 rounded-lg text-sm text-background placeholder:text-background/40 focus:outline-none focus:border-primary" aria-label="Email для подписки" />
-              <button type="submit" className="px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors" aria-label="Подписаться"><IconSend className="w-4 h-4" /></button>
-            </form>
-          </div>
         </div>
       </div>
       <div className="border-t border-background/10">
         <div className="container mx-auto px-4 py-4 md:py-5">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-            <div className="text-[10px] sm:text-xs text-background/50">2025 ООО «Фестивальное движение Феникс». Все права защищены.</div>
+            <div className="text-[10px] sm:text-xs text-background/50">{siteConfig.stats.yearFounded} {siteConfig.company.name}. Все права защищены.</div>
             <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs text-background/50">
-              <span className="font-mono">ОГРН {siteConfig.company.ogrn}</span>
-              <span className="w-1 h-1 bg-background/30 rounded-full" />
-              <span className="font-mono">ИНН {siteConfig.company.inn}</span>
+              {siteConfig.company.ogrn && <span className="font-mono">ОГРН {siteConfig.company.ogrn}</span>}
+              {siteConfig.company.ogrn && siteConfig.company.inn && <span className="w-1 h-1 bg-background/30 rounded-full" />}
+              {siteConfig.company.inn && <span className="font-mono">ИНН {siteConfig.company.inn}</span>}
             </div>
           </div>
         </div>
