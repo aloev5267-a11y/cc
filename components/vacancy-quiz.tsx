@@ -5,8 +5,8 @@ import { AnimatePresence, motion } from "framer-motion"
 import { getCategory, buildVacancyMessage, type Vacancy } from "@/lib/vacancies-data"
 import { useRegion } from "@/hooks/use-geo"
 import { siteConfig } from "@/lib/config"
-import { PromoMessengers, type PromoMessengersOptions } from "./promo/promo-messengers"
-import { VpnNotice } from "./promo/vpn-notice"
+import { Messengers, type MessengersOptions } from "./messengers"
+import { VpnNotice } from "./vpn-notice"
 import {
   IconClose,
   IconArrow,
@@ -55,7 +55,7 @@ export function VacancyQuiz({ vacancy, onClose }: { vacancy: Vacancy; onClose: (
     goNext()
   }
 
-  const messengerOptions: PromoMessengersOptions = useMemo(() => {
+  const messengerOptions: MessengersOptions = useMemo(() => {
     const fullAnswers = { ...answers, name: name.trim() }
     return {
       message: buildVacancyMessage(vacancy, fullAnswers),
@@ -279,8 +279,8 @@ export function VacancyQuiz({ vacancy, onClose }: { vacancy: Vacancy; onClose: (
                   </div>
 
                   <div className="mt-5">
-                    <VpnNotice />
-                    <PromoMessengers options={messengerOptions} />
+                <VpnNotice />
+                <Messengers options={messengerOptions} />
                   </div>
 
                   <p className="mt-4 text-center text-xs text-muted-foreground">

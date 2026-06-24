@@ -1,6 +1,6 @@
 "use client"
 
-import { IconTelegram, IconWhatsapp, IconMax } from "../icons"
+import { IconTelegram, IconWhatsapp, IconMax } from "./icons"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
 import { siteConfig } from "@/lib/config"
 
@@ -8,11 +8,11 @@ import { siteConfig } from "@/lib/config"
 // GET подтягивает аккаунт из БД (round-robin), клик создаёт заявку через trackClick.
 // Опционально формируют "бизнес-ссылку" с предзаполненным сообщением и сохраняют ответы опроса.
 
-export type PromoMessengersOptions = {
+export type MessengersOptions = {
   message?: string
   metadata?: Record<string, string>
   source?: string
-  // Метка промо-страницы (например, "courier").
+  // Метка страницы (например, "courier").
   page?: string
 }
 
@@ -37,7 +37,7 @@ const messengerConfig = {
   },
 } as const
 
-function MessengerButton({ type, options }: { type: "telegram" | "whatsapp" | "max"; options?: PromoMessengersOptions }) {
+function MessengerButton({ type, options }: { type: "telegram" | "whatsapp" | "max"; options?: MessengersOptions }) {
   const messenger = useMessengerLink(type, options)
   const config = messengerConfig[type]
 
@@ -80,7 +80,7 @@ function MessengerButton({ type, options }: { type: "telegram" | "whatsapp" | "m
   )
 }
 
-export function PromoMessengers({ options }: { options?: PromoMessengersOptions }) {
+export function Messengers({ options }: { options?: MessengersOptions }) {
   return (
     <div className="flex flex-col gap-2.5">
       <MessengerButton type="telegram" options={options} />

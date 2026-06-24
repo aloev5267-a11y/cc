@@ -29,7 +29,7 @@ export function notifyMessengerUnavailable(type: MessengerType) {
 // Опции для формирования "бизнес-ссылки" с предзаполненными данными.
 // message — текст, который подставится в окно чата (работает в WhatsApp и Telegram-ботах).
 // metadata — ответы опроса (город, транспорт и т.д.), сохраняются в lead.
-// source — метка источника лида (например, "promo-courier").
+// source — метка источника лида (например, "vacancy-quiz").
 interface MessengerLinkOptions {
   message?: string
   metadata?: Record<string, string>

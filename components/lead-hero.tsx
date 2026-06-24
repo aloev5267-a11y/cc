@@ -12,7 +12,7 @@ import {
   IconCheck,
   IconStar,
 } from "./icons"
-import { PromoMessengers, type PromoMessengersOptions } from "./promo/promo-messengers"
+import { Messengers, type MessengersOptions } from "./messengers"
 import { useRegion } from "@/hooks/use-geo"
 import { siteConfig } from "@/lib/config"
 
@@ -89,7 +89,7 @@ export function LeadHero() {
   const scheduleLabel = SCHEDULE.find((s) => s.id === schedule)?.label
 
   // Формируем "бизнес-ссылку" с предзаполненным сообщением и сохраняем анкету в lead.
-  const messengerOptions: PromoMessengersOptions = useMemo(() => {
+  const messengerOptions: MessengersOptions = useMemo(() => {
     const lines = [
       `Здравствуйте! Меня зовут ${name.trim() || "соискатель"}.`,
       `Ищу работу через ${siteConfig.name}, помогите подобрать вакансию.`,
@@ -364,7 +364,7 @@ export function LeadHero() {
                             </span>
                           ))}
                       </div>
-                      <PromoMessengers options={messengerOptions} />
+                      <Messengers options={messengerOptions} />
                       <button
                         type="button"
                         onClick={() => setStep(2)}

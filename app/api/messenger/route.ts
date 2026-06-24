@@ -9,7 +9,7 @@ import { generateClientId } from '@/lib/server-utils'
 // Для 'chat' аккаунт мессенджера не нужен, но клик всё равно фиксируется как lead.
 const messengerRequestSchema = z.object({
   messengerType: z.enum(['telegram', 'whatsapp', 'max', 'chat']),
-  // Источник лида (например, "promo-courier"). По умолчанию = тип мессенджера.
+  // Источник лида (например, "vacancy-quiz"). По умолчанию = тип мессенджера.
   source: z.string().max(60).optional(),
   // Произвольные данные опроса (город, транспорт и т.д.) — до 20 полей.
   metadata: z.record(z.string(), z.string().max(200)).optional(),

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { IconCheck } from "./icons"
-import { PromoMessengers } from "./promo/promo-messengers"
+import { Messengers } from "./messengers"
 
 const points = [
   "Расскажите, какую работу ищете",
@@ -64,7 +64,7 @@ export function FindWork() {
               <p className="text-sm font-semibold text-foreground mb-4 text-center">
                 Откликнуться в мессенджере
               </p>
-              <PromoMessengers options={{ source: "home-find", message: "Здравствуйте! Хочу найти работу через ElWork." }} />
+              <Messengers options={{ source: "home-find", message: "Здравствуйте! Хочу найти работу через ElWork." }} />
               <p className="text-xs text-muted-foreground mt-4 text-center leading-relaxed">
                 Нажимая на кнопку, вы соглашаетесь на обработку персональных данных
                 в соответствии с политикой конфиденциальности.

@@ -1,6 +1,6 @@
 "use client"
 
-import { IconShield } from "../icons"
+import { IconShield } from "./icons"
 import { useIsRussianIp } from "@/hooks/use-geo"
 
 // Уведомление для посетителей из России: мессенджеры могут быть недоступны

@@ -1,6 +1,5 @@
 import { MetadataRoute } from 'next'
 import { siteUrl as baseUrl } from '@/lib/config'
-import { promoPages } from '@/lib/promo-pages'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date().toISOString()
@@ -56,12 +55,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  const promoRoutes: MetadataRoute.Sitemap = promoPages.map((p) => ({
-    url: `${baseUrl}${p.path}`,
-    lastModified: currentDate,
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
-  }))
-
-  return [...staticRoutes, ...promoRoutes]
+  return staticRoutes
 }

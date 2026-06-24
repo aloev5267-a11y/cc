@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { motion } from "framer-motion"
 import { IconCheck } from "./icons"
-import { PromoMessengers } from "./promo/promo-messengers"
+import { Messengers } from "./messengers"
 
 // Единая секция для работодателей: "Нужны люди? Давайте договоримся".
 // Построена на том же рабочем мессенджер-потоке, что и блок для соискателей (FindWork):
@@ -152,7 +152,7 @@ export function HireStaff({ source = "employer" }: { source?: string }) {
               <p className="text-sm font-semibold text-foreground mb-3 text-center">
                 Написать менеджеру по подбору
               </p>
-              <PromoMessengers options={{ source, message, metadata }} />
+              <Messengers options={{ source, message, metadata }} />
               <p className="text-xs text-muted-foreground mt-4 text-center leading-relaxed">
                 Нажимая на кнопку, вы соглашаетесь на обработку персональных данных
                 в соответствии с политикой конфиденциальности.
