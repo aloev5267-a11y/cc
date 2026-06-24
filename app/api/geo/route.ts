@@ -120,6 +120,11 @@ export async function GET(request: NextRequest) {
   }
 
   const country = await lookupCountry(ip)
-  setCachedCountry(ip, country)
+  // Кэшируем только успешный ответ. Если оба сервиса временно недоступны
+  // (country === null), не запоминаем сбой — чтобы при следующем заходе
+  // попробовать снова, а не считать посетителя «не из РФ» сутки.
+  if (country !== null) {
+    setCachedCountry(ip, country)
+  }
   return NextResponse.json({ country, isRussia: country === "RU" })
 }
