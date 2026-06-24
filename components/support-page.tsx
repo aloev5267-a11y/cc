@@ -2,10 +2,12 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
+import { toast } from "sonner"
 import { Header } from "./header"
 import { Footer } from "./footer"
 import { siteConfig } from "@/lib/config"
 import { faqItems } from "@/lib/faq"
+import { openLiveChat, trackLiveChatLead } from "@/lib/livechat"
 import { 
   IconMail, 
   IconTelegram, 
@@ -13,7 +15,8 @@ import {
   IconSend,
   IconCheck,
   IconClock,
-  IconMessage
+  IconMessage,
+  IconHeadphones
 } from "./icons"
 
 export function SupportPage() {
@@ -30,6 +33,17 @@ export function SupportPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitted(true)
+  }
+
+  // Открыть онлайн-чат с темой "Поддержка" и зафиксировать лид (канал 'chat').
+  const handleOpenLiveChat = async () => {
+    trackLiveChatLead("support")
+    const opened = await openLiveChat({ subject: "Поддержка" })
+    if (!opened) {
+      toast.error("Онлайн-чат пока недоступен", {
+        description: "Чат не успел загрузиться. Пожалуйста, напишите нам в мессенджер или на email.",
+      })
+    }
   }
 
   return (
@@ -66,7 +80,24 @@ export function SupportPage() {
         {/* Contact options */}
         <section className="py-12 border-t border-b border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid sm:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Онлайн-чат — быстрый ответ прямо на сайте */}
+              <motion.button
+                type="button"
+                onClick={handleOpenLiveChat}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-4 p-5 bg-primary text-primary-foreground rounded-2xl border border-primary hover:bg-primary/90 transition-colors text-left group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-primary-foreground/15 flex items-center justify-center shrink-0">
+                  <IconHeadphones className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="text-sm text-primary-foreground/70">Онлайн-чат</div>
+                  <div className="font-semibold">Ответим сразу</div>
+                </div>
+              </motion.button>
+
               {[
                 { icon: IconMail, label: "Email", value: siteConfig.contact.email, href: siteConfig.contact.emailHref, color: "text-blue-500" },
                 { icon: IconTelegram, label: "Telegram", value: siteConfig.social.telegram, href: siteConfig.social.telegramUrl, color: "text-sky-500" },
@@ -79,7 +110,7 @@ export function SupportPage() {
                   rel="noopener noreferrer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: (index + 1) * 0.1 }}
                   className="flex items-center gap-4 p-5 bg-card rounded-2xl border border-border hover:border-primary/50 transition-colors group"
                 >
                   <div className={`w-12 h-12 rounded-xl bg-muted flex items-center justify-center ${contact.color}`}>
@@ -152,7 +183,7 @@ export function SupportPage() {
                       <option value="general">Общий вопрос</option>
                       <option value="jobseeker">Поиск работы</option>
                       <option value="application">Статус моей заявки</option>
-                      <option value="employer">Подбор персонала (работодателям)</option>
+                      <option value="employer">По��бор персонала (работодателям)</option>
                       <option value="other">Другое</option>
                     </select>
                   </div>

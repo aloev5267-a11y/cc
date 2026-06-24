@@ -1,12 +1,18 @@
 "use client"
 
-import { IconTelegram, IconWhatsapp, IconMax } from "./icons"
+import { useState } from "react"
+import { toast } from "sonner"
+import { IconTelegram, IconWhatsapp, IconMax, IconHeadphones } from "./icons"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
+import { openLiveChat, trackLiveChatLead } from "@/lib/livechat"
 import { siteConfig } from "@/lib/config"
 
 // Кнопки перехода в мессенджеры — повторяют рабочий паттерн сайта:
 // GET подтягивает аккаунт из БД (round-robin), клик создаёт заявку через trackClick.
 // Опционально формируют "бизнес-ссылку" с предзаполненным сообщением и сохраняют ответы опроса.
+//
+// Помимо мессенджеров, есть кнопка онлайн-чата (LiveChat / Omnidesk): она открывает
+// виджет прямо на сайте с тем же предзаполненным текстом и фиксирует лид через канал 'chat'.
 
 export type MessengersOptions = {
   message?: string
@@ -80,12 +86,54 @@ function MessengerButton({ type, options }: { type: "telegram" | "whatsapp" | "m
   )
 }
 
+// Кнопка онлайн-чата (LiveChat). Открывает виджет на сайте с предзаполненным сообщением
+// и темой; если виджет не успел загрузиться — мягко подсказываем воспользоваться мессенджером.
+function LiveChatButton({ options }: { options?: MessengersOptions }) {
+  const [opening, setOpening] = useState(false)
+
+  const handleClick = async () => {
+    if (opening) return
+    setOpening(true)
+
+    // Тема обращения для оператора: источник/страница помогают понять контекст.
+    const subject = options?.source || options?.page || "Заявка с сайта"
+
+    // Фиксируем лид (не блокирует открытие чата).
+    trackLiveChatLead(options?.source, options?.metadata)
+
+    const opened = await openLiveChat({
+      subject,
+      message: options?.message,
+    })
+
+    if (!opened) {
+      toast.error("Онлайн-чат пока недоступен", {
+        description: "Чат не успел загрузиться. Пожалуйста, напишите нам в мессенджер выше.",
+      })
+    }
+    setOpening(false)
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      aria-busy={opening}
+      className="flex items-center justify-center gap-2 h-12 px-4 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02]"
+    >
+      <IconHeadphones className="w-5 h-5 shrink-0" />
+      <span className="truncate">Онлайн-чат</span>
+    </button>
+  )
+}
+
 export function Messengers({ options }: { options?: MessengersOptions }) {
   return (
     <div className="flex flex-col gap-2.5">
       <MessengerButton type="telegram" options={options} />
       <MessengerButton type="whatsapp" options={options} />
       <MessengerButton type="max" options={options} />
+      <LiveChatButton options={options} />
     </div>
   )
 }
