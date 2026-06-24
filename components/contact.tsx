@@ -3,23 +3,8 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { siteConfig } from "@/lib/config"
-import { IconPhone, IconMessage, IconSend, IconTelegram, IconWhatsapp, IconMail, IconMax, IconUser, IconAt } from "./icons"
+import { IconPhone, IconMessage, IconSend, IconTelegram, IconWhatsapp, IconMax, IconUser, IconAt } from "./icons"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
-
-const contactInfo = [
-  {
-    icon: IconMail,
-    title: "Email",
-    value: siteConfig.contact.email,
-    description: "Ответим в течение часа",
-  },
-  {
-    icon: IconMessage,
-    title: "Поддержка",
-    value: "Пн–Вс",
-    description: "Ответим в течение рабочего дня",
-  },
-]
 
 function MessengerLinks() {
   const telegram = useMessengerLink('telegram')
@@ -153,33 +138,6 @@ export function Contact() {
         </motion.div>
 
         <div className="max-w-5xl mx-auto">
-          {/* Contact cards */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6"
-          >
-            {contactInfo.map((item, index) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 + index * 0.08 }}
-                className="card-elevated p-5 rounded-xl text-center"
-              >
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <item.icon className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground text-sm mb-1">{item.title}</h3>
-                <p className="text-lg font-bold text-primary mb-0.5">{item.value}</p>
-                <p className="text-xs text-muted-foreground">{item.description}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-
           {/* Messengers */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
