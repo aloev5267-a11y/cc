@@ -27,7 +27,7 @@ export function SearchHero() {
   }
 
   return (
-    <section className="bg-background pt-24 md:pt-28 pb-10 md:pb-14">
+    <section className="bg-background pt-4 md:pt-6 pb-10 md:pb-14">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-foreground mb-6 text-balance">
           Поиск работы в Москве

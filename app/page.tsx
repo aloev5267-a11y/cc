@@ -1,4 +1,5 @@
 import { Header } from "@/components/header"
+import { LeadHero } from "@/components/lead-hero"
 import { SearchHero } from "@/components/search-hero"
 import { Advantages } from "@/components/advantages"
 import { JobCategories } from "@/components/job-categories"
@@ -13,6 +14,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <Header />
+      <LeadHero />
       <SearchHero />
       <JobCategories />
       <Advantages />
