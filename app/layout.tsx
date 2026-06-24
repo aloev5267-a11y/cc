@@ -1,4 +1,5 @@
 import { StructuredData } from "@/components/structured-data"
+import Script from 'next/script'
 import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { YandexMetrika } from '@/components/yandex-metrika'
@@ -79,6 +80,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <YandexMetrika />
         {children}
         <Toaster position="top-center" richColors />
+        <Script
+          src="https://charter-panel.com/livechat.js"
+          data-omnidesk-key="lc_64df096612564adc8bfd9b8a694b9e26"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   )
