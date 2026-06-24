@@ -6,7 +6,6 @@ import { JobCategories } from "@/components/job-categories"
 import { FindWork } from "@/components/careers"
 import { HireStaff } from "@/components/hire-staff"
 import { CTA } from "@/components/cta"
-import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
 
 export default function Home() {
@@ -20,7 +19,6 @@ export default function Home() {
       <FindWork />
       <HireStaff source="employer-home" />
       <CTA />
-      <Contact />
       <Footer />
     </main>
   )
