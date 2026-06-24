@@ -329,7 +329,7 @@ server {
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' charter-panel.com; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' charter-panel.com;" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://charter-panel.com https://*.charter-panel.com; img-src 'self' data: blob: https://charter-panel.com https://*.charter-panel.com; style-src 'self' 'unsafe-inline' https://charter-panel.com https://*.charter-panel.com; font-src 'self' data: https://charter-panel.com https://*.charter-panel.com; connect-src 'self' https://charter-panel.com https://*.charter-panel.com wss://charter-panel.com wss://*.charter-panel.com; frame-src 'self' https://charter-panel.com https://*.charter-panel.com; worker-src 'self' blob:; frame-ancestors 'self';" always;
 
     # Gzip сжатие
     gzip on;
@@ -447,7 +447,8 @@ curl -X POST "https://kurierhub.ru/api/admin/managers" \
 
 ### Чек-лист перед запуском
 
-- [ ] Установлены уникальные `ADMIN_SECRET` и `JWT_SECRET` (сгенерированы через `openssl rand -base64 32`)
+- [ ] Установлен уникальный `ADMIN_SECRET` (сгенерирован через `openssl rand -base64 32`). Отдельный JWT-секрет не нужен — сессии хранятся в БД
+- [ ] Сайт открывается строго по HTTPS (иначе secure-cookie сессии не сохраняется и админка «разлогинивается» при обновлении)
 - [ ] Создан администратор через `scripts/create-admin.mjs` (пароли хэшируются bcrypt)
 - [ ] Настроен HTTPS (SSL сертификат Let's Encrypt)
 - [ ] Настроены заголовки безопасности в Nginx

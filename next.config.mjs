@@ -32,7 +32,7 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
-          { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://charter-panel.com; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://charter-panel.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'" },
+          { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://charter-panel.com https://*.charter-panel.com; img-src 'self' data: blob: https://charter-panel.com https://*.charter-panel.com; style-src 'self' 'unsafe-inline' https://charter-panel.com https://*.charter-panel.com; font-src 'self' data: https://charter-panel.com https://*.charter-panel.com; connect-src 'self' https://charter-panel.com https://*.charter-panel.com wss://charter-panel.com wss://*.charter-panel.com; frame-src 'self' https://charter-panel.com https://*.charter-panel.com; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'" },
         ],
       },
     ]
