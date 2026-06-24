@@ -5,6 +5,7 @@ import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { IconPhone, IconClose } from "../icons"
 import { navItems, serviceItems, type NavItem } from "./nav-config"
+import { siteConfig } from "@/lib/config"
 
 interface MobileMenuProps {
   isOpen: boolean
@@ -100,11 +101,11 @@ export function MobileMenu({ isOpen, onClose, onCalculatorClick }: MobileMenuPro
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
               <Link href="/" className="flex items-center gap-2" onClick={onClose}>
-                <div className="relative w-8 h-8">
-                  <Image src="/logo.webp" alt="КурьерХаб" fill className="object-contain" />
+                <div className="relative w-8 h-8 rounded-lg overflow-hidden">
+                  <Image src="/logo.png" alt={siteConfig.name} fill className="object-cover" />
                 </div>
                 <span className="text-sm font-bold">
-                  Курьер<span className="text-primary">Хаб</span>
+                  {siteConfig.brandPrefix}<span className="text-primary">{siteConfig.brandSuffix}</span>
                 </span>
               </Link>
               <button
@@ -153,7 +154,7 @@ export function MobileMenu({ isOpen, onClose, onCalculatorClick }: MobileMenuPro
             {/* Footer */}
             <div className="p-4 border-t border-border">
               <a
-                href="tel:+78001234567"
+                href={siteConfig.contact.phoneHref}
                 className="flex items-center justify-center gap-2 w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl"
               >
                 <IconPhone className="w-4 h-4" />

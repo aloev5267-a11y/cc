@@ -1,15 +1,10 @@
 import {
-  IconMapPin,
-  IconUsers,
-  IconSearch,
-  IconCalculator,
   IconBriefcase,
-  IconUserPlus,
-  IconPackage,
-  IconTruck,
-  IconHeadphones,
+  IconUsers,
   IconHandshake,
-  IconCode,
+  IconUserPlus,
+  IconHeadphones,
+  IconHeart,
 } from "../icons"
 
 export type NavItem = {
@@ -19,18 +14,15 @@ export type NavItem = {
 }
 
 export const navItems: NavItem[] = [
-  { href: "/cities", label: "Города", icon: IconMapPin },
-  { href: "/about", label: "О нас", icon: IconUsers },
-  { href: "/tracking", label: "Отслеживание", icon: IconSearch },
-  { href: "/#delivery", label: "Калькулятор", icon: IconCalculator },
-  { href: "/#careers", label: "Работа у нас", icon: IconBriefcase },
   { href: "/vacancies", label: "Вакансии", icon: IconUserPlus },
+  { href: "/#how", label: "Как это работает", icon: IconBriefcase },
+  { href: "/about", label: "О нас", icon: IconUsers },
+  { href: "/partners", label: "Работодателям", icon: IconHandshake },
 ]
 
 export const serviceItems: NavItem[] = [
-  { href: "/#delivery", label: "Доставка", icon: IconPackage },
-  { href: "/#cargo", label: "Грузы", icon: IconTruck },
+  { href: "/vacancies", label: "Открытые вакансии", icon: IconUserPlus },
+  { href: "/#how", label: "Соискателям", icon: IconHeart },
+  { href: "/partners", label: "Работодателям", icon: IconHandshake },
   { href: "/support", label: "Поддержка", icon: IconHeadphones },
-  { href: "/partners", label: "Партнёрам", icon: IconHandshake },
-  { href: "/api-docs", label: "API", icon: IconCode },
 ]

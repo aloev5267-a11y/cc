@@ -1,26 +1,26 @@
 {
-  "name": "КурьерХаб - Доставка грузов",
-  "short_name": "КурьерХаб",
-  "description": "Современная логистическая платформа для доставки грузов по России",
+  "name": "ElWork — кадровое агентство",
+  "short_name": "ElWork",
+  "description": "Кадровое агентство ElWork: подбор персонала и помощь в трудоустройстве",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#f97316",
+  "background_color": "#ffffff",
+  "theme_color": "#0f9b6c",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "ru",
-  "categories": ["business", "logistics", "delivery"],
+  "categories": ["business", "jobs", "recruitment"],
   "icons": [
     {
-      "src": "/logo.webp",
+      "src": "/logo.png",
       "sizes": "192x192",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo.webp",
+      "src": "/logo.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

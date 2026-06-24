@@ -2,40 +2,40 @@
 @import 'tw-animate-css';
 
 :root {
-  /* КурьерХаб - Светлая тема с оранжевым акцентом */
-  --background: oklch(0.98 0.005 90);
-  --foreground: oklch(0.15 0.02 260);
+  /* ElWork — светлая трастовая тема с изумрудным акцентом */
+  --background: oklch(0.99 0.003 160);
+  --foreground: oklch(0.21 0.03 255);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.02 260);
+  --card-foreground: oklch(0.21 0.03 255);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 260);
-  --primary: oklch(0.65 0.24 38);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.01 90);
-  --secondary-foreground: oklch(0.2 0.02 260);
-  --muted: oklch(0.92 0.01 90);
-  --muted-foreground: oklch(0.45 0.02 260);
-  --accent: oklch(0.65 0.24 38);
-  --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.55 0.25 25);
+  --popover-foreground: oklch(0.21 0.03 255);
+  --primary: oklch(0.58 0.13 162);
+  --primary-foreground: oklch(0.99 0.01 160);
+  --secondary: oklch(0.96 0.01 220);
+  --secondary-foreground: oklch(0.26 0.03 255);
+  --muted: oklch(0.96 0.008 220);
+  --muted-foreground: oklch(0.5 0.02 255);
+  --accent: oklch(0.58 0.13 162);
+  --accent-foreground: oklch(0.99 0.01 160);
+  --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.88 0.01 90);
-  --input: oklch(0.95 0.01 90);
-  --ring: oklch(0.65 0.24 38);
-  --chart-1: oklch(0.65 0.24 38);
-  --chart-2: oklch(0.55 0.2 50);
-  --chart-3: oklch(0.5 0.15 180);
-  --chart-4: oklch(0.65 0.15 60);
-  --chart-5: oklch(0.5 0.2 320);
+  --border: oklch(0.9 0.008 230);
+  --input: oklch(0.95 0.008 230);
+  --ring: oklch(0.58 0.13 162);
+  --chart-1: oklch(0.58 0.13 162);
+  --chart-2: oklch(0.5 0.1 220);
+  --chart-3: oklch(0.65 0.12 145);
+  --chart-4: oklch(0.6 0.11 195);
+  --chart-5: oklch(0.45 0.09 250);
   --radius: 0.75rem;
-  --sidebar: oklch(0.97 0.005 90);
-  --sidebar-foreground: oklch(0.15 0.02 260);
-  --sidebar-primary: oklch(0.65 0.24 38);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.93 0.01 90);
-  --sidebar-accent-foreground: oklch(0.2 0.02 260);
-  --sidebar-border: oklch(0.88 0.01 90);
-  --sidebar-ring: oklch(0.65 0.24 38);
+  --sidebar: oklch(0.98 0.004 200);
+  --sidebar-foreground: oklch(0.21 0.03 255);
+  --sidebar-primary: oklch(0.58 0.13 162);
+  --sidebar-primary-foreground: oklch(0.99 0.01 160);
+  --sidebar-accent: oklch(0.94 0.01 200);
+  --sidebar-accent-foreground: oklch(0.26 0.03 255);
+  --sidebar-border: oklch(0.9 0.008 230);
+  --sidebar-ring: oklch(0.58 0.13 162);
 }
 
 @theme inline {
@@ -94,34 +94,34 @@
 
 /* Subtle grid pattern */
 .grid-pattern {
-  background-image: 
-    linear-gradient(oklch(0.65 0.24 38 / 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.65 0.24 38 / 0.04) 1px, transparent 1px);
+  background-image:
+    linear-gradient(oklch(0.58 0.13 162 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.58 0.13 162 / 0.04) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 /* Dot pattern */
 .dot-pattern {
-  background-image: radial-gradient(oklch(0.65 0.24 38 / 0.15) 1px, transparent 1px);
+  background-image: radial-gradient(oklch(0.58 0.13 162 / 0.14) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
 /* Gradient backgrounds */
 .gradient-soft {
-  background: linear-gradient(180deg, oklch(0.98 0.005 90) 0%, oklch(0.95 0.01 60) 100%);
+  background: linear-gradient(180deg, oklch(0.99 0.003 160) 0%, oklch(0.96 0.012 200) 100%);
 }
 
 .gradient-hero {
-  background: 
-    radial-gradient(ellipse 100% 80% at 50% 0%, oklch(0.65 0.24 38 / 0.08), transparent 50%),
-    radial-gradient(ellipse 60% 50% at 100% 0%, oklch(0.7 0.2 50 / 0.06), transparent 40%),
-    radial-gradient(ellipse 60% 50% at 0% 50%, oklch(0.65 0.24 38 / 0.04), transparent 40%);
+  background:
+    radial-gradient(ellipse 100% 80% at 50% 0%, oklch(0.58 0.13 162 / 0.1), transparent 50%),
+    radial-gradient(ellipse 60% 50% at 100% 0%, oklch(0.5 0.1 220 / 0.07), transparent 40%),
+    radial-gradient(ellipse 60% 50% at 0% 50%, oklch(0.58 0.13 162 / 0.05), transparent 40%);
 }
 
 /* Card styles */
 .card-elevated {
   background: var(--card);
-  box-shadow: 
+  box-shadow:
     0 1px 3px oklch(0 0 0 / 0.04),
     0 4px 12px oklch(0 0 0 / 0.04),
     0 0 0 1px oklch(0 0 0 / 0.03);
@@ -129,29 +129,29 @@
 }
 
 .card-elevated:hover {
-  box-shadow: 
+  box-shadow:
     0 4px 12px oklch(0 0 0 / 0.08),
     0 12px 32px oklch(0 0 0 / 0.06),
-    0 0 0 1px oklch(0.65 0.24 38 / 0.15);
+    0 0 0 1px oklch(0.58 0.13 162 / 0.18);
   transform: translateY(-2px);
 }
 
-/* Glow effects for light theme */
-.glow-orange {
-  box-shadow: 
-    0 0 20px oklch(0.65 0.24 38 / 0.25),
-    0 0 40px oklch(0.65 0.24 38 / 0.15);
+/* Glow effects */
+.glow-primary {
+  box-shadow:
+    0 0 20px oklch(0.58 0.13 162 / 0.25),
+    0 0 40px oklch(0.58 0.13 162 / 0.12);
 }
 
 .glow-soft {
-  box-shadow: 
-    0 4px 20px oklch(0.65 0.24 38 / 0.2),
-    0 8px 40px oklch(0.65 0.24 38 / 0.1);
+  box-shadow:
+    0 4px 20px oklch(0.58 0.13 162 / 0.2),
+    0 8px 40px oklch(0.58 0.13 162 / 0.1);
 }
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, oklch(0.65 0.24 38), oklch(0.55 0.2 30), oklch(0.65 0.24 38));
+  background: linear-gradient(135deg, oklch(0.58 0.13 162), oklch(0.5 0.11 175), oklch(0.58 0.13 162));
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -160,7 +160,7 @@
 }
 
 .gradient-text-static {
-  background: linear-gradient(135deg, oklch(0.55 0.24 38), oklch(0.45 0.2 25));
+  background: linear-gradient(135deg, oklch(0.52 0.13 162), oklch(0.44 0.1 200));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -174,17 +174,17 @@
 
 /* Button styles */
 .btn-primary {
-  background: linear-gradient(135deg, oklch(0.65 0.24 38), oklch(0.55 0.22 35));
-  box-shadow: 
-    0 2px 8px oklch(0.65 0.24 38 / 0.3),
-    inset 0 1px 0 oklch(1 0 0 / 0.1);
+  background: linear-gradient(135deg, oklch(0.58 0.13 162), oklch(0.52 0.12 168));
+  box-shadow:
+    0 2px 8px oklch(0.58 0.13 162 / 0.3),
+    inset 0 1px 0 oklch(1 0 0 / 0.12);
   transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-  box-shadow: 
-    0 4px 16px oklch(0.65 0.24 38 / 0.4),
-    inset 0 1px 0 oklch(1 0 0 / 0.15);
+  box-shadow:
+    0 4px 16px oklch(0.58 0.13 162 / 0.4),
+    inset 0 1px 0 oklch(1 0 0 / 0.18);
   transform: translateY(-1px);
 }
 
@@ -243,7 +243,7 @@
   animation: float 4s ease-in-out infinite;
 }
 
-/* Появление контента первого экрана без JS (замена framer-motion) */
+/* Появление контента первого экрана без JS */
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -264,7 +264,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in-up,
-  .animate-slide-down {
+  .animate-slide-down,
+  .animate-float,
+  .animate-pulse-soft {
     animation: none;
   }
 }
@@ -276,32 +278,32 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: oklch(0.95 0.005 90);
+  background: oklch(0.96 0.005 200);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.8 0.01 90);
+  background: oklch(0.82 0.01 220);
   border-radius: 5px;
-  border: 2px solid oklch(0.95 0.005 90);
+  border: 2px solid oklch(0.96 0.005 200);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.65 0.24 38);
+  background: oklch(0.58 0.13 162);
 }
 
 /* Selection styling */
 ::selection {
-  background: oklch(0.65 0.24 38 / 0.2);
-  color: oklch(0.15 0.02 260);
+  background: oklch(0.58 0.13 162 / 0.2);
+  color: oklch(0.21 0.03 255);
 }
 
 /* Section divider */
 .section-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, oklch(0.65 0.24 38 / 0.2), transparent);
+  background: linear-gradient(90deg, transparent, oklch(0.58 0.13 162 / 0.2), transparent);
 }
 
-/* Промо-калькулятор: кастомный ползунок дохода */
+/* Промо-калькулятор / ползунок */
 .promo-range {
   -webkit-appearance: none;
   appearance: none;
@@ -319,9 +321,9 @@
   width: 24px;
   height: 24px;
   border-radius: 9999px;
-  background: oklch(0.65 0.24 38);
+  background: oklch(0.58 0.13 162);
   border: 4px solid oklch(1 0 0);
-  box-shadow: 0 2px 10px oklch(0.65 0.24 38 / 0.5);
+  box-shadow: 0 2px 10px oklch(0.58 0.13 162 / 0.5);
   transition: transform 0.15s ease;
 }
 
@@ -333,8 +335,8 @@
   width: 24px;
   height: 24px;
   border-radius: 9999px;
-  background: oklch(0.65 0.24 38);
+  background: oklch(0.58 0.13 162);
   border: 4px solid oklch(1 0 0);
-  box-shadow: 0 2px 10px oklch(0.65 0.24 38 / 0.5);
+  box-shadow: 0 2px 10px oklch(0.58 0.13 162 / 0.5);
   cursor: pointer;
 }

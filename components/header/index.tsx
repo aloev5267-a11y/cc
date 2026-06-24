@@ -4,6 +4,7 @@ import { MessengerPill } from "./messenger-pill"
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { siteConfig } from "@/lib/config"
 import { HamburgerIcon } from "./hamburger-icon"
 import { DesktopNav } from "./desktop-nav"
 import { MobileMenu } from "./mobile-menu"
@@ -45,17 +46,17 @@ export function Header() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  // Navigate to calculator section
+  // Прокрутка к секции "Как это работает" (для соискателей)
   const handleCalculatorClick = (e: React.MouseEvent) => {
     e.preventDefault()
     setNavOpen(false)
     setMobileMenuOpen(false)
-    
-    const element = document.getElementById('delivery')
+
+    const element = document.getElementById('how')
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
     } else {
-      window.location.href = '/#delivery'
+      window.location.href = '/#how'
     }
   }
 
@@ -77,17 +78,17 @@ export function Header() {
         >
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 pl-1 pr-2 shrink-0">
-            <div className="relative w-8 h-8">
+            <div className="relative w-8 h-8 rounded-lg overflow-hidden">
               <Image
-                src="/logo.webp"
-                alt="КурьерХаб"
+                src="/logo.png"
+                alt={siteConfig.name}
                 fill
-                className="object-contain"
+                className="object-cover"
                 priority
               />
             </div>
             <span className="hidden sm:block text-sm font-bold tracking-tight text-foreground">
-              Курьер<span className="text-primary">Хаб</span>
+              {siteConfig.brandPrefix}<span className="text-primary">{siteConfig.brandSuffix}</span>
             </span>
           </Link>
 

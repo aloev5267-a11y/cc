@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { YandexMetrika } from '@/components/yandex-metrika'
 import { Toaster } from '@/components/ui/sonner'
-import { siteUrl } from '@/lib/config'
+import { siteUrl, siteConfig } from '@/lib/config'
 import './globals.css'
 
 const inter = Inter({
@@ -21,28 +21,44 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'КурьерХаб — Курьерская доставка грузов и посылок по всей России',
-    template: '%s | КурьерХаб'
+    default: siteConfig.meta.title,
+    template: `%s | ${siteConfig.name}`
   },
-  description: 'КурьерХаб — курьерская служба для быстрой и надёжной доставки грузов и посылок по всей России. Оформление за минуту, 14 регионов, поддержка 24/7.',
-  keywords: ['курьерская доставка','доставка грузов','доставка посылок','курьерская служба','экспресс доставка','доставка по России','логистика','грузоперевозки','КурьерХаб','доставка Москва','доставка СПб','отправить посылку','доставка день в день'],
-  authors: [{ name: 'ООО "Фестивальное движение Феникс"', url: siteUrl }],
-  creator: 'КурьерХаб',
-  publisher: 'ООО "Фестивальное движение Феникс"',
+  description: siteConfig.meta.description,
+  keywords: siteConfig.meta.keywords.split(', '),
+  authors: [{ name: siteConfig.company.name, url: siteUrl }],
+  creator: siteConfig.name,
+  publisher: siteConfig.company.name,
   formatDetection: { email: true, address: true, telephone: true },
-  verification: { yandex: '3ddb5b26f1ccf934' },
   alternates: { canonical: '/', languages: { 'ru-RU': '/' } },
-  icons: { icon: [{ url: '/logo.webp', type: 'image/webp' },{ url: '/logo.jpg', type: 'image/jpeg' }], apple: '/logo.jpg', shortcut: '/logo.webp' },
+  icons: {
+    icon: [{ url: '/logo.png', type: 'image/png' }],
+    apple: '/logo.png',
+    shortcut: '/logo.png',
+  },
   manifest: '/manifest.json',
-  openGraph: { type: 'website', locale: 'ru_RU', url: siteUrl, siteName: 'КурьерХаб', title: 'КурьерХаб — Курьерская доставка по всей России', description: 'Курьерская служба для быстрой доставки грузов и посылок по России. Оформи доставку за минуту. 14 регионов, поддержка 24/7.', images: [{ url: `${siteUrl}/og-image.png`, width: 1200, height: 630, alt: 'КурьерХаб — курьерская доставка грузов и посылок', type: 'image/png' }] },
-  twitter: { card: 'summary_large_image', title: 'КурьерХаб — Курьерская доставка по России', description: 'Курьерская служба для быстрой доставки грузов и посылок. Оформи доставку за минуту.', images: [`${siteUrl}/og-image.png`], creator: '@ccourierhub' },
-  robots: { index: true, follow: true, nocache: false, googleBot: { index: true, follow: true, noimageindex: false, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 } },
-  category: 'logistics',
+  openGraph: {
+    type: 'website',
+    locale: 'ru_RU',
+    url: siteUrl,
+    siteName: siteConfig.name,
+    title: siteConfig.meta.title,
+    description: siteConfig.meta.description,
+    images: [{ url: `${siteUrl}/og-image.png`, width: 1200, height: 630, alt: `${siteConfig.name} — кадровое агентство`, type: 'image/png' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.meta.title,
+    description: siteConfig.meta.description,
+    images: [`${siteUrl}/og-image.png`],
+  },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
+  category: 'business',
 }
 
 export const viewport: Viewport = {
-  themeColor: [{ media: '(prefers-color-scheme: light)', color: '#f97316' },{ media: '(prefers-color-scheme: dark)', color: '#0a0a0a' }],
-  width: 'device-width', initialScale: 1, maximumScale: 5, userScalable: true, colorScheme: 'dark',
+  themeColor: '#0f9b6c',
+  width: 'device-width', initialScale: 1, maximumScale: 5, userScalable: true, colorScheme: 'light',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -53,10 +69,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://mc.yandex.ru" />
         <meta name="geo.region" content="RU" />
         <meta name="geo.placename" content="Россия" />
-        <meta name="application-name" content="КурьерХаб" />
-        <meta name="apple-mobile-web-app-title" content="КурьерХаб" />
+        <meta name="application-name" content={siteConfig.name} />
+        <meta name="apple-mobile-web-app-title" content={siteConfig.name} />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
         <StructuredData />
       </head>

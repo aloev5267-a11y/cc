@@ -1,10 +1,11 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { IconPhone, IconTruck } from "../icons"
+import { IconPhone, IconBriefcase } from "../icons"
 import { Tooltip } from "./tooltip"
 import { DropdownMenu } from "./dropdown-menu"
 import { navItems, serviceItems } from "./nav-config"
+import { siteConfig } from "@/lib/config"
 
 interface DesktopNavProps {
   navOpen: boolean
@@ -56,8 +57,8 @@ export function DesktopNav({
       {/* Phone Button */}
       <Tooltip label="Позвонить">
         <motion.a
-          href="tel:+78001234567"
-          className="w-9 h-9 rounded-full bg-muted/60 flex items-center justify-center text-foreground/70 hover:text-green-600 hover:bg-green-50 transition-all duration-200"
+          href={siteConfig.contact.phoneHref}
+          className="w-9 h-9 rounded-full bg-muted/60 flex items-center justify-center text-foreground/70 hover:text-primary hover:bg-primary/10 transition-all duration-200"
           whileTap={{ scale: 0.95 }}
         >
           <IconPhone className="w-4 h-4" />
@@ -79,7 +80,7 @@ export function DesktopNav({
             }`}
             whileTap={{ scale: 0.95 }}
           >
-            <IconTruck className="w-4 h-4" />
+            <IconBriefcase className="w-4 h-4" />
           </motion.button>
         </Tooltip>
 
