@@ -1,6 +1,7 @@
 import { StructuredData } from "@/components/structured-data"
 import { CookieConsent } from "@/components/cookie-consent"
 import { SupportChat } from "@/components/support-chat"
+import { YandexMetrika } from "@/components/yandex-metrika"
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
@@ -52,6 +53,9 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
   category: 'business',
+  verification: {
+    yandex: '4700bd298bd9bc4a',
+  },
 }
 
 export const viewport: Viewport = {
@@ -72,6 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <StructuredData />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
+        <YandexMetrika />
         {children}
         <CookieConsent />
         <Toaster position="top-center" richColors />
