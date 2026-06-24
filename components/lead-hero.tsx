@@ -125,7 +125,7 @@ export function LeadHero() {
               fill
               priority
               sizes="100vw"
-              className="object-cover object-right"
+              className="object-cover object-[72%_22%]"
             />
             {/* Затемнение слева под текст — синяя фирменная гамма */}
             <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-primary/10" />
