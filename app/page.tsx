@@ -3,7 +3,6 @@ import { LeadHero } from "@/components/lead-hero"
 import { SearchHero } from "@/components/search-hero"
 import { Advantages } from "@/components/advantages"
 import { JobCategories } from "@/components/job-categories"
-import { HowItWorks } from "@/components/how-it-works"
 import { FindWork } from "@/components/careers"
 import { ForEmployers } from "@/components/for-employers"
 import { CTA } from "@/components/cta"
@@ -18,7 +17,6 @@ export default function Home() {
       <SearchHero />
       <JobCategories />
       <Advantages />
-      <HowItWorks />
       <FindWork />
       <ForEmployers />
       <CTA />

@@ -19,7 +19,7 @@ const footerColumns = [
       { label: "О компании", href: "/about" },
       { label: "Вакансии", href: "/vacancies" },
       { label: "Работодателям", href: "/partners" },
-      { label: "Как это работает", href: "/#how" },
+      { label: "Найти работу", href: "/#find" },
       { label: "Поддержка", href: "/support" },
     ],
   },
