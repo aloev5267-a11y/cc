@@ -49,7 +49,7 @@ export function SupportPage() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6">
                 <IconMessage className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold text-primary">Поддержка 24/7</span>
+                <span className="text-sm font-semibold text-primary">Поддержка</span>
               </div>
               
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-6">
@@ -57,8 +57,8 @@ export function SupportPage() {
               </h1>
               
               <p className="text-lg text-muted-foreground">
-                Есть вопросы? Напишите нам, и мы ответим в кратчайшие сроки.
-                Наша команда готова помочь вам 24/7.
+                Есть вопросы о трудоустройстве или подборе персонала? Напишите нам — 
+                специалист ответит в течение рабочего дня.
               </p>
             </motion.div>
           </div>
@@ -152,10 +152,9 @@ export function SupportPage() {
                       className="w-full h-12 px-4 bg-muted border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                     >
                       <option value="general">Общий вопрос</option>
-                      <option value="delivery">Вопрос по доставке</option>
-                      <option value="tracking">Отслеживание посылки</option>
-                      <option value="work">Работа курьером</option>
-                      <option value="partnership">Партнёрство</option>
+                      <option value="jobseeker">Поиск работы</option>
+                      <option value="application">Статус моей заявки</option>
+                      <option value="employer">Подбор персонала (работодателям)</option>
                       <option value="other">Другое</option>
                     </select>
                   </div>
@@ -191,7 +190,7 @@ export function SupportPage() {
                   </div>
                   <h3 className="text-xl font-bold mb-2">Сообщение отправлено!</h3>
                   <p className="text-muted-foreground mb-6">
-                    Мы ответим вам в ближайшее время. Обычно это занимает не более 2 часов.
+                    Мы ответим вам в ближайшее время — как правило, в течение рабочего дня.
                   </p>
                   <button
                     onClick={() => {
@@ -255,7 +254,7 @@ export function SupportPage() {
                   <span className="font-bold">Время ответа</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Мы стараемся отвечать на все обращения в течение 2 часов в рабочее время. 
+                  Мы стараемся отвечать на все обращения в течение рабочего дня. 
                   По срочным вопросам звоните на горячую линию.
                 </p>
               </div>

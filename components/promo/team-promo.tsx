@@ -17,6 +17,7 @@ import {
   IconTarget,
 } from "../icons"
 import { PromoMessengers, type PromoMessengersOptions } from "./promo-messengers"
+import { siteConfig } from "@/lib/config"
 
 // Промо-страница "присоединяйся к команде" — без привязки к конкретным вакансиям.
 // Интерактивный шаг: человек выбирает, кто он и что ищет, ответы уходят в предзаполненное
@@ -39,32 +40,32 @@ const vibes: Vibe[] = [
 
 // "Что важно" — приоритеты, тоже без конкретики по ролям
 const wants: { id: string; label: string; icon: typeof IconWallet }[] = [
-  { id: "money", label: "Хороший доход", icon: IconWallet },
-  { id: "free", label: "Свободный график", icon: IconClock },
-  { id: "care", label: "Поддержка команды", icon: IconHeart },
-  { id: "fair", label: "Честные условия", icon: IconShield },
+  { id: "money", label: "Достойный доход", icon: IconWallet },
+  { id: "free", label: "Удобный график", icon: IconClock },
+  { id: "care", label: "Поддержка на старте", icon: IconHeart },
+  { id: "fair", label: "Официальное оформление", icon: IconShield },
 ]
 
 const values = [
   {
     icon: IconHandshake,
-    title: "Мы за своих",
-    text: "Каждый новичок получает наставника и поддержку команды с первого дня.",
+    title: "Сопровождаем кандидата",
+    text: "Помогаем на каждом этапе: от анкеты до оформления у работодателя.",
   },
   {
     icon: IconWallet,
-    title: "Платим честно",
-    text: "Прозрачные выплаты без задержек и скрытых вычетов. Заработал — получил.",
+    title: "Бесплатно для соискателя",
+    text: "Услуги агентства для кандидатов бесплатны — их оплачивает работодатель.",
   },
   {
     icon: IconTarget,
-    title: "Растём вместе",
-    text: "Хочешь больше — поможем выйти на топовый доход и взять на себя больше.",
+    title: "Подбираем под вас",
+    text: "Учитываем ваши пожелания по графику, городу и формату занятости.",
   },
   {
     icon: IconClock,
-    title: "Ценим твоё время",
-    text: "Гибкий график, который подстроится под твою жизнь, а не наоборот.",
+    title: "Ценим ваше время",
+    text: "Быстрый отклик и подбор вариантов без долгих ожиданий.",
   },
 ]
 
@@ -111,11 +112,11 @@ export function TeamPromo() {
       {/* Шапка */}
       <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-8">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="relative h-9 w-9">
-            <Image src="/logo.webp" alt="КурьерХаб" fill className="object-contain" priority />
+          <div className="relative h-9 w-9 overflow-hidden rounded-lg">
+            <Image src="/logo.png" alt={siteConfig.name} fill className="object-cover" priority />
           </div>
           <span className="text-base font-extrabold tracking-tight">
-            Курьер<span className="text-primary">Хаб</span>
+            {siteConfig.brandPrefix}<span className="text-primary">{siteConfig.brandSuffix}</span>
           </span>
         </Link>
         <Link
@@ -143,8 +144,8 @@ export function TeamPromo() {
         </h1>
 
         <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-white/70 sm:text-lg">
-          Мы растём и ищем людей, которым по пути с нами. Без долгих собеседований и резюме — просто расскажи о себе,
-          а мы подберём, чем ты можешь заняться.
+          Мы помогаем соискателям найти подходящую работу у проверенных работодателей. Расскажите о себе —
+          и специалист подберёт вакансии под ваши пожелания.
         </p>
 
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
@@ -166,9 +167,9 @@ export function TeamPromo() {
         {/* Доверие */}
         <div className="mx-auto mt-9 grid max-w-2xl grid-cols-3 gap-3">
           {[
-            { value: "2 500+", label: "человек в команде" },
-            { value: "1 день", label: "до первого выхода" },
-            { value: "14", label: "регионов России" },
+            { value: "Бесплатно", label: "для соискателя" },
+            { value: "1–3 дня", label: "на подбор" },
+            { value: "30+", label: "городов России" },
           ].map((s) => (
             <div key={s.label} className="rounded-2xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-sm">
               <div className="text-lg font-black leading-none text-primary sm:text-2xl">{s.value}</div>
@@ -274,7 +275,7 @@ export function TeamPromo() {
                 </div>
 
                 <ul className="flex flex-col gap-2">
-                  {["Ответим за несколько минут", "Без опыта и без резюме", "Оформление прямо в мессенджере"].map((t) => (
+                  {["Ответим в течение рабочего дня", "Бесплатно для соискателя", "Подбор вариантов под ваш запрос"].map((t) => (
                     <li key={t} className="flex items-center gap-2 text-sm text-white/75">
                       <IconCheck className="h-4 w-4 shrink-0 text-primary" />
                       {t}
@@ -321,15 +322,15 @@ export function TeamPromo() {
             ))}
           </div>
           <blockquote className="mt-4 text-balance text-xl font-semibold leading-snug sm:text-2xl">
-            «Пришёл сюда без опыта, переживал. А в итоге команда помогла на старте, и уже через неделю я вышел на
-            стабильный доход. Здесь реально по-человечески».
+            «Искал работу, но не хотел тратить недели на поиски. Специалисты агентства быстро подобрали несколько
+            вариантов под мой график и помогли с оформлением. Всё по-человечески».
           </blockquote>
           <div className="mt-5 flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/20 text-primary">
               <IconUsers className="h-5 w-5" />
             </span>
             <div>
-              <div className="text-sm font-bold">Алексей, в команде 8 месяцев</div>
+              <div className="text-sm font-bold">Алексей, соискатель</div>
               <div className="text-xs text-white/50">Москва</div>
             </div>
           </div>
@@ -349,7 +350,7 @@ export function TeamPromo() {
           <div className="w-full max-w-sm">
             <PromoMessengers options={messengerOptions} />
           </div>
-          <p className="text-[11px] text-white/45">Ответим в течение нескольких минут · без опыта · с 18 лет</p>
+          <p className="text-[11px] text-white/45">Ответим в течение рабочего дня · бесплатно для соискателя</p>
         </div>
       </section>
     </main>

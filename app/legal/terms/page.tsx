@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { siteConfig } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: 'Пользовательское соглашение | КурьерХаб',
-  description: 'Условия использования сервиса КурьерХаб',
+  title: `Пользовательское соглашение | ${siteConfig.name}`,
+  description: `Условия использования сервиса ${siteConfig.name}`,
   alternates: { canonical: '/legal/terms' },
 }
 
@@ -34,7 +34,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-semibold mb-4">2. Предмет соглашения</h2>
             <p className="text-muted-foreground leading-relaxed">
               Компания предоставляет Пользователю доступ к информационным услугам сайта, включая возможность 
-              оформления заявок на курьерскую доставку и трудоустройство.
+              оставить заявку на подбор работы или подбор персонала.
             </p>
           </section>
 

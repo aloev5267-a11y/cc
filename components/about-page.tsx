@@ -3,45 +3,46 @@
 import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
+import { siteConfig } from "@/lib/config"
 import { Header } from "./header"
 import { Footer } from "./footer"
-import { IconUsers, IconMapPin, IconShield, IconClock, IconTruck, IconHeart, IconTarget, IconStar, IconArrow } from "./icons"
+import { IconUsers, IconMapPin, IconShield, IconClock, IconBriefcase, IconHeart, IconTarget, IconStar, IconArrow } from "./icons"
 
 const stats = [
-  { icon: IconClock, value: "2026", label: "старт проекта" },
-  { icon: IconUsers, value: "Новая", label: "команда" },
-  { icon: IconMapPin, value: "14", label: "регионов" },
+  { icon: IconClock, value: String(siteConfig.stats.yearFounded), label: "год основания" },
+  { icon: IconUsers, value: siteConfig.stats.candidatesPlaced, label: "трудоустроено" },
+  { icon: IconMapPin, value: `${siteConfig.stats.cities}+`, label: "городов" },
   { icon: IconShield, value: "100%", label: "официально" },
 ]
 
 const values = [
   {
     icon: IconHeart,
-    title: "Забота о клиенте",
-    description: "Каждый клиент важен. Мы стремимся превзойти ожидания и обеспечить лучший сервис.",
+    title: "Забота о кандидате",
+    description: "Сопровождаем соискателя на каждом этапе — от анкеты до выхода на работу. Бесплатно.",
   },
   {
     icon: IconShield,
-    title: "Надёжность",
-    description: "Гарантируем сохранность груза и своевременную доставку в любую точку.",
+    title: "Проверенные работодатели",
+    description: "Сотрудничаем только с компаниями, которые оформляют сотрудников официально по ТК РФ.",
   },
   {
     icon: IconTarget,
-    title: "Прозрачность",
-    description: "Честные цены, понятные условия, отслеживание на каждом этапе.",
+    title: "Точный подбор",
+    description: "Учитываем пожелания по графику, городу и формату занятости, чтобы предложить релевантное.",
   },
   {
     icon: IconStar,
-    title: "Качество",
-    description: "Высокие стандарты работы и постоянное совершенствование процессов.",
+    title: "Качество сервиса",
+    description: "Высокие стандарты работы и честная коммуникация с соискателями и работодателями.",
   },
 ]
 
 const team = [
-  { role: "Основатель", description: "Идея и стратегия развития проекта" },
-  { role: "Операционный директор", description: "Управление логистикой и процессами" },
-  { role: "Технический директор", description: "Разработка платформы и технологий" },
-  { role: "HR директор", description: "Подбор и развитие команды курьеров" },
+  { role: "Руководитель агентства", description: "Стратегия и развитие направлений подбора" },
+  { role: "Руководитель подбора", description: "Управление командой рекрутеров" },
+  { role: "Менеджеры по подбору", description: "Работа с соискателями и вакансиями" },
+  { role: "Клиентский отдел", description: "Сопровождение работодателей" },
 ]
 
 export function AboutPage() {
@@ -53,7 +54,7 @@ export function AboutPage() {
         <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
           <div className="absolute inset-0 dot-pattern opacity-30" />
-          
+
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
             <div className="max-w-4xl mx-auto text-center">
               <motion.span
@@ -61,26 +62,26 @@ export function AboutPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="inline-block px-4 py-2 bg-primary/10 rounded-full text-sm font-semibold text-primary mb-6"
               >
-                О компании
+                Об агентстве
               </motion.span>
-              
+
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
                 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight mb-6"
               >
-                Мы — <span className="gradient-text">КурьерХаб</span>
+                Мы — <span className="gradient-text">{siteConfig.name}</span>
               </motion.h1>
-              
+
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
                 className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
               >
-                Новая логистическая платформа от ООО «Фестивальное движение Феникс». 
-                Мы строим сервис, который изменит рынок доставки в России.
+                Кадровое агентство {siteConfig.company.name}. Помогаем соискателям найти подходящую работу,
+                а работодателям — закрыть вакансии проверенными кандидатами.
               </motion.p>
 
               {/* Stats */}
@@ -118,24 +119,23 @@ export function AboutPage() {
                 </h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p>
-                    Сделать доставку простой и доступной для каждого. Мы верим, что качественная 
-                    логистика должна быть доступна не только крупным компаниям, но и малому бизнесу, 
-                    и частным лицам.
+                    Сделать поиск работы простым и честным. Мы верим, что каждый соискатель заслуживает
+                    прозрачных условий, а работодатель — мотивированных и подходящих сотрудников.
                   </p>
                   <p>
-                    Мы создаём экосистему, где отправители могут легко и быстро организовать доставку, 
-                    а курьеры — получать достойную оплату за свой труд.
+                    Мы берём на себя рутину подбора: анализируем запрос, подбираем варианты у проверенных
+                    работодателей и сопровождаем кандидата вплоть до выхода на работу.
                   </p>
                 </div>
 
                 <div className="mt-8 p-6 bg-card rounded-2xl border border-border">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                      <IconTruck className="w-6 h-6 text-primary" />
+                      <IconBriefcase className="w-6 h-6 text-primary" />
                     </div>
                     <div>
-                      <div className="font-bold">Запущены в мае 2026</div>
-                      <div className="text-sm text-muted-foreground">И уже работаем в 14 регионах</div>
+                      <div className="font-bold">Бесплатно для соискателей</div>
+                      <div className="text-sm text-muted-foreground">Услуги агентства оплачивает работодатель</div>
                     </div>
                   </div>
                 </div>
@@ -148,12 +148,12 @@ export function AboutPage() {
                 className="relative"
               >
                 <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent p-8 flex items-center justify-center">
-                  <div className="relative w-48 h-48">
+                  <div className="relative w-48 h-48 overflow-hidden rounded-3xl">
                     <Image
-                      src="/logo.webp"
-                      alt="КурьерХаб"
+                      src="/logo.png"
+                      alt={siteConfig.name}
                       fill
-                      className="object-contain"
+                      className="object-cover"
                     />
                   </div>
                 </div>
@@ -213,7 +213,7 @@ export function AboutPage() {
                 Команда
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Профессионалы, которые строят КурьерХаб
+                Специалисты, которые помогают людям находить работу
               </p>
             </motion.div>
 
@@ -249,28 +249,24 @@ export function AboutPage() {
             >
               <div className="card-elevated p-6 sm:p-8 rounded-2xl">
                 <h3 className="text-xl font-bold mb-6">Реквизиты компании</h3>
-                
+
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <span className="text-sm text-muted-foreground">Полное наименование</span>
-                    <div className="font-medium mt-1">ООО «Фестивальное движение Феникс»</div>
+                    <div className="font-medium mt-1">{siteConfig.company.name}</div>
                   </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">ОГРН</span>
-                    <div className="font-mono font-medium mt-1">1269600016927</div>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">ИНН</span>
-                    <div className="font-mono font-medium mt-1">6686172964</div>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">КПП</span>
-                    <div className="font-mono font-medium mt-1">668601001</div>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Дата регистрации</span>
-                    <div className="font-medium mt-1">Май 2026</div>
-                  </div>
+                  {siteConfig.company.ogrn && (
+                    <div>
+                      <span className="text-sm text-muted-foreground">ОГРН</span>
+                      <div className="font-mono font-medium mt-1">{siteConfig.company.ogrn}</div>
+                    </div>
+                  )}
+                  {siteConfig.company.inn && (
+                    <div>
+                      <span className="text-sm text-muted-foreground">ИНН</span>
+                      <div className="font-mono font-medium mt-1">{siteConfig.company.inn}</div>
+                    </div>
+                  )}
                   <div>
                     <span className="text-sm text-muted-foreground">Статус</span>
                     <div className="font-medium mt-1 flex items-center gap-2">
@@ -279,10 +275,8 @@ export function AboutPage() {
                     </div>
                   </div>
                   <div className="sm:col-span-2">
-                    <span className="text-sm text-muted-foreground">Юридический адрес</span>
-                    <div className="font-medium mt-1">
-                      Свердловская обл., г.о. Верхняя Пышма, г. Верхняя Пышма, ул. Пионерская, д. 21А
-                    </div>
+                    <span className="text-sm text-muted-foreground">Адрес</span>
+                    <div className="font-medium mt-1">{siteConfig.company.address}</div>
                   </div>
                 </div>
               </div>
@@ -300,12 +294,12 @@ export function AboutPage() {
               className="max-w-3xl mx-auto text-center"
             >
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black mb-4">
-                Присоединяйтесь к команде
+                Ищете работу или сотрудников?
               </h2>
               <p className="text-muted-foreground mb-8">
-                Мы ищем талантливых людей, которые хотят строить будущее логистики вместе с нами.
+                Подберём подходящие вакансии для соискателей и закроем потребность в персонале для работодателей.
               </p>
-              
+
               <div className="flex flex-wrap gap-4 justify-center">
                 <Link
                   href="/vacancies"

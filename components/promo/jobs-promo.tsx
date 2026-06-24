@@ -458,14 +458,14 @@ export function JobsPromo() {
       {/* Финальный CTA */}
       <section className="relative z-10 mx-auto max-w-6xl px-4 pb-16 sm:px-8">
         <div className="flex flex-col items-center gap-4 rounded-3xl border border-primary/30 bg-primary/10 p-8 text-center sm:p-10">
-          <h2 className="text-balance text-3xl font-black sm:text-4xl">Готов начать зарабатывать?</h2>
+          <h2 className="text-balance text-3xl font-black sm:text-4xl">Готовы найти работу?</h2>
           <p className="max-w-md text-pretty text-sm text-white/70 sm:text-base">
-            Напиши нам в удобный мессенджер — поможем выбрать вакансию и оформим за пару минут.
+            Напишите нам в удобный мессенджер — поможем выбрать вакансию и бесплатно подберём подходящие варианты.
           </p>
           <div className="w-full max-w-sm">
             <PromoMessengers options={messengerOptions} />
           </div>
-          <p className="text-[11px] text-white/45">Ответим в течение нескольких минут · без опыта · с 18 лет</p>
+          <p className="text-[11px] text-white/45">Ответим в течение рабочего дня · бесплатно для соискателя</p>
         </div>
       </section>
     </main>

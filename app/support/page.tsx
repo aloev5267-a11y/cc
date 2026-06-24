@@ -1,10 +1,11 @@
 import { Metadata } from 'next'
 import { SupportPage } from '@/components/support-page'
 import { faqItems } from '@/lib/faq'
+import { siteConfig } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: 'Поддержка — КурьерХаб',
-  description: 'Служба поддержки КурьерХаб. Свяжитесь с нами для решения любых вопросов по доставке грузов.',
+  title: `Поддержка — ${siteConfig.name}`,
+  description: `Служба поддержки ${siteConfig.name}. Свяжитесь с нами по вопросам трудоустройства и подбора персонала.`,
   alternates: { canonical: '/support' },
 }
 

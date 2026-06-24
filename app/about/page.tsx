@@ -1,9 +1,10 @@
 import { Metadata } from "next"
 import { AboutPage } from "@/components/about-page"
+import { siteConfig } from "@/lib/config"
 
 export const metadata: Metadata = {
-  title: "О компании — КурьерХаб | ООО Феникс",
-  description: "КурьерХаб — логистическая платформа от ООО «Фестивальное движение Феникс». Узнайте о нашей миссии, команде и ценностях.",
+  title: `Об агентстве — ${siteConfig.name}`,
+  description: `${siteConfig.name} — кадровое агентство ${siteConfig.company.name}. Узнайте о нашей миссии, команде и ценностях.`,
   alternates: { canonical: "/about" },
 }
 

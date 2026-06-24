@@ -34,10 +34,10 @@ const vacancies = [
     id: "courier-foot",
     title: "Пеший курьер",
     icon: IconPackage,
-    salary: "от 80 000 руб/мес",
+    salary: "доход от работодателя",
     schedule: "Гибкий график",
     image: "/images/courier-walk.webp",
-    description: "Доставка мелких грузов и посылок по городу",
+    description: "Вакансии у проверенных работодателей: доставка по городу",
     closed: false,
     requirements: [
       "Возраст от 18 лет",
@@ -46,20 +46,20 @@ const vacancies = [
       "Пунктуальность"
     ],
     benefits: [
-      "Свободный график работы",
-      "Ежедневные выплаты",
-      "Бонусы за скорость",
-      "Бесплатное обучение"
+      "Гибкий график от работодателя",
+      "Официальное оформление",
+      "Подбор бесплатно для соискателя",
+      "Сопровождение на старте"
     ]
   },
   {
     id: "courier-car",
-    title: "Курьер на авто",
+    title: "Водитель / курьер на авто",
     icon: IconCar,
-    salary: "от 120 000 руб/мес",
+    salary: "доход от работодателя",
     schedule: "Полный день / Подработка",
     image: "/images/courier-driver.webp",
-    description: "Доставка грузов на личном автомобиле",
+    description: "Вакансии для водителей с личным или служебным авто",
     closed: true,
     requirements: [
       "Права категории B",
@@ -68,20 +68,20 @@ const vacancies = [
       "Смартфон"
     ],
     benefits: [
-      "Компенсация ГСМ",
-      "Повышенные тарифы",
-      "Приоритет на заказы",
-      "Техподдержка 24/7"
+      "Условия и компенсации от работодателя",
+      "Официальное оформление",
+      "Подбор бесплатно для соискателя",
+      "Поддержка агентства"
     ]
   },
   {
     id: "warehouse",
     title: "Сотрудник склада",
     icon: IconWarehouse,
-    salary: "от 65 000 руб/мес",
+    salary: "доход от работодателя",
     schedule: "Сменный график 2/2",
     image: "/images/warehouse-worker.webp",
-    description: "Приём, сортировка и комплектация заказов",
+    description: "Вакансии на складах: приём, сортировка и комплектация",
     closed: false,
     requirements: [
       "Возраст от 18 лет",
@@ -90,10 +90,10 @@ const vacancies = [
       "Опыт приветствуется"
     ],
     benefits: [
-      "Стабильный оклад",
-      "Оплачиваемые переработки",
-      "Бесплатное питание",
-      "Карьерный рост"
+      "Стабильный оклад от работодателя",
+      "Официальное оформление",
+      "Подбор бесплатно для соискателя",
+      "Сопровождение агентства"
     ]
   }
 ]
@@ -101,31 +101,31 @@ const vacancies = [
 const advantages = [
   {
     icon: IconWallet,
-    title: "Достойный заработок",
-    description: "Прозрачная система оплаты. Бонусы за качество и скорость."
+    title: "Бесплатно для соискателя",
+    description: "Услуги по подбору для кандидатов бесплатны — их оплачивает работодатель."
   },
   {
     icon: IconClock,
     title: "Гибкий график",
-    description: "Сами решаете когда работать. Планируйте время под себя."
+    description: "Подберём вакансию под ваш формат: подработка или полная занятость."
   },
   {
     icon: IconShield,
     title: "Официальное оформление",
-    description: "Работа по договору с полным соц. пакетом."
+    description: "Работа по договору у проверенных работодателей по ТК РФ."
   },
   {
     icon: IconHeart,
-    title: "Забота о сотрудниках",
-    description: "Комнаты отдыха, питание на складах, корпоративы."
+    title: "Сопровождение на старте",
+    description: "Помогаем с откликом, собеседованием и выходом на работу."
   }
 ]
 
 const steps = [
   { step: 1, title: "Оставьте заявку", description: "Заполните форму за 2 минуты" },
-  { step: 2, title: "Пройдите интервью", description: "Короткий разговор с менеджером" },
-  { step: 3, title: "Обучение", description: "Научим работе с приложением" },
-  { step: 4, title: "Начните работать", description: "Выходите на линию" }
+  { step: 2, title: "Подбор вакансий", description: "Менеджер предложит подходящие варианты" },
+  { step: 3, title: "Собеседование", description: "Знакомим с работодателем" },
+  { step: 4, title: "Выход на работу", description: "Помогаем с оформлением" }
 ]
 
 // Компонент чата
@@ -143,7 +143,7 @@ export function VacanciesPage() {
         <div className="absolute inset-0">
           <Image 
             src="/images/courier-scooter.webp" 
-            alt="Курьер КурьерХаб" 
+            alt={`Работа через ${siteConfig.name}`} 
             fill 
             className="object-cover object-center"
             priority
@@ -167,12 +167,12 @@ export function VacanciesPage() {
               </Link>
               
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 sm:mb-6 text-balance">
-                Зарабатывай{" "}
-                <span className="gradient-text">достойно</span>
+                Найди работу{" "}
+                <span className="gradient-text">мечты</span>
               </h1>
               
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
-                Присоединяйся к команде КурьерХаб. Гибкий график, официальное оформление и стабильный доход.
+                {siteConfig.name} подберёт вакансию у проверенного работодателя. Гибкий график, официальное оформление — бесплатно для соискателя.
               </p>
 
               <a 
@@ -192,20 +192,20 @@ export function VacanciesPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-primary">89</div>
-              <div className="text-xs sm:text-sm text-muted-foreground mt-1">Регионов России</div>
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-primary">{siteConfig.stats.cities}+</div>
+              <div className="text-xs sm:text-sm text-muted-foreground mt-1">Городов России</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-primary">24/7</div>
-              <div className="text-xs sm:text-sm text-muted-foreground mt-1">Поддержка</div>
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-primary">{siteConfig.stats.partners}+</div>
+              <div className="text-xs sm:text-sm text-muted-foreground mt-1">Работодателей</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-primary">1 день</div>
-              <div className="text-xs sm:text-sm text-muted-foreground mt-1">До первого заказа</div>
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-primary">{siteConfig.stats.avgPlacementDays}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground mt-1">Средний срок подбора</div>
             </div>
             <div className="text-center">
-              <div className="text-xl sm:text-2xl lg:text-4xl font-black text-primary">Каждый день</div>
-              <div className="text-xs sm:text-sm text-muted-foreground mt-1">Выплаты</div>
+              <div className="text-xl sm:text-2xl lg:text-4xl font-black text-primary">Бесплатно</div>
+              <div className="text-xs sm:text-sm text-muted-foreground mt-1">Для соискателя</div>
             </div>
           </div>
         </div>

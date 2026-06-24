@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { siteConfig } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: 'Политика конфиденциальности | КурьерХаб',
-  description: 'Политика обработки персональных данных КурьерХаб',
+  title: `Политика конфиденциальности | ${siteConfig.name}`,
+  description: `Политика обработки персональных данных ${siteConfig.name}`,
   alternates: { canonical: '/legal/privacy' },
 }
 
@@ -34,14 +34,14 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold mb-4">2. Сбор персональных данных</h2>
             <p className="text-muted-foreground leading-relaxed">
               Мы собираем следующие данные: имя, номер телефона, адрес электронной почты, 
-              адреса для доставки. Данные собираются при заполнении форм на сайте.
+              сведения о желаемой работе или вакансии. Данные собираются при заполнении форм на сайте.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold mb-4">3. Цели обработки данных</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Персональные данные используются для: обработки заявок на доставку, связи с пользователями, 
+              Персональные данные используются для: подбора вакансий и персонала, связи с пользователями, 
               рассмотрения заявок на трудоустройство, улучшения качества услуг.
             </p>
           </section>
