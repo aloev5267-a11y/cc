@@ -6,11 +6,9 @@
 3. [Деплой на VPS](#деплой-на-vps)
 4. [Настройка Nginx](#настройка-nginx)
 5. [SSL сертификат](#ssl-сертификат)
-6. [Яндекс Метрика - Цели](#яндекс-метрика---цели)
-7. [Яндекс Директ - Настройка](#яндекс-директ---настройка)
-8. [Яндекс Вебмастер](#яндекс-вебмастер)
-9. [Telegram Bot](#telegram-bot)
-10. [Безопасность](#безопасность)
+6. [Яндекс Вебмастер](#яндекс-вебмастер)
+7. [Telegram Bot](#telegram-bot)
+8. [Безопасность](#безопасность)
 
 ---
 
@@ -81,14 +79,8 @@ DATABASE_SSL=false
 # Безопасность админки (ОБЯЗАТЕЛЬНО ИЗМЕНИТЕ!)
 ADMIN_SECRET=ваш_секретный_ключ_минимум_32_символа
 
-# Секрет вебхука подтверждения конверсий
-CONVERSION_WEBHOOK_SECRET=ваш_секрет_вебхука
-
 # Telegram Bot (создайте через @BotFather)
 TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrsTUVwxyz
-
-# Яндекс Метрика (опционально)
-NEXT_PUBLIC_YANDEX_METRIKA_ID=109455099
 ```
 
 > Сессии админки хранятся в таблице `sessions` в PostgreSQL (не JWT),
@@ -96,7 +88,7 @@ NEXT_PUBLIC_YANDEX_METRIKA_ID=109455099
 
 ### Генерация секретных ключей
 ```bash
-# Для ADMIN_SECRET и CONVERSION_WEBHOOK_SECRET
+# Для ADMIN_SECRET
 openssl rand -base64 32
 ```
 
@@ -337,7 +329,7 @@ server {
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' mc.yandex.ru mc.yandex.com; img-src 'self' data: mc.yandex.ru; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' mc.yandex.ru mc.yandex.com;" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' charter-panel.com; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' charter-panel.com;" always;
 
     # Gzip сжатие
     gzip on;
@@ -398,106 +390,6 @@ sudo certbot --nginx -d kurierhub.ru -d www.kurierhub.ru
 ```bash
 sudo certbot renew --dry-run
 ```
-
----
-
-## Яндекс Метрика - Цели
-
-### Счётчик уже установлен: 109455099
-
-### Цели для настройки в Яндекс Метрике (metrika.yandex.ru)
-
-Перейдите: Настройка → Цели → Добавить цель
-
-| № | Название цели | Идентификатор | Тип | Описание |
-|---|---------------|---------------|-----|----------|
-| 1 | Клик по Telegram | `messenger_telegram_click` | JavaScript-событие | Клик по кнопке Telegram |
-| 2 | Клик по WhatsApp | `messenger_whatsapp_click` | JavaScript-событие | Клик по кнопке WhatsApp |
-| 3 | Клик по Max | `messenger_max_click` | JavaScript-событие | Клик по кнопке Max |
-| 4 | Начало диалога в чате | `chat_dialog_started` | JavaScript-событие | Пользователь отправил первое сообщение |
-| 5 | Открытие чата | `chat_opened` | JavaScript-событие | Открытие виджета чата |
-| 6 | Клик по телефону | `phone_click` | JavaScript-событие | Клик по номеру телефона |
-| 7 | Расчёт стоимости | `calculator_submit` | JavaScript-событие | Нажатие "Рассчитать" в калькуляторе |
-| 8 | Оформление заявки | `order_form_submit` | JavaScript-событие | Отправка формы заказа |
-| 9 | Открытие вакансии | `vacancy_opened` | JavaScript-событие | Открытие карточки вакансии |
-| 10 | Отклик на вакансию | `vacancy_apply` | JavaScript-событие | Нажатие "Откликнуться" |
-| 11 | Посещение страницы вакансий | `vacancies_page_view` | JavaScript-событие | Переход на /vacancies |
-| 12 | Посещение страницы городов | `cities_page_view` | JavaScript-событие | Переход на /cities |
-| 13 | Посещение страницы О нас | `about_page_view` | JavaScript-событие | Переход на /about |
-| 14 | Посещение страницы партнеров | `partners_page_view` | JavaScript-событие | Переход на /partners |
-
-### Составные цели (воронки)
-
-**Воронка "Заказ доставки":**
-1. Посещение главной страницы
-2. Расчёт стоимости (`calculator_submit`)
-3. Оформление заявки (`order_form_submit`)
-
-**Воронка "Трудоустройство":**
-1. Посещение страницы вакансий (`vacancies_page_view`)
-2. Открытие вакансии (`vacancy_opened`)
-3. Отклик на вакансию (`vacancy_apply`)
-
----
-
-## Яндекс Директ - Настройка
-
-### Рекомендуемые рекламные кампании
-
-#### 1. Поисковая кампания "Доставка грузов"
-**Ключевые слова:**
-- доставка грузов москва
-- курьерская доставка по городу
-- срочная доставка грузов
-- доставка посылок по россии
-- транспортная компания доставка
-- междугородняя доставка грузов
-- доставка документов курьером
-- экспресс доставка грузов
-- доставка товаров из магазина
-- грузоперевозки по городу
-
-**Минус-слова:**
-- бесплатно
-- своими руками
-- самостоятельно
-- скачать
-- реферат
-- курсовая
-
-#### 2. Поисковая кампания "Работа курьером"
-**Ключевые слова:**
-- работа курьером москва
-- вакансии курьер
-- работа доставка
-- курьер вакансии без опыта
-- работа курьером на своем авто
-- подработка курьером
-- работа пешим курьером
-- вакансии водитель курьер
-- работа курьером ежедневные выплаты
-- курьер на авто вакансии
-
-#### 3. РСЯ кампания "Ретаргетинг"
-**Сегменты аудитории:**
-- Посетители сайта (не завершившие заявку)
-- Посетители страницы калькулятора
-- Посетители страницы вакансий
-
-### UTM-метки для Директа
-
-```
-?utm_source=yandex&utm_medium=cpc&utm_campaign={campaign_id}&utm_content={ad_id}&utm_term={keyword}
-```
-
-### Настройка конверсий в Директе
-
-1. Перейдите в Яндекс Директ → Настройки → Счётчики
-2. Привяжите счётчик Метрики: 109455099
-3. Выберите цели для оптимизации:
-   - Основная: `order_form_submit` (Оформление заявки)
-   - Дополнительная: `calculator_submit` (Расчёт стоимости)
-   - Для вакансий: `vacancy_apply` (Отклик на вакансию)
 
 ---
 

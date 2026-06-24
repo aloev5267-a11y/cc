@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { metrikaCounterId, siteUrl, siteConfig } from "@/lib/config"
+import { siteConfig } from "@/lib/config"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
@@ -19,12 +19,9 @@ import {
   IconEdit,
   IconCheck,
   IconArrow,
-  IconArrowUpRight,
-  IconFileText,
 } from "@/components/icons"
-import { promoPages } from "@/lib/promo-pages"
 
-type Tab = "dashboard" | "managers" | "messengers" | "promo" | "users" | "settings"
+type Tab = "dashboard" | "managers" | "messengers" | "users" | "settings"
 
 interface Manager {
   id: string
@@ -58,12 +55,6 @@ interface Stats {
     today: number
     bySource: Array<{ source: string; count: number }>
     byStatus: Array<{ status: string; count: number }>
-  }
-  conversions?: {
-    pending: number
-    converted: number
-    convertedToday: number
-    notUploaded: number
   }
   chats: {
     total: number
@@ -294,7 +285,6 @@ export default function AdminPage() {
             { id: "dashboard" as Tab, label: "Дашборд", icon: IconChart },
             { id: "managers" as Tab, label: "Менеджеры чата", icon: IconMessage },
             { id: "messengers" as Tab, label: "Мессенджеры", icon: IconTelegram },
-            { id: "promo" as Tab, label: "Промо-страницы", icon: IconFileText },
             { id: "users" as Tab, label: "Пользователи", icon: IconUsers },
             { id: "settings" as Tab, label: "Настройки", icon: IconSettings },
           ].map((item) => (
@@ -336,9 +326,6 @@ export default function AdminPage() {
           {activeTab === "messengers" && (
             <MessengersTab accounts={messengerAccounts} onRefresh={loadMessengers} key="messengers" />
           )}
-          {activeTab === "promo" && (
-            <PromoPagesTab key="promo" />
-          )}
           {activeTab === "users" && (
             <UsersTab users={adminUsers} onRefresh={loadUsers} key="users" />
           )}
@@ -348,210 +335,6 @@ export default function AdminPage() {
         </AnimatePresence>
       </main>
     </div>
-  )
-}
-
-// Promo Pages Tab — справочник для запуска кампаний в Яндекс.Директе:
-// быстрые ссылки, UTM, ключевые слова, тексты объявлений и общий фид.
-const METRIKA_COUNTER_ID = metrikaCounterId
-const PROMO_GOAL = "promo_messenger"
-
-// Кнопка копирования. Определена на уровне модуля (а не внутри PromoPagesTab),
-// чтобы не пересоздавать компонент при каждом рендере. Состояние передаётся пропсами.
-function CopyBtn({
-  value,
-  id,
-  label,
-  copiedId,
-  onCopy,
-}: {
-  value: string
-  id: string
-  label?: string
-  copiedId: string | null
-  onCopy: (value: string, id: string) => void
-}) {
-  return (
-    <button
-      onClick={() => onCopy(value, id)}
-      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-muted"
-    >
-      {copiedId === id ? (
-        <>
-          <IconCheck className="h-3.5 w-3.5 text-green-500" /> Готово
-        </>
-      ) : (
-        label || "Копировать"
-      )}
-    </button>
-  )
-}
-
-function PromoPagesTab() {
-  const [copied, setCopied] = useState<string | null>(null)
-  const baseUrl =
-    (typeof window !== "undefined" && window.location.origin) || siteUrl
-
-  function fullUrl(path: string) {
-    return `${baseUrl.replace(/\/$/, "")}${path}`
-  }
-
-  // UTM-ссылка для конкретной кампании (как в фиде)
-  function utmUrl(path: string, key: string) {
-    const url = fullUrl(path)
-    const params = `utm_source=yandex&utm_medium=cpc&utm_campaign=promo_feed&utm_content=${key}`
-    return `${url}${url.includes("?") ? "&" : "?"}${params}`
-  }
-
-  async function copy(value: string, id: string) {
-    try {
-      await navigator.clipboard.writeText(value)
-      setCopied(id)
-      setTimeout(() => setCopied(null), 1500)
-    } catch {
-      // clipboard может быть недоступен — игнорируем
-    }
-  }
-
-  const feedUrl = `${baseUrl.replace(/\/$/, "")}/feed/yandex`
-
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold">Промо-страницы и реклама</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Всё для запуска кампаний в Яндекс.Директе: ссылки с UTM, ключевые слова, тексты объявлений и общий
-          товарный фид. У всех страниц единая цель Метрики —{" "}
-          <span className="font-mono font-semibold text-foreground">{PROMO_GOAL}</span>.
-        </p>
-      </div>
-
-      {/* Общая справка по кампании */}
-      <div className="mb-6 grid grid-cols-1 gap-3 rounded-2xl border border-border bg-card p-5 lg:grid-cols-3">
-        <div>
-          <div className="text-xs font-semibold uppercase text-muted-foreground">Счётчик Метрики</div>
-          <div className="mt-1 flex items-center justify-between gap-2">
-            <code className="font-mono text-sm font-bold">{METRIKA_COUNTER_ID}</code>
-            <CopyBtn value={METRIKA_COUNTER_ID} id="counter" copiedId={copied} onCopy={copy} />
-          </div>
-        </div>
-        <div>
-          <div className="text-xs font-semibold uppercase text-muted-foreground">Цель (конверсия)</div>
-          <div className="mt-1 flex items-center justify-between gap-2">
-            <code className="font-mono text-sm font-bold">{PROMO_GOAL}</code>
-            <CopyBtn value={PROMO_GOAL} id="goal" copiedId={copied} onCopy={copy} />
-          </div>
-        </div>
-        <div>
-          <div className="text-xs font-semibold uppercase text-muted-foreground">Товарный фид (YML)</div>
-          <div className="mt-1 flex items-center justify-between gap-2">
-            <code className="truncate font-mono text-xs text-muted-foreground">{feedUrl}</code>
-            <CopyBtn value={feedUrl} id="feed" copiedId={copied} onCopy={copy} />
-          </div>
-        </div>
-        <p className="lg:col-span-3 text-xs text-muted-foreground">
-          Фид подходит для смарт-баннеров и динамических/товарных кампаний: укажите ссылку{" "}
-          <span className="font-mono">{feedUrl}</span> в разделе «Фиды» Яндекс.Директа (тип «Прочее»). Все
-          переходы помечены UTM и ведут на цель <span className="font-mono">{PROMO_GOAL}</span>.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {promoPages.map((page) => (
-          <div
-            key={page.path}
-            className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="font-bold">{page.name}</h3>
-                <p className="text-sm text-muted-foreground">{page.description}</p>
-              </div>
-              <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-                {page.price.toLocaleString("ru-RU")} ₽ {page.priceNote}
-              </span>
-            </div>
-
-            {/* Ссылка с UTM */}
-            <div>
-              <div className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                Ссылка с UTM
-              </div>
-              <div className="flex items-center gap-2">
-                <code className="flex-1 break-all rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
-                  {utmUrl(page.path, page.key)}
-                </code>
-                <CopyBtn value={utmUrl(page.path, page.key)} id={`utm-${page.key}`} copiedId={copied} onCopy={copy} />
-              </div>
-            </div>
-
-            {/* Ключевые слова */}
-            <div>
-              <div className="mb-1 flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase text-muted-foreground">
-                  Ключевые слова
-                </span>
-                <CopyBtn value={page.keywords.join("\n")} id={`kw-${page.key}`} label="Копировать все" copiedId={copied} onCopy={copy} />
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {page.keywords.map((kw) => (
-                  <span key={kw} className="rounded-md bg-muted px-2 py-1 text-xs text-foreground">
-                    {kw}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Заголовки объявлений */}
-            <div>
-              <div className="mb-1 flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase text-muted-foreground">
-                  Заголовки объявлений
-                </span>
-                <CopyBtn value={page.adTitles.join("\n")} id={`titles-${page.key}`} label="Копировать все" copiedId={copied} onCopy={copy} />
-              </div>
-              <ul className="space-y-1">
-                {page.adTitles.map((t) => (
-                  <li key={t} className="flex items-center justify-between gap-2 text-sm">
-                    <span className="text-foreground">{t}</span>
-                    <span className="shrink-0 text-xs text-muted-foreground">{t.length}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Тексты объявлений */}
-            <div>
-              <div className="mb-1 flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase text-muted-foreground">
-                  Тексты объявлений
-                </span>
-                <CopyBtn value={page.adTexts.join("\n")} id={`texts-${page.key}`} label="Копировать все" copiedId={copied} onCopy={copy} />
-              </div>
-              <ul className="space-y-1">
-                {page.adTexts.map((t) => (
-                  <li key={t} className="flex items-start justify-between gap-2 text-sm">
-                    <span className="text-muted-foreground">{t}</span>
-                    <span className="shrink-0 text-xs text-muted-foreground">{t.length}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mt-1 flex items-center gap-2">
-              <Link
-                href={page.path}
-                target="_blank"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90"
-              >
-                Открыть <IconArrowUpRight className="h-4 w-4" />
-              </Link>
-              <CopyBtn value={fullUrl(page.path)} id={`url-${page.key}`} label="Ссылка без UTM" copiedId={copied} onCopy={copy} />
-            </div>
-          </div>
-        ))}
-      </div>
-    </motion.div>
   )
 }
 
@@ -595,40 +378,6 @@ function DashboardTab({ stats }: { stats: Stats | null }) {
         />
       </div>
 
-      {stats.conversions && (
-        <div className="mb-8">
-          <h3 className="text-lg font-bold mb-1">Конверсии в мессенджеры</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Засчитываются только после того, как человек написал в мессенджер (подтверждение по номеру заявки).
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard
-              title="Написали сегодня"
-              value={stats.conversions.convertedToday}
-              icon={<IconCheck className="w-5 h-5" />}
-              color="green"
-            />
-            <StatCard
-              title="Всего конверсий"
-              value={stats.conversions.converted}
-              icon={<IconCheck className="w-5 h-5" />}
-              color="primary"
-            />
-            <StatCard
-              title="Ожидают подтверждения"
-              value={stats.conversions.pending}
-              icon={<IconArrow className="w-5 h-5 rotate-45" />}
-              color="blue"
-            />
-            <StatCard
-              title="Не ушли в Метрику"
-              value={stats.conversions.notUploaded}
-              icon={<IconArrow className="w-5 h-5 rotate-45" />}
-              color="orange"
-            />
-          </div>
-        </div>
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-card border border-border rounded-2xl p-6">

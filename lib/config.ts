@@ -7,9 +7,6 @@
 // Фолбэк используется только в локальной разработке, если переменная не задана.
 export const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-// ID счётчика Яндекс.Метрики. Задаётся через NEXT_PUBLIC_YANDEX_METRIKA_ID.
-export const metrikaCounterId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || ''
-
 // Название бренда (можно переопределить через ENV, чтобы не трогать код).
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || 'ElWork'
 // Бренд состоит из двух частей для двухцветного логотипа: "El" + "Work".

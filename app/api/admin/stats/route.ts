@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getLeadStats, getAllChats, getActivityLog, getAllManagers, getAllMessengerAccounts, getRecentLeads, getConversionStats } from '@/lib/db'
+import { getLeadStats, getAllChats, getActivityLog, getAllManagers, getAllMessengerAccounts, getRecentLeads } from '@/lib/db'
 import { checkAdminAuth } from '@/lib/admin-auth'
 
 export async function GET() {
@@ -9,10 +9,9 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const [leadStats, conversions, chats, managers, messengerAccounts, recentActivity, recentLeads] =
+    const [leadStats, chats, managers, messengerAccounts, recentActivity, recentLeads] =
       await Promise.all([
         getLeadStats(),
-        getConversionStats(),
         getAllChats(),
         getAllManagers(),
         getAllMessengerAccounts(),
@@ -22,7 +21,6 @@ export async function GET() {
 
     const stats = {
       leads: leadStats,
-      conversions,
       recentLeads,
       chats: {
         total: chats.length,

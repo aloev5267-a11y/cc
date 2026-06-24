@@ -7,15 +7,12 @@ import { siteConfig } from "@/lib/config"
 // Кнопки перехода в мессенджеры — повторяют рабочий паттерн сайта:
 // GET подтягивает аккаунт из БД (round-robin), клик создаёт заявку через trackClick.
 // Опционально формируют "бизнес-ссылку" с предзаполненным сообщением и сохраняют ответы опроса.
-//
-// ВАЖНО: единственная цель Метрики — серверная офлайн-конверсия "написал в мессенджер".
-// Она засчитывается не по клику, а после подтверждения входящего сообщения вебхуком.
 
 export type PromoMessengersOptions = {
   message?: string
   metadata?: Record<string, string>
   source?: string
-  // Метка промо-страницы для параметра цели (например, "courier"). Цель остаётся единой.
+  // Метка промо-страницы (например, "courier").
   page?: string
 }
 
@@ -72,8 +69,7 @@ function MessengerButton({ type, options }: { type: "telegram" | "whatsapp" | "m
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => {
-        // Создаём заявку в БД с уникальным кодом и ClientID Метрики (статус "ожидает").
-        // Конверсия в Метрику уедет только после подтверждения сообщения вебхуком.
+        // Создаём заявку в БД (фиксируем переход в мессенджер).
         messenger.trackClick()
       }}
       className={`flex items-center justify-center gap-2 h-12 px-4 rounded-xl font-bold transition-all duration-200 hover:scale-[1.02] ${config.color}`}

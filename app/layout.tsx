@@ -2,7 +2,6 @@ import { StructuredData } from "@/components/structured-data"
 import Script from 'next/script'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
-import { YandexMetrika } from '@/components/yandex-metrika'
 import { Toaster } from '@/components/ui/sonner'
 import { siteUrl, siteConfig } from '@/lib/config'
 import './globals.css'
@@ -63,8 +62,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className="bg-background scroll-smooth" data-scroll-behavior="smooth">
       <head>
-        <link rel="preconnect" href="https://mc.yandex.ru" />
-        <link rel="dns-prefetch" href="https://mc.yandex.ru" />
         <meta name="geo.region" content="RU" />
         <meta name="geo.placename" content="Россия" />
         <meta name="application-name" content={siteConfig.name} />
@@ -74,7 +71,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <StructuredData />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <YandexMetrika />
         {children}
         <Toaster position="top-center" richColors />
         <Script

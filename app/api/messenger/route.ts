@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getNextMessengerAccount, peekMessengerAccount, createLead, createLeadWithCode } from '@/lib/db'
+import { getNextMessengerAccount, peekMessengerAccount, createLead } from '@/lib/db'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 import { generateClientId } from '@/lib/server-utils'
@@ -13,10 +13,6 @@ const messengerRequestSchema = z.object({
   source: z.string().max(60).optional(),
   // Произвольные данные опроса (город, транспорт и т.д.) — до 20 полей.
   metadata: z.record(z.string(), z.string().max(200)).optional(),
-  // Уникальный номер заявки, подставленный в текст сообщения (для подтверждения конверсии).
-  code: z.string().regex(/^[A-Z0-9]{4,12}$/).optional(),
-  // ClientID Яндекс.Метрики для серверной офлайн-конверсии.
-  ymClientId: z.string().max(64).optional(),
 })
 
 // GET - получить аккаунт без создания lead (при загрузке страницы)
@@ -83,7 +79,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
     
-    const { messengerType, source, metadata, code, ymClientId } = result.data
+    const { messengerType, source, metadata } = result.data
 
     // Получаем client ID из cookie
     const cookieStore = await cookies()
@@ -107,20 +103,7 @@ export async function POST(request: NextRequest) {
     const metadataJson =
       metadata && Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : undefined
 
-    if (code) {
-      // Заявка с номером и ClientID — ждёт подтверждения сообщения для засчёта конверсии.
-      await createLeadWithCode({
-        code,
-        clientId,
-        ymClientId,
-        source: source || messengerType,
-        messengerAccountId: account?.id,
-        metadata: metadataJson,
-      })
-    } else {
-      // Обычный лид без конверсионной связки (например, переход в онлайн-чат).
-      await createLead(clientId, source || messengerType, undefined, account?.id, metadataJson)
-    }
+    await createLead(clientId, source || messengerType, undefined, account?.id, metadataJson)
 
     const response = NextResponse.json({
       success: true,

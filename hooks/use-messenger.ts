@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
-import { getMetrikaClientId } from '@/components/yandex-metrika'
 
 interface MessengerAccount {
   id: string
@@ -10,23 +9,6 @@ interface MessengerAccount {
 }
 
 type MessengerType = 'telegram' | 'whatsapp' | 'max'
-
-// Символы без неоднозначных (0/O, 1/I) — номер заявки легко продиктовать и не перепутать.
-const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-
-// Генерирует человекоподобный номер заявки, например "A7K4M2".
-function generateLeadCode(length = 6): string {
-  let out = ''
-  const cryptoObj = typeof window !== 'undefined' ? window.crypto : undefined
-  if (cryptoObj?.getRandomValues) {
-    const buf = new Uint32Array(length)
-    cryptoObj.getRandomValues(buf)
-    for (let i = 0; i < length; i++) out += CODE_ALPHABET[buf[i] % CODE_ALPHABET.length]
-  } else {
-    for (let i = 0; i < length; i++) out += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]
-  }
-  return out
-}
 
 // Человекочитаемые названия мессенджеров для уведомлений
 const messengerLabels: Record<MessengerType, string> = {
@@ -68,20 +50,14 @@ export function useMessengerLink(
   const metadata = options?.metadata
   const source = options?.source
 
-  // Уникальный номер заявки, стабильный на всё время жизни кнопки.
-  // Он подставляется в текст сообщения и одновременно отправляется на сервер,
-  // чтобы позже сопоставить подтверждение из мессенджера с этим визитом.
-  const [code] = useState(() => generateLeadCode())
-
-  // Текст сообщения с номером заявки. Всегда содержит номер — даже если базового
-  // текста нет (тогда добавляем короткое приветствие), чтобы код попал в чат.
+  // Текст сообщения для предзаполнения чата. Если базовый текст не задан —
+  // подставляем короткое приветствие.
   const message = useMemo(() => {
-    const tag = `Мой номер заявки: ${code}`
     if (baseMessage && baseMessage.trim().length > 0) {
-      return `${baseMessage}\n\n${tag}`
+      return baseMessage
     }
-    return `Здравствуйте! ${tag}`
-  }, [baseMessage, code])
+    return 'Здравствуйте!'
+  }, [baseMessage])
 
   // GET запрос — только получает текущего менеджера из очереди, не создаёт lead и не сдвигает очередь
   const fetchAccount = useCallback(() => {
@@ -125,31 +101,27 @@ export function useMessengerLink(
   // POST отправляется ВСЕГДА — даже если аккаунт ещё не загрузился или не настроен,
   // чтобы ни один переход в мессенджер не потерялся (серверная фиксация лида).
   const trackClick = useCallback(() => {
-    // Берём ClientID Метрики (с таймаутом), затем фоном создаём заявку.
-    // Переход в мессенджер происходит мгновенно через href — этот POST его не задерживает.
-    getMetrikaClientId().then((ymClientId) => {
-      fetch('/api/messenger', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          messengerType: type,
-          code,
-          ...(ymClientId ? { ymClientId } : {}),
-          ...(source ? { source } : {}),
-          ...(metadata && Object.keys(metadata).length > 0 ? { metadata } : {}),
-        }),
-      })
-        .then(() => {
-          // Очередь сдвинулась — подтягиваем следующего менеджера, чтобы
-          // следующий клик ушёл уже ему (чередование на каждый клик).
-          fetchAccount()
-        })
-        .catch(() => {
-          // Ошибка трекинга не должна мешать переходу
-        })
+    // Фоном создаём заявку. Переход в мессенджер происходит мгновенно через href —
+    // этот POST его не задерживает.
+    fetch('/api/messenger', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        messengerType: type,
+        ...(source ? { source } : {}),
+        ...(metadata && Object.keys(metadata).length > 0 ? { metadata } : {}),
+      }),
     })
-  }, [type, code, metadata, source, fetchAccount])
+      .then(() => {
+        // Очередь сдвинулась — подтягиваем следующего менеджера, чтобы
+        // следующий клик ушёл уже ему (чередование на каждый клик).
+        fetchAccount()
+      })
+      .catch(() => {
+        // Ошибка трекинга не должна мешать переходу
+      })
+  }, [type, metadata, source, fetchAccount])
 
   const getLink = useCallback(() => {
     if (!account) return null

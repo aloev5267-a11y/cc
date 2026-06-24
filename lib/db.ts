@@ -126,10 +126,6 @@ async function ensureSchema(): Promise<void> {
         messenger_account_id TEXT,
         status TEXT DEFAULT 'new',
         metadata TEXT,
-        code TEXT,
-        ym_client_id TEXT,
-        confirmed_at TIMESTAMPTZ,
-        ym_uploaded INTEGER DEFAULT 0,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       );
@@ -142,7 +138,6 @@ async function ensureSchema(): Promise<void> {
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
 
-      CREATE INDEX IF NOT EXISTS idx_leads_code ON leads(code);
       CREATE INDEX IF NOT EXISTS idx_leads_client_id ON leads(client_id);
       CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
       CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
@@ -260,13 +255,9 @@ export interface Lead {
   messenger_account_id: string | null
   status: string
   metadata: string | null
-  code: string | null
-  ym_client_id: string | null
-  confirmed_at: string | null
-  ym_uploaded: number
   created_at: string
   updated_at: string
-}
+  }
 
 // ============ Chat Functions ============
 export async function createChat(id: string, userName: string, position: string, clientId?: string) {
@@ -708,63 +699,6 @@ export async function createLead(
 
 export async function updateLeadStatus(id: number, status: string) {
   return query('UPDATE leads SET status = $1, updated_at = NOW() WHERE id = $2', [status, id])
-}
-
-// ============ Conversion (messenger lead) Functions ============
-export async function createLeadWithCode(params: {
-  code: string
-  clientId: string
-  ymClientId?: string | null
-  source: string
-  messengerAccountId?: string | null
-  metadata?: string | null
-}) {
-  return query(
-    'INSERT INTO leads (client_id, source, messenger_account_id, metadata, code, ym_client_id, status) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-    [
-      params.clientId,
-      params.source,
-      params.messengerAccountId || null,
-      params.metadata || null,
-      params.code,
-      params.ymClientId || null,
-      'new',
-    ],
-  )
-}
-
-export async function getLeadByCode(code: string): Promise<Lead | undefined> {
-  return queryOne<Lead>('SELECT * FROM leads WHERE code = $1 ORDER BY created_at DESC LIMIT 1', [code])
-}
-
-export async function confirmLeadByCode(code: string) {
-  return query(
-    "UPDATE leads SET status = 'converted', confirmed_at = NOW(), updated_at = NOW() WHERE code = $1 AND status != 'converted'",
-    [code],
-  )
-}
-
-export async function markLeadUploaded(code: string) {
-  return query('UPDATE leads SET ym_uploaded = 1, updated_at = NOW() WHERE code = $1', [code])
-}
-
-export async function getConversionStats() {
-  const pending = await queryOne<{ count: string }>(
-    "SELECT COUNT(*) as count FROM leads WHERE code IS NOT NULL AND status != 'converted'",
-  )
-  const converted = await queryOne<{ count: string }>("SELECT COUNT(*) as count FROM leads WHERE status = 'converted'")
-  const convertedToday = await queryOne<{ count: string }>(
-    "SELECT COUNT(*) as count FROM leads WHERE status = 'converted' AND confirmed_at::date = CURRENT_DATE",
-  )
-  const notUploaded = await queryOne<{ count: string }>(
-    "SELECT COUNT(*) as count FROM leads WHERE status = 'converted' AND ym_uploaded = 0",
-  )
-  return {
-    pending: Number(pending?.count ?? 0),
-    converted: Number(converted?.count ?? 0),
-    convertedToday: Number(convertedToday?.count ?? 0),
-    notUploaded: Number(notUploaded?.count ?? 0),
-  }
 }
 
 export async function getLeadStats() {
