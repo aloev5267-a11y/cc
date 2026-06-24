@@ -1,7 +1,7 @@
 import { StructuredData } from "@/components/structured-data"
 import Script from 'next/script'
 import type { Metadata, Viewport } from 'next'
-import { Inter, Fraunces } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import { YandexMetrika } from '@/components/yandex-metrika'
 import { Toaster } from '@/components/ui/sonner'
 import { siteUrl, siteConfig } from '@/lib/config'
@@ -11,14 +11,6 @@ const inter = Inter({
   subsets: ["latin", "cyrillic"],
   variable: '--font-inter',
   display: 'swap'
-})
-
-// Серифный дисплейный шрифт для крупных заголовков — editorial-характер
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: '--font-fraunces',
-  display: 'swap',
-  axes: ['opsz', 'SOFT', 'WONK'],
 })
 
 export const metadata: Metadata = {
@@ -60,7 +52,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#1a4d3a',
+  themeColor: '#1f6bff',
   width: 'device-width', initialScale: 1, maximumScale: 5, userScalable: true, colorScheme: 'light',
 }
 
@@ -78,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
         <StructuredData />
       </head>
-      <body className={`${inter.variable} ${fraunces.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`}>
         <YandexMetrika />
         {children}
         <Toaster position="top-center" richColors />

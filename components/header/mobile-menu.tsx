@@ -24,6 +24,24 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           className="fixed inset-0 z-40 bg-background lg:hidden flex flex-col pt-16"
         >
           <div className="flex-1 overflow-y-auto px-5 py-8 flex flex-col">
+            {/* Сегментированный переключатель режимов */}
+            <div className="flex items-center p-1 rounded-full bg-secondary mb-6">
+              <Link
+                href="/"
+                onClick={onClose}
+                className="flex-1 text-center px-4 py-2.5 text-sm font-semibold rounded-full bg-card text-foreground shadow-sm"
+              >
+                Ищу работу
+              </Link>
+              <Link
+                href="/partners"
+                onClick={onClose}
+                className="flex-1 text-center px-4 py-2.5 text-sm font-semibold rounded-full text-muted-foreground"
+              >
+                Ищу сотрудника
+              </Link>
+            </div>
+
             {/* Big nav links */}
             <nav className="flex flex-col">
               {navItems.map((item, i) => {
@@ -63,9 +81,9 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               <Link
                 href="/#find"
                 onClick={onClose}
-                className="flex items-center justify-center gap-2 w-full py-4 btn-primary font-semibold rounded-full"
+                className="flex items-center justify-center gap-2 w-full py-4 bg-foreground text-background font-semibold rounded-full"
               >
-                Подобрать работу
+                Оставить заявку
               </Link>
             </motion.div>
 

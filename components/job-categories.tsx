@@ -23,22 +23,17 @@ const categories = [
 
 export function JobCategories() {
   return (
-    <section className="relative py-16 md:py-24 bg-muted/30">
+    <section className="relative py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10 md:mb-12"
+          className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 md:mb-10"
         >
-          <div>
-            <span className="inline-block px-4 py-1.5 bg-primary/10 rounded-full text-sm font-semibold text-primary mb-4">
-              Направления
-            </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-balance">
-              Кому мы помогаем найти работу
-            </h2>
-          </div>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-balance">
+            Работа по направлениям
+          </h2>
           <Link
             href="/vacancies"
             className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all shrink-0"

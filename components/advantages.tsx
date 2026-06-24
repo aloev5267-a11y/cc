@@ -28,7 +28,7 @@ const advantages = [
 
 export function Advantages() {
   return (
-    <section className="relative pt-28 md:pt-36 pb-16 md:pb-28">
+    <section className="relative py-16 md:py-24 border-t border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -36,10 +36,9 @@ export function Advantages() {
           viewport={{ once: true }}
           className="max-w-3xl mb-12 md:mb-16"
         >
-          <p className="eyebrow text-primary mb-5">Почему нам доверяют</p>
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-foreground text-balance leading-[1.08]">
-            Помогаем найти работу{" "}
-            <span className="italic text-primary">честно и спокойно</span>
+          <p className="text-sm font-semibold text-primary mb-3">Почему нам доверяют</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-foreground text-balance leading-tight">
+            Помогаем найти работу честно и спокойно
           </h2>
           <p className="mt-5 text-muted-foreground max-w-xl text-pretty leading-relaxed">
             Мы на стороне соискателя: подбираем вакансии под ваши навыки и сопровождаем до выхода на работу.

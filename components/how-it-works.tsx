@@ -36,10 +36,9 @@ export function HowItWorks() {
           viewport={{ once: true }}
           className="max-w-3xl mb-12 md:mb-16"
         >
-          <p className="eyebrow text-primary mb-5">Как это работает</p>
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-foreground text-balance leading-[1.08]">
-            Четыре простых шага{" "}
-            <span className="italic text-primary">до новой работы</span>
+          <p className="text-sm font-semibold text-primary mb-3">Как это работает</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-foreground text-balance leading-tight">
+            Четыре простых шага до новой работы
           </h2>
           <p className="mt-5 text-muted-foreground max-w-xl text-pretty leading-relaxed">
             Без долгих анкет и оплат — только живое общение и реальные вакансии.

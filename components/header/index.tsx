@@ -2,93 +2,94 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { siteConfig } from "@/lib/config"
-import { IconArrow } from "../icons"
-import { navItems } from "./nav-config"
-import { MessengerPill } from "./messenger-pill"
+import { IconArrow, IconMapPin } from "../icons"
 import { HamburgerIcon } from "./hamburger-icon"
 import { MobileMenu } from "./mobile-menu"
 
+const navLinks = [
+  { href: "/vacancies", label: "Вакансии" },
+  { href: "/about", label: "О нас" },
+  { href: "/support", label: "Помощь" },
+]
+
 export function Header() {
-  const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 16)
-    handleScroll()
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
 
   // Close mobile menu when navigating
   useEffect(() => {
     setMobileMenuOpen(false)
   }, [pathname])
 
-  const isActive = (href: string) => {
-    if (href.startsWith("/#") || href.startsWith("#")) return false
-    return pathname === href || pathname.startsWith(href + "/")
-  }
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/")
+  // Переключатель режимов: соискатель (главная) / работодатель (partners)
+  const employerMode = pathname.startsWith("/partners")
 
   return (
     <>
-      <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-background/85 backdrop-blur-xl border-b border-border/70 shadow-[0_2px_20px_-8px_oklch(0_0_0/0.15)]"
-            : "bg-transparent border-b border-transparent"
-        }`}
-      >
+      <header className="fixed inset-x-0 top-0 z-50 bg-background border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between gap-4">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-              <div className="relative w-9 h-9 rounded-xl overflow-hidden ring-1 ring-border/60 group-hover:ring-primary/40 transition-all">
-                <Image src="/logo.png" alt={siteConfig.name} fill className="object-cover" priority />
-              </div>
-              <span className="text-lg font-black tracking-tight text-foreground">
+          <div className="flex h-16 items-center gap-3 sm:gap-5">
+            {/* Logo — красный круг-марк + вордмарк */}
+            <Link href="/" className="flex items-center gap-2.5 shrink-0 group" aria-label={siteConfig.name}>
+              <span className="w-9 h-9 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-black text-sm lowercase tracking-tight">
+                {siteConfig.brandPrefix.slice(0, 2)}
+              </span>
+              <span className="hidden sm:inline text-lg font-extrabold tracking-tight text-foreground">
                 {siteConfig.brandPrefix}
-                <span className="text-primary">{siteConfig.brandSuffix}</span>
+                <span className="text-accent">{siteConfig.brandSuffix}</span>
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Сегментированный переключатель — как на hh */}
+            <div className="hidden md:flex items-center p-1 rounded-full bg-secondary shrink-0">
+              <Link
+                href="/"
+                className={`px-4 lg:px-6 py-2 text-sm font-semibold rounded-full transition-all ${
+                  !employerMode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Ищу работу
+              </Link>
+              <Link
+                href="/partners"
+                className={`px-4 lg:px-6 py-2 text-sm font-semibold rounded-full transition-all ${
+                  employerMode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Ищу сотрудника
+              </Link>
+            </div>
+
+            {/* Текстовая навигация */}
             <nav className="hidden lg:flex items-center gap-1">
-              {navItems.map((item) => {
-                const active = isActive(item.href)
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`relative px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
-                      active
-                        ? "text-primary"
-                        : "text-foreground/70 hover:text-foreground"
-                    }`}
-                  >
-                    {item.label}
-                    {active && (
-                      <span className="absolute inset-x-4 -bottom-px h-0.5 bg-primary rounded-full" />
-                    )}
-                  </Link>
-                )
-              })}
+              {navLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-3 py-2 text-sm font-semibold rounded-lg transition-colors ${
+                    isActive(item.href) ? "text-primary" : "text-foreground/80 hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </nav>
 
             {/* Right actions */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="hidden lg:flex">
-                <MessengerPill />
-              </div>
+            <div className="flex items-center gap-2 sm:gap-3 ml-auto">
+              <span className="hidden lg:inline-flex items-center gap-1.5 text-sm font-medium text-foreground/80">
+                <IconMapPin className="w-4 h-4 text-muted-foreground" />
+                Москва
+              </span>
 
               <Link
                 href="/#find"
-                className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 btn-primary text-sm font-semibold rounded-full transition-transform hover:scale-[1.02]"
+                className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-foreground text-background text-sm font-semibold rounded-full hover:opacity-90 transition-opacity"
               >
-                Подобрать работу
+                Оставить заявку
                 <IconArrow className="w-4 h-4" />
               </Link>
 

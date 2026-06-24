@@ -1,4 +1,5 @@
 import { Header } from "@/components/header"
+import { SearchHero } from "@/components/search-hero"
 import { Advantages } from "@/components/advantages"
 import { JobCategories } from "@/components/job-categories"
 import { HowItWorks } from "@/components/how-it-works"
@@ -12,8 +13,9 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <Header />
-      <Advantages />
+      <SearchHero />
       <JobCategories />
+      <Advantages />
       <HowItWorks />
       <FindWork />
       <ForEmployers />
