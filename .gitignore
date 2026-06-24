@@ -6,8 +6,21 @@ __v0_jsx-dev-runtime.ts
 .v0-trash/
 .vercel/
 
-# Environment variables
+# Environment variables (never commit real secrets)
+.env
+.env.*
+!.env.example
 .env*.local
+
+# Database (contains PII and admin password hashes)
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Build artifacts
+*.tsbuildinfo
+tsconfig.tsbuildinfo
 
 # Common ignores
 node_modules
