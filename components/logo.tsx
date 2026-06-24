@@ -13,9 +13,9 @@ type LogoProps = {
 
 /**
  * Фирменный логотип ElWork.
- * Марка — скруглённый квадрат фирменного синего с белым знаком «стрелка вверх»
- * (символ карьерного роста / трудоустройства). Вордмарк двухцветный: «El» —
- * базовый цвет текста, «Work» — фирменный синий, что держит единый стиль сайта.
+ * Марка — блочная буква «E» глубокого синего (navy) и две восходящие «стрелки»-штриха
+ * фирменного синего (динамика, карьерный рост). Вместе читается как монограмма «ElWork».
+ * Вордмарк двухцветный: «El» — базовый цвет текста, «Work» — фирменный синий.
  */
 export function Logo({ size = 36, showWordmark = true, wordmarkClassName, className }: LogoProps) {
   return (
@@ -36,34 +36,58 @@ export function Logo({ size = 36, showWordmark = true, wordmarkClassName, classN
   )
 }
 
-/** Только марка (без текста) — для favicon-подобных мест, аватаров, копирайта. */
-export function LogoMark({ size = 36, className }: { size?: number; className?: string }) {
+/**
+ * Только марка (без текста) — для favicon-подобных мест, аватаров, копирайта.
+ * `withBackdrop` рисует скруглённую подложку (для favicon / тёмных фонов).
+ */
+export function LogoMark({
+  size = 36,
+  className,
+  withBackdrop = false,
+}: {
+  size?: number
+  className?: string
+  withBackdrop?: boolean
+}) {
+  // Уникальные id градиентов на случай нескольких марок на странице.
+  const uid = `lw-${size}-${withBackdrop ? "b" : "n"}`
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 40 40"
+      viewBox="0 0 48 48"
       fill="none"
       role="img"
       aria-label={siteConfig.name}
       className={cn("shrink-0", className)}
     >
-      {/* Скруглённый квадрат — фирменный синий */}
-      <rect width="40" height="40" rx="11" className="fill-primary" />
-      {/* Знак: восходящая стрелка/шеврон — карьерный рост */}
+      <defs>
+        <linearGradient id={`${uid}-blue`} x1="26" y1="42" x2="48" y2="6" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#1f6bff" />
+          <stop offset="1" stopColor="#4f9bff" />
+        </linearGradient>
+      </defs>
+
+      {withBackdrop && <rect width="48" height="48" rx="13" fill="#0f2f63" />}
+
+      {/* Блочная «E» — фирменный navy (на подложке — белая для контраста) */}
       <path
-        d="M12 23.5 L20 15.5 L28 23.5"
-        stroke="white"
-        strokeWidth="3.4"
+        d="M5 8 H25 V15 H13 V20.5 H23 V27 H13 V33 H25 V40 H5 Z"
+        fill={withBackdrop ? "#ffffff" : "#0f2f63"}
+      />
+
+      {/* Восходящие штрихи-стрелки — динамика и рост */}
+      <path
+        d="M26 40 L40 9"
+        stroke="#5aa2ff"
+        strokeWidth="5"
         strokeLinecap="round"
-        strokeLinejoin="round"
       />
       <path
-        d="M20 15.5 L20 27"
-        stroke="white"
-        strokeWidth="3.4"
+        d="M33 40 L46 9"
+        stroke={`url(#${uid}-blue)`}
+        strokeWidth="5.5"
         strokeLinecap="round"
-        strokeOpacity="0.45"
       />
     </svg>
   )

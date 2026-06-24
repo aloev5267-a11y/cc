@@ -27,9 +27,12 @@ export const metadata: Metadata = {
   formatDetection: { email: true, address: true, telephone: false },
   alternates: { canonical: '/', languages: { 'ru-RU': '/' } },
   icons: {
-    icon: [{ url: '/logo.png', type: 'image/png' }],
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/logo.png', type: 'image/png' },
+    ],
     apple: '/logo.png',
-    shortcut: '/logo.png',
+    shortcut: '/icon.svg',
   },
   manifest: '/manifest.json',
   openGraph: {

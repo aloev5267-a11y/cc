@@ -24,12 +24,12 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 bg-background border-b border-border">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center gap-3 sm:gap-5">
+      <header className="fixed inset-x-0 top-0 z-50 px-2 sm:px-4 pt-2 sm:pt-3">
+        <div className="container mx-auto">
+          <div className="flex h-14 sm:h-16 items-center gap-3 sm:gap-5 rounded-full border border-border bg-card/80 px-3 sm:px-5 shadow-lg shadow-foreground/[0.06] backdrop-blur-xl supports-[backdrop-filter]:bg-card/70">
             {/* Logo — фирменная марка + вордмарк */}
             <Link href="/" className="flex items-center shrink-0 group" aria-label={siteConfig.name}>
-              <Logo size={36} wordmarkClassName="text-lg hidden sm:inline" />
+              <Logo size={34} wordmarkClassName="text-base sm:text-lg" />
             </Link>
 
             {/* Сегментированный переключатель — как на hh */}
