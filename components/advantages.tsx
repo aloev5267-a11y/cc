@@ -28,7 +28,7 @@ const advantages = [
 
 export function Advantages() {
   return (
-    <section className="relative py-16 md:py-28 border-t border-border">
+    <section className="relative pt-28 md:pt-36 pb-16 md:pb-28">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
