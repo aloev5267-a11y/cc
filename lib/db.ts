@@ -483,6 +483,12 @@ export function getAllAdminUsers(): Omit<AdminUser, 'password_hash'>[] {
   return database.prepare('SELECT id, username, role, telegram_id, is_active, created_at FROM admin_users ORDER BY created_at').all() as Omit<AdminUser, 'password_hash'>[]
 }
 
+export function countAdminUsers(): number {
+  const database = getDb()
+  const row = database.prepare('SELECT COUNT(*) as count FROM admin_users').get() as { count: number }
+  return row.count
+}
+
 // Whitelist of allowed column names to prevent SQL injection
 const ADMIN_ALLOWED_COLUMNS = new Set(['username', 'password_hash', 'role', 'telegram_id', 'is_active'])
 
@@ -525,9 +531,12 @@ export function logActivity(action: string, entityType?: string, entityId?: stri
   return database.prepare('INSERT INTO activity_log (action, entity_type, entity_id, admin_id, details) VALUES (?, ?, ?, ?, ?)').run(action, entityType || null, entityId || null, adminId || null, details || null)
 }
 
-export function getActivityLog(limit: number = 100) {
+export function getActivityLog(limit: number = 100, offset: number = 0) {
   const database = getDb()
-  return database.prepare('SELECT * FROM activity_log ORDER BY created_at DESC LIMIT ?').all(limit)
+  // Ограничиваем limit разумным максимумом, чтобы один запрос не вычитал всю таблицу.
+  const safeLimit = Math.min(Math.max(1, Math.floor(limit)), 500)
+  const safeOffset = Math.max(0, Math.floor(offset))
+  return database.prepare('SELECT * FROM activity_log ORDER BY created_at DESC LIMIT ? OFFSET ?').all(safeLimit, safeOffset)
 }
 
 // ============ Lead Functions ============
@@ -612,11 +621,13 @@ export function getLeadStats() {
 }
 
 // Последние заявки с данными опроса (для админки)
-export function getRecentLeads(limit = 30): Lead[] {
+export function getRecentLeads(limit = 30, offset = 0): Lead[] {
   const database = getDb()
+  const safeLimit = Math.min(Math.max(1, Math.floor(limit)), 500)
+  const safeOffset = Math.max(0, Math.floor(offset))
   return database
-    .prepare('SELECT * FROM leads ORDER BY created_at DESC LIMIT ?')
-    .all(limit) as Lead[]
+    .prepare('SELECT * FROM leads ORDER BY created_at DESC LIMIT ? OFFSET ?')
+    .all(safeLimit, safeOffset) as Lead[]
 }
 
 export function getActiveChatByManagerTelegramId(telegramId: string): Chat | undefined {

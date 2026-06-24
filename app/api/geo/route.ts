@@ -6,15 +6,47 @@ import type { NextRequest } from "next/server"
 // клиента из заголовков прокси (nginx) и спрашиваем страну у бесплатного geo-сервиса.
 export const dynamic = "force-dynamic"
 
-// Достаём реальный IP клиента. За nginx обычно приходит X-Forwarded-For:
-// "реальный_ip, прокси1, прокси2" — берём самый первый адрес.
+// Достаём реальный IP клиента. На VPS за nginx надёжнее всего X-Real-IP
+// (его выставляет доверенный прокси из реального соединения и подделать нельзя),
+// а X-Forwarded-For клиент может подменить, поэтому он идёт запасным вариантом.
 function getClientIp(req: NextRequest): string | null {
+  const realIp = req.headers.get("x-real-ip")
+  if (realIp) return realIp.trim()
+
+  const cf = req.headers.get("cf-connecting-ip")
+  if (cf) return cf.trim()
+
   const xff = req.headers.get("x-forwarded-for")
   if (xff) {
     const first = xff.split(",")[0]?.trim()
     if (first) return first
   }
-  return req.headers.get("x-real-ip") || req.headers.get("cf-connecting-ip") || null
+  return null
+}
+
+// Кэш страны по IP в памяти процесса, чтобы не дёргать внешний гео-сервис
+// на каждый заход одного и того же посетителя. TTL — 24 часа.
+const GEO_CACHE_TTL_MS = 24 * 60 * 60 * 1000
+const GEO_CACHE_MAX = 5000
+const geoCache = new Map<string, { country: string | null; expires: number }>()
+
+function getCachedCountry(ip: string): string | null | undefined {
+  const hit = geoCache.get(ip)
+  if (!hit) return undefined
+  if (hit.expires < Date.now()) {
+    geoCache.delete(ip)
+    return undefined
+  }
+  return hit.country
+}
+
+function setCachedCountry(ip: string, country: string | null): void {
+  // Простейшая защита от безграничного роста: чистим самые старые записи.
+  if (geoCache.size >= GEO_CACHE_MAX) {
+    const oldestKey = geoCache.keys().next().value
+    if (oldestKey !== undefined) geoCache.delete(oldestKey)
+  }
+  geoCache.set(ip, { country, expires: Date.now() + GEO_CACHE_TTL_MS })
 }
 
 // Приватные/локальные адреса — гео-сервис для них спрашивать бессмысленно.
@@ -59,22 +91,7 @@ async function lookupCountry(ip: string): Promise<string | null> {
       }
     }
   } catch {
-    // второй сервис недоступен — пробуем третий
-  }
-
-  // Третий запасной: ip-api.com (бесплатно, до 45 запросов/мин, по HTTP).
-  try {
-    const res = await fetch(`http://ip-api.com/json/${ip}?fields=status,countryCode`, {
-      signal: AbortSignal.timeout(2500),
-    })
-    if (res.ok) {
-      const data = (await res.json()) as { status?: string; countryCode?: string }
-      if (data.status === "success" && data.countryCode) {
-        return data.countryCode.toUpperCase()
-      }
-    }
-  } catch {
-    // ignore
+    // оба HTTPS-сервиса недоступны
   }
 
   return null
@@ -96,6 +113,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ country: null, isRussia: false })
   }
 
+  // Отдаём из кэша, если IP уже спрашивали недавно.
+  const cached = getCachedCountry(ip)
+  if (cached !== undefined) {
+    return NextResponse.json({ country: cached, isRussia: cached === "RU" })
+  }
+
   const country = await lookupCountry(ip)
+  setCachedCountry(ip, country)
   return NextResponse.json({ country, isRussia: country === "RU" })
 }

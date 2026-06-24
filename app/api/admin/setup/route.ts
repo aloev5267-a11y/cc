@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { addManager, createAdminUser, getAdminUserByUsername } from '@/lib/db'
+import { addManager, createAdminUser, getAdminUserByUsername, countAdminUsers } from '@/lib/db'
 import { checkRateLimit, rateLimitConfigs, getClientIp } from '@/lib/rate-limit'
 import { getTelegramApiUrl } from '@/lib/telegram'
 import { hashPassword } from '@/lib/auth'
@@ -25,6 +25,17 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'create_admin': {
+        // Защита от повторного использования эндпойнта: первичная настройка
+        // создаёт только ПЕРВОГО админа. Дальнейшее управление пользователями —
+        // через защищённую сессией админку (/api/admin/users), а не через этот
+        // эндпойнт на общем секрете. Это закрывает риск, если ADMIN_SECRET утечёт.
+        if (countAdminUsers() > 0) {
+          return NextResponse.json(
+            { error: 'Setup already completed. Manage admins from the authenticated admin panel.' },
+            { status: 403 }
+          )
+        }
+
         const { username, password } = body
         if (!username || !password) {
           return NextResponse.json({ error: 'Username and password required' }, { status: 400 })
