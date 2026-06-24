@@ -3,7 +3,7 @@ import { Hero } from "@/components/hero"
 import { Advantages } from "@/components/advantages"
 import { JobCategories } from "@/components/job-categories"
 import { HowItWorks } from "@/components/how-it-works"
-import { Careers } from "@/components/careers"
+import { FindWork } from "@/components/careers"
 import { ForEmployers } from "@/components/for-employers"
 import { CTA } from "@/components/cta"
 import { Contact } from "@/components/contact"
@@ -17,7 +17,7 @@ export default function Home() {
       <Advantages />
       <JobCategories />
       <HowItWorks />
-      <Careers />
+      <FindWork />
       <ForEmployers />
       <CTA />
       <Contact />

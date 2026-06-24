@@ -22,8 +22,8 @@ const contactInfo = [
   {
     icon: IconMessage,
     title: "Поддержка",
-    value: siteConfig.stats.support,
-    description: "Всегда на связи",
+    value: "Пн–Вс",
+    description: "Ответим в течение рабочего дня",
   },
 ]
 

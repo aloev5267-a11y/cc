@@ -3,7 +3,7 @@ import { PartnersPage } from '@/components/partners-page'
 import { siteConfig } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: `Работодателям — ${siteConfig.name}`,
+  title: `Работодателям`,
   description: `Подбор линейного и массового персонала для бизнеса от кадрового агентства ${siteConfig.name}. Быстро закрываем вакансии проверенными кандидатами.`,
   alternates: { canonical: '/partners' },
 }

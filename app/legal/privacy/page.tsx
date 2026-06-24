@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { siteConfig } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: `Политика конфиденциальности | ${siteConfig.name}`,
+  title: `Политика конфиденциальности`,
   description: `Политика обработки персональных данных ${siteConfig.name}`,
   alternates: { canonical: '/legal/privacy' },
 }

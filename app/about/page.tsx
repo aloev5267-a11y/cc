@@ -3,7 +3,7 @@ import { AboutPage } from "@/components/about-page"
 import { siteConfig } from "@/lib/config"
 
 export const metadata: Metadata = {
-  title: `Об агентстве — ${siteConfig.name}`,
+  title: `Об агентстве`,
   description: `${siteConfig.name} — кадровое агентство ${siteConfig.company.name}. Узнайте о нашей миссии, команде и ценностях.`,
   alternates: { canonical: "/about" },
 }

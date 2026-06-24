@@ -53,12 +53,11 @@ export async function POST(request: NextRequest) {
     if (adminChatId) {
       const lines = [
         '<b>Новая заявка с сайта</b>',
-        `Источник: ${data.source === 'delivery_calc' ? 'Калькулятор доставки' : 'Форма обратной связи'}`,
+        'Источник: Форма обратной связи',
         `Имя: ${escapeHtml(data.name)}`,
         `Телефон: ${escapeHtml(data.phone)}`,
         data.email ? `Email: ${escapeHtml(data.email)}` : null,
         data.preferredContact ? `Предпочтительный способ связи: ${escapeHtml(data.preferredContact)}` : null,
-        typeof data.estimatedPrice === 'number' ? `Расчётная стоимость: ${data.estimatedPrice.toLocaleString('ru-RU')} ₽` : null,
         data.message ? `Сообщение: ${escapeHtml(data.message)}` : null,
       ].filter(Boolean)
       // Не блокируем ответ пользователю из-за уведомления

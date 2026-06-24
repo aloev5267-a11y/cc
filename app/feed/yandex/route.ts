@@ -1,5 +1,5 @@
 import { promoPages } from "@/lib/promo-pages"
-import { siteUrl } from "@/lib/config"
+import { siteUrl, siteConfig } from "@/lib/config"
 
 // Экранирование спецсимволов для XML
 function esc(str: string): string {
@@ -43,7 +43,7 @@ export async function GET() {
         <picture>${esc(siteUrl + p.image)}</picture>
         <name>${esc(p.name)}</name>
         <description>${esc(p.description)}</description>
-        <vendor>КурьерХаб</vendor>
+        <vendor>${esc(siteConfig.name)}</vendor>
         <param name="Доход">${p.price.toLocaleString("ru-RU")} ₽ ${esc(p.priceNote)}</param>
       </offer>`
     })
@@ -56,8 +56,8 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <yml_catalog date="${dateStr}">
   <shop>
-    <name>КурьерХаб</name>
-    <company>ООО «Фестивальное движение Феникс»</company>
+    <name>${esc(siteConfig.name)}</name>
+    <company>${esc(siteConfig.company.name)}</company>
     <url>${siteUrl}</url>
     <currencies>
       <currency id="RUR" rate="1"/>

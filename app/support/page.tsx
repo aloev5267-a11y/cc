@@ -4,7 +4,7 @@ import { faqItems } from '@/lib/faq'
 import { siteConfig } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: `Поддержка — ${siteConfig.name}`,
+  title: `Поддержка`,
   description: `Служба поддержки ${siteConfig.name}. Свяжитесь с нами по вопросам трудоустройства и подбора персонала.`,
   alternates: { canonical: '/support' },
 }

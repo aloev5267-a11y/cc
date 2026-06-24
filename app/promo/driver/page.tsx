@@ -5,7 +5,7 @@ import { siteConfig } from "@/lib/config"
 import { promoRoles, getOtherRoles } from "@/lib/promo-config"
 
 export const metadata: Metadata = {
-  title: `Работа водителем — вакансии на авто | ${siteConfig.name}`,
+  title: `Работа водителем — вакансии на авто`,
   description:
     `${siteConfig.name} — кадровое агентство: подберём вакансию водителя на личном или служебном авто с гибким графиком. Услуги для соискателей бесплатны. Заполните анкету и напишите нам в мессенджер.`,
   keywords: "работа водителем, вакансия водитель, работа с личным авто, водитель доставки, кадровое агентство",

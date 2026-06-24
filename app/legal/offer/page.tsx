@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { siteConfig } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: `Публичная оферта | ${siteConfig.name}`,
+  title: `Публичная оферта`,
   description: `Публичная оферта на оказание услуг по подбору персонала и содействию в трудоустройстве ${siteConfig.name}`,
   alternates: { canonical: '/legal/offer' },
 }

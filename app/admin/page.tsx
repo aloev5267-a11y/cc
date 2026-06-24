@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { metrikaCounterId, siteUrl } from "@/lib/config"
+import { metrikaCounterId, siteUrl, siteConfig } from "@/lib/config"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
@@ -229,11 +229,11 @@ export default function AdminPage() {
         >
           <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
             <div className="flex items-center justify-center gap-3 mb-8">
-              <div className="relative w-12 h-12">
-                <Image src="/logo.webp" alt="КурьерХаб" fill className="object-contain" />
+              <div className="relative w-12 h-12 rounded-xl overflow-hidden">
+                <Image src="/logo.png" alt={siteConfig.name} fill className="object-cover" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">КурьерХаб</h1>
+                <h1 className="text-xl font-bold">{siteConfig.name}</h1>
                 <p className="text-xs text-muted-foreground">Панель управления</p>
               </div>
             </div>
@@ -281,11 +281,11 @@ export default function AdminPage() {
       <aside className="w-64 bg-card border-r border-border flex flex-col">
         <div className="p-4 border-b border-border">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-10 h-10">
-              <Image src="/logo.webp" alt="КурьерХаб" fill className="object-contain" />
+            <div className="relative w-10 h-10 rounded-xl overflow-hidden">
+              <Image src="/logo.png" alt={siteConfig.name} fill className="object-cover" />
             </div>
             <div>
-              <h1 className="font-bold">КурьерХаб</h1>
+              <h1 className="font-bold">{siteConfig.name}</h1>
               <p className="text-xs text-muted-foreground">Админ-панель</p>
             </div>
           </Link>

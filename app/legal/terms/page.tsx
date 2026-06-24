@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { siteConfig } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: `Пользовательское соглашение | ${siteConfig.name}`,
+  title: `Пользовательское соглашение`,
   description: `Условия использования сервиса ${siteConfig.name}`,
   alternates: { canonical: '/legal/terms' },
 }
