@@ -39,8 +39,22 @@ export function MessengerPill() {
   return (
     <div className="flex items-center gap-1">
       {messengers.map((m) => {
+        // Идёт загрузка статуса — серая неактивная иконка (без мигания цветом)
+        if (m.messenger.loading) {
+          return (
+            <span
+              key={m.label}
+              title={`${m.label}`}
+              aria-label={`${m.label} — проверяем доступность`}
+              aria-busy="true"
+              className="w-9 h-9 rounded-full flex items-center justify-center bg-muted text-muted-foreground/40 cursor-default transition-all duration-200"
+            >
+              <m.icon className="w-4 h-4" />
+            </span>
+          )
+        }
         // Нет менеджеров для мессенджера — неактивная кнопка с уведомлением
-        if (!m.messenger.loading && !m.messenger.available) {
+        if (!m.messenger.available) {
           return (
             <button
               key={m.label}
