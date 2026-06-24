@@ -12,7 +12,7 @@ const nextConfig = {
   },
 
   // Нативные модули — не бандлить
-  serverExternalPackages: ['better-sqlite3'],
+  serverExternalPackages: ['pg'],
 
   // Разбивка тяжёлых UI-компонентов в отдельные чанки
   experimental: {

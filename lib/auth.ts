@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
-import type Database from 'better-sqlite3'
+import { dbQuery, dbQueryOne } from './db'
 
 const SALT_ROUNDS = 12
 
@@ -29,71 +29,49 @@ export function generateSessionExpiry(hours: number = 24): Date {
   return new Date(Date.now() + hours * 60 * 60 * 1000)
 }
 
-// Session functions that work with the database
-export function createSession(db: Database.Database, userId: string, token: string, expiresAt: Date) {
-  // Ensure sessions table exists
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS sessions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id TEXT NOT NULL,
-      token TEXT NOT NULL UNIQUE,
-      expires_at DATETIME NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES admin_users(id) ON DELETE CASCADE
-    );
-    CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
-    CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
-  `)
-  
-  // Remove any existing sessions for this user (single session per user)
-  db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId)
-  
-  // Create new session
-  return db.prepare('INSERT INTO sessions (user_id, token, expires_at) VALUES (?, ?, ?)').run(
+// Session functions backed by PostgreSQL (lib/db ensures the sessions table exists).
+export async function createSession(userId: string, token: string, expiresAt: Date) {
+  // Single session per user: remove existing sessions first.
+  await dbQuery('DELETE FROM sessions WHERE user_id = $1', [userId])
+  return dbQuery('INSERT INTO sessions (user_id, token, expires_at) VALUES ($1, $2, $3)', [
     userId,
     token,
-    expiresAt.toISOString()
-  )
+    expiresAt.toISOString(),
+  ])
 }
 
-export function validateSession(db: Database.Database, token: string): { userId: string; expiresAt: string } | null {
-  // Ensure sessions table exists
+export async function validateSession(token: string): Promise<{ userId: string; expiresAt: string } | null> {
   try {
-    const session = db.prepare(`
-      SELECT user_id, expires_at FROM sessions 
-      WHERE token = ? AND expires_at > datetime('now')
-    `).get(token) as { user_id: string; expires_at: string } | undefined
-    
+    const session = await dbQueryOne<{ user_id: string; expires_at: string }>(
+      'SELECT user_id, expires_at FROM sessions WHERE token = $1 AND expires_at > NOW()',
+      [token],
+    )
     if (!session) return null
-    
-    return {
-      userId: session.user_id,
-      expiresAt: session.expires_at
-    }
+    return { userId: session.user_id, expiresAt: session.expires_at }
   } catch {
     return null
   }
 }
 
-export function deleteSession(db: Database.Database, token: string) {
+export async function deleteSession(token: string) {
   try {
-    return db.prepare('DELETE FROM sessions WHERE token = ?').run(token)
+    return await dbQuery('DELETE FROM sessions WHERE token = $1', [token])
   } catch {
     return null
   }
 }
 
-export function deleteUserSessions(db: Database.Database, userId: string) {
+export async function deleteUserSessions(userId: string) {
   try {
-    return db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId)
+    return await dbQuery('DELETE FROM sessions WHERE user_id = $1', [userId])
   } catch {
     return null
   }
 }
 
-export function cleanExpiredSessions(db: Database.Database) {
+export async function cleanExpiredSessions() {
   try {
-    return db.prepare("DELETE FROM sessions WHERE expires_at <= datetime('now')").run()
+    return await dbQuery('DELETE FROM sessions WHERE expires_at <= NOW()')
   } catch {
     return null
   }
