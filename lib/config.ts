@@ -29,10 +29,14 @@ export const siteConfig = {
   domain: siteDomain,
   tagline: 'Кадровое агентство по подбору персонала',
   company: {
-    name: process.env.NEXT_PUBLIC_COMPANY_NAME || 'ООО «ЭлВорк»',
-    ogrn: process.env.NEXT_PUBLIC_COMPANY_OGRN || '',
-    inn: process.env.NEXT_PUBLIC_COMPANY_INN || '',
-    address: process.env.NEXT_PUBLIC_COMPANY_ADDRESS || 'г. Москва',
+    name: process.env.NEXT_PUBLIC_COMPANY_NAME || 'ООО «Бизнес-Экосистемы»',
+    ogrn: process.env.NEXT_PUBLIC_COMPANY_OGRN || '1267700212493',
+    inn: process.env.NEXT_PUBLIC_COMPANY_INN || '7735214442',
+    kpp: process.env.NEXT_PUBLIC_COMPANY_KPP || '773501001',
+    address:
+      process.env.NEXT_PUBLIC_COMPANY_ADDRESS ||
+      '124527, г. Москва, вн.тер.г. муниципальный округ Старое Крюково, г. Зеленоград',
+    registrationDate: process.env.NEXT_PUBLIC_COMPANY_REG_DATE || '23 июня 2026',
   },
   contact: {
     email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || `info@${siteDomain}`,

@@ -267,6 +267,18 @@ export function AboutPage() {
                       <div className="font-mono font-medium mt-1">{siteConfig.company.inn}</div>
                     </div>
                   )}
+                  {siteConfig.company.kpp && (
+                    <div>
+                      <span className="text-sm text-muted-foreground">КПП</span>
+                      <div className="font-mono font-medium mt-1">{siteConfig.company.kpp}</div>
+                    </div>
+                  )}
+                  {siteConfig.company.registrationDate && (
+                    <div>
+                      <span className="text-sm text-muted-foreground">Дата регистрации</span>
+                      <div className="font-medium mt-1">{siteConfig.company.registrationDate}</div>
+                    </div>
+                  )}
                   <div>
                     <span className="text-sm text-muted-foreground">Статус</span>
                     <div className="font-medium mt-1 flex items-center gap-2">

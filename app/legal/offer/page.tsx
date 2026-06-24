@@ -69,6 +69,7 @@ export default function OfferPage() {
               {siteConfig.company.name}<br />
               ОГРН: {siteConfig.company.ogrn}<br />
               ИНН: {siteConfig.company.inn}<br />
+              КПП: {siteConfig.company.kpp}<br />
               Адрес: {siteConfig.company.address}<br />
               Email: {siteConfig.contact.email}
             </p>
