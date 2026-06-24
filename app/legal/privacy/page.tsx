@@ -1,6 +1,8 @@
 import { Metadata } from "next"
 import { siteConfig } from "@/lib/config"
 import { LegalPage, type LegalSection } from "@/components/legal-page"
+import { JsonLd } from "@/components/structured-data"
+import { breadcrumbSchema } from "@/lib/structured-data"
 
 export const metadata: Metadata = {
   title: `Политика конфиденциальности`,
@@ -73,12 +75,20 @@ const sections: LegalSection[] = [
 
 export default function PrivacyPage() {
   return (
-    <LegalPage
-      doc="privacy"
-      title="Политика конфиденциальности"
-      description={`Как ${siteConfig.name} собирает, использует и защищает ваши персональные данные.`}
-      updatedAt={siteConfig.company.registrationDate}
-      sections={sections}
-    />
+    <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Главная", path: "/" },
+          { name: "Политика конфиденциальности", path: "/legal/privacy" },
+        ])}
+      />
+      <LegalPage
+        doc="privacy"
+        title="Политика конфиденциальности"
+        description={`Как ${siteConfig.name} собирает, использует и защищает ваши персональные данные.`}
+        updatedAt={siteConfig.company.registrationDate}
+        sections={sections}
+      />
+    </>
   )
 }

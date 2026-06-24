@@ -1,6 +1,8 @@
 import { Metadata } from "next"
 import { siteConfig } from "@/lib/config"
 import { LegalPage, type LegalSection } from "@/components/legal-page"
+import { JsonLd } from "@/components/structured-data"
+import { breadcrumbSchema } from "@/lib/structured-data"
 
 export const metadata: Metadata = {
   title: `Пользовательское соглашение`,
@@ -65,12 +67,20 @@ const sections: LegalSection[] = [
 
 export default function TermsPage() {
   return (
-    <LegalPage
-      doc="terms"
-      title="Пользовательское соглашение"
-      description={`Условия использования сервиса ${siteConfig.name} — порядок взаимодействия, права и обязанности сторон.`}
-      updatedAt={siteConfig.company.registrationDate}
-      sections={sections}
-    />
+    <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Главная", path: "/" },
+          { name: "Пользовательское соглашение", path: "/legal/terms" },
+        ])}
+      />
+      <LegalPage
+        doc="terms"
+        title="Пользовательское соглашение"
+        description={`Условия использования сервиса ${siteConfig.name} — порядок взаимодействия, права и обязанности сторон.`}
+        updatedAt={siteConfig.company.registrationDate}
+        sections={sections}
+      />
+    </>
   )
 }

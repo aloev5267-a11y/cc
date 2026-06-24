@@ -1,6 +1,8 @@
 import { Metadata } from "next"
 import { siteConfig } from "@/lib/config"
 import { LegalPage, type LegalSection } from "@/components/legal-page"
+import { JsonLd } from "@/components/structured-data"
+import { breadcrumbSchema } from "@/lib/structured-data"
 
 export const metadata: Metadata = {
   title: `Публичная оферта`,
@@ -69,12 +71,20 @@ const sections: LegalSection[] = [
 
 export default function OfferPage() {
   return (
-    <LegalPage
-      doc="offer"
-      title="Публичная оферта"
-      description="Официальное предложение на оказание услуг по подбору персонала и содействию в трудоустройстве."
-      updatedAt={siteConfig.company.registrationDate}
-      sections={sections}
-    />
+    <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Главная", path: "/" },
+          { name: "Публичная оферта", path: "/legal/offer" },
+        ])}
+      />
+      <LegalPage
+        doc="offer"
+        title="Публичная оферта"
+        description="Официальное предложение на оказание услуг по подбору персонала и содействию в трудоустройстве."
+        updatedAt={siteConfig.company.registrationDate}
+        sections={sections}
+      />
+    </>
   )
 }

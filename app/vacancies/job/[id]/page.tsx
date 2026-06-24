@@ -1,8 +1,15 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { VacancyDetail } from "@/components/vacancy-detail"
-import { getVacancyById } from "@/lib/vacancies-data"
+import { getVacancyById, allVacancies } from "@/lib/vacancies-data"
 import { siteConfig } from "@/lib/config"
+import { JsonLd } from "@/components/structured-data"
+import { jobPostingSchema, breadcrumbSchema, vacancyBreadcrumb } from "@/lib/structured-data"
+
+// Предрендерим все карточки вакансий (статическая генерация + полная индексация).
+export function generateStaticParams() {
+  return allVacancies.map((v) => ({ id: v.id }))
+}
 
 export async function generateMetadata({
   params,
@@ -21,7 +28,13 @@ export async function generateMetadata({
     description,
     keywords: [vacancy.title, vacancy.company, vacancy.city, vacancy.categoryTitle, "вакансия", "работа"].join(", "),
     alternates: { canonical: `/vacancies/job/${vacancy.id}` },
-    openGraph: { title: `${title} — ${siteConfig.name}`, description, type: "website" },
+    openGraph: {
+      title: `${title} — ${siteConfig.name}`,
+      description,
+      type: "website",
+      url: `/vacancies/job/${vacancy.id}`,
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: title }],
+    },
   }
 }
 
@@ -34,5 +47,10 @@ export default async function VacancyJobPage({
   const vacancy = getVacancyById(id)
   if (!vacancy) notFound()
 
-  return <VacancyDetail vacancy={vacancy} />
+  return (
+    <>
+      <JsonLd data={[jobPostingSchema(vacancy), breadcrumbSchema(vacancyBreadcrumb(vacancy))]} />
+      <VacancyDetail vacancy={vacancy} />
+    </>
+  )
 }

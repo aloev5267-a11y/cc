@@ -23,7 +23,7 @@ export function SupportChat({ apiKey }: SupportChatProps) {
       if (document.getElementById(SCRIPT_ID)) return
 
       let key = apiKey
-      let scriptPath = siteConfig.livechat.scriptPath
+      let scriptPath: string = siteConfig.livechat.scriptPath
 
       // Если ключ не передан пропом — тянем публичную конфигурацию (управляется из админки).
       if (!key) {
