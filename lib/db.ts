@@ -138,12 +138,6 @@ async function ensureSchema(): Promise<void> {
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
 
-      CREATE TABLE IF NOT EXISTS app_settings (
-        key TEXT PRIMARY KEY,
-        value TEXT,
-        updated_at TIMESTAMPTZ DEFAULT NOW()
-      );
-
       CREATE INDEX IF NOT EXISTS idx_leads_client_id ON leads(client_id);
       CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
       CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
@@ -735,30 +729,3 @@ export async function getActiveChatByManagerTelegramId(telegramId: string): Prom
   )
 }
 
-// ============ App Settings (key-value) ============
-// Универсальное хранилище настроек (ключ→значение). Используется, например,
-// для конфигурации онлайн-чата (livechat_api_key, livechat_enabled).
-export async function getSetting(key: string): Promise<string | null> {
-  const row = await queryOne<{ value: string | null }>('SELECT value FROM app_settings WHERE key = $1', [key])
-  return row?.value ?? null
-}
-
-export async function getSettings(keys: string[]): Promise<Record<string, string | null>> {
-  if (keys.length === 0) return {}
-  const rows = await query<{ key: string; value: string | null }>(
-    'SELECT key, value FROM app_settings WHERE key = ANY($1)',
-    [keys],
-  )
-  const result: Record<string, string | null> = {}
-  for (const k of keys) result[k] = null
-  for (const r of rows) result[r.key] = r.value
-  return result
-}
-
-export async function setSetting(key: string, value: string | null) {
-  return query(
-    `INSERT INTO app_settings (key, value, updated_at) VALUES ($1, $2, NOW())
-     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`,
-    [key, value],
-  )
-}

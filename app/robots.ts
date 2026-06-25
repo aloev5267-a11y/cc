@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { siteUrl } from '@/lib/config'
 
 // Запрещённые к индексации служебные разделы.
-const disallow = ['/admin', '/admin/', '/api/', '/__support/', '/_next/']
+const disallow = ['/admin', '/admin/', '/api/', '/_next/']
 
 export default function robots(): MetadataRoute.Robots {
   return {

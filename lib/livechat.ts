@@ -1,33 +1,32 @@
-// Хелпер для онлайн-чата Omnidesk. Виджет грузится first-party через прокси
-// /__support/livechat.js (см. next.config.mjs и components/support-chat.tsx).
-// Виджет подключается в app/layout.tsx и выставляет глобальный объект
-// window.OmnideskLiveChat с публичным API:
-//   OmnideskLiveChat.open({ name, subject, message })  // открыть + предзаполнить
-//   OmnideskLiveChat.close()
-//   OmnideskLiveChat.on(event, cb)
+// Хелпер для онлайн-чата (виджет charter-panel.com/widget.js).
+// Виджет подключается одним скриптом в app/layout.tsx (см. components/support-chat.tsx)
+// и выставляет глобальный объект window.SupportChat с публичным API:
+//   SupportChat.open({ name, subject, message })  // открыть + предзаполнить
+//   SupportChat.close()
+//   SupportChat.on(event, cb)                      // напр. событие 'ready'
 //
 // Здесь мы оборачиваем open() так, чтобы:
 //  1) предзаполнять чат теми же данными, что и "бизнес-ссылку" мессенджера
 //     (текст сообщения + тема), и
 //  2) корректно обрабатывать случай, когда виджет ещё не успел смонтироваться
-//     (open() — no-op, пока instance не готов), делая несколько повторных попыток.
+//     (open() — no-op, пока instance не готов): пробуем повторно и дополнительно
+//     открываем по событию 'ready'.
 
-interface OmnideskPrefill {
+interface SupportChatPrefill {
   name?: string
   subject?: string
   message?: string
 }
 
-interface OmnideskLiveChatApi {
-  open: (prefill?: OmnideskPrefill) => void
+interface SupportChatApi {
+  open: (prefill?: SupportChatPrefill) => void
   close: () => void
   on: (event: string, cb: (...args: unknown[]) => void) => void
-  readonly instance: unknown
 }
 
 declare global {
   interface Window {
-    OmnideskLiveChat?: OmnideskLiveChatApi
+    SupportChat?: SupportChatApi
   }
 }
 
@@ -50,24 +49,28 @@ export function trackLiveChatLead(source?: string, metadata?: Record<string, str
   })
 }
 
-// Готов ли виджет принять команду open (скрипт загружен и инстанс смонтирован).
+// Загружен ли скрипт виджета (глобальный объект уже доступен).
 export function isLiveChatReady(): boolean {
   if (typeof window === "undefined") return false
-  const api = window.OmnideskLiveChat
-  return !!(api && api.instance)
+  return typeof window.SupportChat?.open === "function"
 }
 
 // Открыть онлайн-чат с предзаполнением. Возвращает Promise<boolean> —
-// удалось ли открыть виджет (false, если скрипт так и не загрузился).
-export function openLiveChat(prefill?: OmnideskPrefill): Promise<boolean> {
+// удалось ли обратиться к виджету (false, если скрипт так и не загрузился).
+export function openLiveChat(prefill?: SupportChatPrefill): Promise<boolean> {
   if (typeof window === "undefined") return Promise.resolve(false)
 
   return new Promise((resolve) => {
     const attempt = (triesLeft: number) => {
-      const api = window.OmnideskLiveChat
-      // Инстанс смонтирован — открываем с предзаполнением.
-      if (api && api.instance) {
+      const api = window.SupportChat
+      if (api && typeof api.open === "function") {
+        // Открываем сразу (сработает, если виджет уже готов)…
         api.open(prefill)
+        // …и подстраховываемся: повторяем open по событию готовности,
+        // если instance смонтировался чуть позже.
+        if (typeof api.on === "function") {
+          api.on("ready", () => api.open(prefill))
+        }
         resolve(true)
         return
       }

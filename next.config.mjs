@@ -1,24 +1,8 @@
-// Адрес сервера онлайн-чата, на который проксируется first-party путь /__support/*.
-// Меняется через ENV SUPPORT_SERVER_URL без правок кода. По умолчанию — провайдер виджета.
-const SUPPORT_SERVER_URL = (process.env.SUPPORT_SERVER_URL || 'https://charter-panel.com').replace(/\/$/, '')
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
-
-  // First-party прокси для онлайн-чата: запросы к /__support/* уходят на сервер
-  // поддержки. Благодаря этому виджет грузится с нашего домена, а в DOM/Network
-  // нет прямой ссылки на домен провайдера.
-  async rewrites() {
-    return [
-      {
-        source: '/__support/:path*',
-        destination: `${SUPPORT_SERVER_URL}/:path*`,
-      },
-    ]
-  },
 
   // Оптимизация картинок
   images: {
