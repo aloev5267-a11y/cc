@@ -12,6 +12,8 @@
 //     (open() — no-op, пока instance не готов): пробуем повторно и дополнительно
 //     открываем по событию 'ready'.
 
+import { trackLead } from "@/lib/metrika"
+
 interface SupportChatPrefill {
   name?: string
   subject?: string
@@ -35,6 +37,11 @@ declare global {
 // Не блокирует открытие чата и молча игнорирует ошибки.
 export function trackLiveChatLead(source?: string, metadata?: Record<string, string>) {
   if (typeof window === "undefined") return
+
+  // Единая цель "ЛИД" в Яндекс.Метрике — на открытие онлайн-чата
+  // (та же цель, что и для кликов по мессенджерам).
+  trackLead({ channel: "chat", ...(source ? { source } : {}) })
+
   fetch("/api/messenger", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

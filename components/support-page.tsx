@@ -8,16 +8,83 @@ import { Footer } from "./footer"
 import { siteConfig } from "@/lib/config"
 import { faqItems } from "@/lib/faq"
 import { openLiveChat, trackLiveChatLead } from "@/lib/livechat"
+import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
 import { 
   IconMail, 
   IconTelegram, 
   IconWhatsapp,
+  IconMax,
   IconSend,
   IconCheck,
   IconClock,
   IconMessage,
   IconHeadphones
 } from "./icons"
+
+// Плитка контакта-мессенджера для страницы поддержки. Использует ту же единую
+// структуру, что и хедер/футер/формы: аккаунт берётся из админки (round-robin
+// через useMessengerLink), клик фиксирует лид и единую цель "ЛИД" в Метрике,
+// при отсутствии активных менеджеров — мягкое уведомление.
+const supportMessengers = {
+  telegram: { icon: IconTelegram, label: "Telegram", color: "text-sky-500", fallbackUrl: siteConfig.social.telegramUrl },
+  whatsapp: { icon: IconWhatsapp, label: "WhatsApp", color: "text-green-500", fallbackUrl: siteConfig.social.whatsappUrl },
+  max: { icon: IconMax, label: "Max", color: "text-violet-500", fallbackUrl: siteConfig.social.maxUrl },
+} as const
+
+function MessengerContactTile({
+  type,
+  delay,
+}: {
+  type: "telegram" | "whatsapp" | "max"
+  delay: number
+}) {
+  const messenger = useMessengerLink(type)
+  const cfg = supportMessengers[type]
+  const Icon = cfg.icon
+
+  if (!messenger.loading && !messenger.available) {
+    return (
+      <motion.button
+        type="button"
+        onClick={() => notifyMessengerUnavailable(type)}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay }}
+        aria-disabled="true"
+        className="flex items-center gap-4 p-5 bg-card rounded-2xl border border-border opacity-60 cursor-not-allowed text-left"
+      >
+        <div className={`w-12 h-12 rounded-xl bg-muted flex items-center justify-center ${cfg.color}`}>
+          <Icon className="w-6 h-6" />
+        </div>
+        <div>
+          <div className="text-sm text-muted-foreground">{cfg.label}</div>
+          <div className="font-semibold">Недоступен</div>
+        </div>
+      </motion.button>
+    )
+  }
+
+  return (
+    <motion.a
+      href={messenger.link || cfg.fallbackUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={() => messenger.trackClick()}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      className="flex items-center gap-4 p-5 bg-card rounded-2xl border border-border hover:border-primary/50 transition-colors group"
+    >
+      <div className={`w-12 h-12 rounded-xl bg-muted flex items-center justify-center ${cfg.color}`}>
+        <Icon className="w-6 h-6" />
+      </div>
+      <div>
+        <div className="text-sm text-muted-foreground">{cfg.label}</div>
+        <div className="font-semibold group-hover:text-primary transition-colors">Написать</div>
+      </div>
+    </motion.a>
+  )
+}
 
 export function SupportPage() {
   const [formData, setFormData] = useState({
@@ -80,7 +147,7 @@ export function SupportPage() {
         {/* Contact options */}
         <section className="py-12 border-t border-b border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
               {/* Онлайн-чат — быстрый ответ прямо на сайте */}
               <motion.button
                 type="button"
@@ -98,30 +165,27 @@ export function SupportPage() {
                 </div>
               </motion.button>
 
-              {[
-                { icon: IconMail, label: "Email", value: siteConfig.contact.email, href: siteConfig.contact.emailHref, color: "text-blue-500" },
-                { icon: IconTelegram, label: "Telegram", value: siteConfig.social.telegram, href: siteConfig.social.telegramUrl, color: "text-sky-500" },
-                { icon: IconWhatsapp, label: "WhatsApp", value: "Написать", href: siteConfig.social.whatsappUrl, color: "text-green-500" },
-              ].map((contact, index) => (
-                <motion.a
-                  key={contact.label}
-                  href={contact.href}
-                  target={contact.label !== "Email" ? "_blank" : undefined}
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: (index + 1) * 0.1 }}
-                  className="flex items-center gap-4 p-5 bg-card rounded-2xl border border-border hover:border-primary/50 transition-colors group"
-                >
-                  <div className={`w-12 h-12 rounded-xl bg-muted flex items-center justify-center ${contact.color}`}>
-                    <contact.icon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">{contact.label}</div>
-                    <div className="font-semibold group-hover:text-primary transition-colors">{contact.value}</div>
-                  </div>
-                </motion.a>
-              ))}
+              {/* Email — прямая ссылка (не мессенджер) */}
+              <motion.a
+                href={siteConfig.contact.emailHref}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="flex items-center gap-4 p-5 bg-card rounded-2xl border border-border hover:border-primary/50 transition-colors group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-blue-500">
+                  <IconMail className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Email</div>
+                  <div className="font-semibold group-hover:text-primary transition-colors">{siteConfig.contact.email}</div>
+                </div>
+              </motion.a>
+
+              {/* Мессенджеры — единая структура (управление из админки + фиксация лида) */}
+              <MessengerContactTile type="telegram" delay={0.2} />
+              <MessengerContactTile type="whatsapp" delay={0.3} />
+              <MessengerContactTile type="max" delay={0.4} />
             </div>
           </div>
         </section>

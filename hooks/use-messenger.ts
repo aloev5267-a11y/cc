@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
+import { trackLead } from '@/lib/metrika'
 
 interface MessengerAccount {
   id: string
@@ -101,6 +102,9 @@ export function useMessengerLink(
   // POST отправляется ВСЕГДА — даже если аккаунт ещё не загрузился или не настроен,
   // чтобы ни один переход в мессенджер не потерялся (серверная фиксация лида).
   const trackClick = useCallback(() => {
+    // Единая цель "ЛИД" в Яндекс.Метрике — на любой клик по мессенджеру.
+    trackLead({ channel: type, ...(source ? { source } : {}) })
+
     // Фоном создаём заявку. Переход в мессенджер происходит мгновенно через href —
     // этот POST его не задерживает.
     fetch('/api/messenger', {
