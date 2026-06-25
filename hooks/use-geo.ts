@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { normalizeCityToRussian } from "@/lib/cities"
 
 type GeoResponse = { country?: string | null; city?: string | null; isRussia?: boolean }
 
@@ -43,9 +44,15 @@ export function useRegion(defaultCity = "Москва") {
     let cancelled = false
 
     // Если пользователь уже выбирал город ранее — берём его и не спрашиваем снова.
+    // Нормализуем на случай, если в кэше осталось латинское название (например,
+    // "Moscow") — показываем корректное русское, иначе откатываемся к дефолту.
     const saved = typeof window !== "undefined" ? window.localStorage.getItem(REGION_STORAGE_KEY) : null
     if (saved) {
-      setCity(saved)
+      const normalized = normalizeCityToRussian(saved) ?? defaultCity
+      setCity(normalized)
+      if (normalized !== saved && typeof window !== "undefined") {
+        window.localStorage.setItem(REGION_STORAGE_KEY, normalized)
+      }
       setConfirmed(true)
       setReady(true)
       return
@@ -55,7 +62,9 @@ export function useRegion(defaultCity = "Москва") {
       .then((res) => res.json())
       .then((data: GeoResponse) => {
         if (cancelled) return
-        const found = data.city?.trim()
+        // API уже нормализует город, но прогоняем ещё раз для надёжности —
+        // на латинице (если вдруг прошла) город не показываем.
+        const found = normalizeCityToRussian(data.city)
         if (found && found.toLowerCase() !== defaultCity.toLowerCase()) {
           // Город отличается от дефолтного — показываем подтверждение.
           setDetectedCity(found)

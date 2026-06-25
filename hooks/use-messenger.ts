@@ -132,12 +132,9 @@ export function useMessengerLink(
     const encoded = message ? encodeURIComponent(message) : null
     switch (type) {
       case 'telegram':
-        // У личных аккаунтов (t.me/username) параметр ?text= НЕ работает —
-        // Telegram его игнорирует. Поэтому ведём на чистую ссылку, а ответы
-        // опроса сохраняем на сервере (metadata в trackClick).
-        return `https://t.me/${account.id}`
+        // Предзаполняем текст сообщения анкетой — менеджер сразу видит данные.
+        return encoded ? `https://t.me/${account.id}?text=${encoded}` : `https://t.me/${account.id}`
       case 'whatsapp':
-        // WhatsApp корректно подставляет текст из ?text=.
         return encoded ? `https://wa.me/${account.id}?text=${encoded}` : `https://wa.me/${account.id}`
       case 'max':
         return `https://max.ru/${account.id}`
