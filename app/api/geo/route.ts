@@ -66,7 +66,31 @@ function isPrivateIp(ip: string): boolean {
 }
 
 async function lookupGeo(ip: string): Promise<GeoData> {
-  // Основной сервис: freeipapi.com (бесплатно, без ключа, по HTTPS) — отдаёт и страну, и город.
+  // Основной сервис: ip-api.com. Ключевое преимущество — параметр lang=ru,
+  // благодаря которому город приходит СРАЗУ на русском ("Москва", "Ставрополь"),
+  // без зависимости от нашей карты переводов. Бесплатный тариф работает по HTTP,
+  // но это серверный запрос (не из браузера), поэтому mixed-content не возникает.
+  try {
+    const res = await fetch(
+      `http://ip-api.com/json/${ip}?lang=ru&fields=status,countryCode,city`,
+      { signal: AbortSignal.timeout(2500) },
+    )
+    if (res.ok) {
+      const data = (await res.json()) as { status?: string; countryCode?: string; city?: string }
+      if (data.status === "success" && data.countryCode && /^[A-Z]{2}$/i.test(data.countryCode)) {
+        return {
+          country: data.countryCode.toUpperCase(),
+          // Город уже на русском — normalizeCityToRussian просто пропустит кириллицу.
+          city: normalizeCityToRussian(data.city),
+        }
+      }
+    }
+  } catch {
+    // основной сервис недоступен — пробуем запасной
+  }
+
+  // Запасной сервис: freeipapi.com (HTTPS, без ключа) — отдаёт город латиницей,
+  // поэтому прогоняем через карту переводов.
   try {
     const res = await fetch(`https://freeipapi.com/api/json/${ip}`, {
       signal: AbortSignal.timeout(2500),
@@ -76,14 +100,12 @@ async function lookupGeo(ip: string): Promise<GeoData> {
       if (data.countryCode && /^[A-Z]{2}$/i.test(data.countryCode)) {
         return {
           country: data.countryCode.toUpperCase(),
-          // Гео-сервис отдаёт город латиницей — приводим к корректному
-          // русскому названию (или null, если уверенно сопоставить не вышло).
           city: normalizeCityToRussian(data.cityName),
         }
       }
     }
   } catch {
-    // основной сервис недоступен — пробуем запасной
+    // запасной сервис недоступен — пробуем последний (только страна)
   }
 
   // Запасной сервис: api.country.is — только страна, без города.
