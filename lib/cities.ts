@@ -346,6 +346,84 @@ export function normalizeCityToRussian(raw: string | null | undefined): string |
   // Уже на кириллице — берём как есть.
   if (CYRILLIC_RE.test(trimmed)) return trimmed
 
+  // 1) Точное соответствие по выверенной карте (правильное написание с ё/ь и т.д.).
   const key = trimmed.toLowerCase()
-  return EN_TO_RU[key] ?? null
+  if (EN_TO_RU[key]) return EN_TO_RU[key]
+
+  // 2) Латинское название, которого нет в карте — транслитерируем в кириллицу,
+  //    чтобы НИКОГДА не показывать город по-английски. Берём только то, что
+  //    похоже на название (латиница, пробелы, дефисы), иначе ничего не предлагаем.
+  if (/^[a-z][a-z\s'.-]*$/i.test(trimmed)) {
+    const translit = transliterateToRussian(trimmed)
+    if (translit) return translit
+  }
+
+  return null
+}
+
+// Фонетическая транслитерация латиницы в кириллицу (запасной вариант для городов
+// вне карты). Диграфы обрабатываются раньше одиночных букв. Результат —
+// приближение (без мягких знаков и т.п.), но всегда кириллицей, а не латиницей.
+const TRANSLIT_DIGRAPHS: Array<[string, string]> = [
+  ["shch", "щ"],
+  ["sch", "щ"],
+  ["zh", "ж"],
+  ["kh", "х"],
+  ["ts", "ц"],
+  ["ch", "ч"],
+  ["sh", "ш"],
+  ["yo", "ё"],
+  ["yu", "ю"],
+  ["ya", "я"],
+  ["ye", "е"],
+  ["iy", "ий"],
+]
+
+const TRANSLIT_SINGLE: Record<string, string> = {
+  a: "а", b: "б", c: "к", d: "д", e: "е", f: "ф", g: "г", h: "х", i: "и",
+  j: "й", k: "к", l: "л", m: "м", n: "н", o: "о", p: "п", q: "к", r: "р",
+  s: "с", t: "т", u: "у", v: "в", w: "в", x: "кс", y: "ы", z: "з",
+}
+
+function transliterateToRussian(input: string): string | null {
+  const lower = input.toLowerCase()
+  let out = ""
+  let i = 0
+  while (i < lower.length) {
+    const ch = lower[i]
+
+    if (ch === " " || ch === "-" || ch === "'" || ch === ".") {
+      out += ch === "'" || ch === "." ? "" : ch
+      i += 1
+      continue
+    }
+
+    let matchedDigraph = false
+    for (const [en, ru] of TRANSLIT_DIGRAPHS) {
+      if (lower.startsWith(en, i)) {
+        out += ru
+        i += en.length
+        matchedDigraph = true
+        break
+      }
+    }
+    if (matchedDigraph) continue
+
+    const single = TRANSLIT_SINGLE[ch]
+    if (single) {
+      out += single
+      i += 1
+    } else {
+      // Незнакомый символ — название нестандартное, не рискуем.
+      return null
+    }
+  }
+
+  // Делаем «Title Case»: первая буква каждого слова/части — заглавная.
+  const titled = out
+    .split(/([\s-])/)
+    .map((part) => (part === " " || part === "-" || !part ? part : part[0].toUpperCase() + part.slice(1)))
+    .join("")
+
+  return titled || null
 }
