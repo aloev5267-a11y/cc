@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server"
 import { normalizeCityToRussian } from "@/lib/cities"
 
 // Определение страны посетителя на собственной VPS.
-// Платформенных заголовков (x-vercel-ip-country) тут нет, поэтому берём реальный IP
+// Платформенных гео-заголовков тут нет, поэтому берём реальный IP
 // клиента из заголовков прокси (nginx) и спрашиваем страну у бесплатного geo-сервиса.
 export const dynamic = "force-dynamic"
 
