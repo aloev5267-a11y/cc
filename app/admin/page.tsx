@@ -56,12 +56,6 @@ interface Stats {
     bySource: Array<{ source: string; count: number }>
     byStatus: Array<{ status: string; count: number }>
   }
-  chats: {
-    total: number
-    active: number
-    waiting: number
-    closed: number
-  }
   managers: {
     total: number
     active: number
@@ -365,8 +359,8 @@ function DashboardTab({ stats }: { stats: Stats | null }) {
           color="blue"
         />
         <StatCard
-          title="Активные чаты"
-          value={stats.chats.active}
+          title="Активные мессенджеры"
+          value={stats.messengers.activeTotal}
           icon={<IconMessage className="w-5 h-5" />}
           color="green"
         />

@@ -35,8 +35,17 @@ export async function POST(request: NextRequest) {
       clientId = generateClientId()
     }
 
-    // Сохраняем лид в БД (источник — форма)
-    await createLead(clientId, 'form')
+    // Сохраняем лид в БД вместе с данными формы.
+    // Кладём контакты в metadata (JSON), чтобы заявка не терялась,
+    // даже если уведомление в Telegram не настроено или недоступно.
+    const metadata = JSON.stringify({
+      name: data.name,
+      phone: data.phone,
+      email: data.email || null,
+      message: data.message || null,
+      preferredContact: data.preferredContact || null,
+    })
+    await createLead(clientId, 'form', undefined, undefined, metadata)
 
     // Уведомление менеджеру в Telegram (если настроен чат)
     const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID

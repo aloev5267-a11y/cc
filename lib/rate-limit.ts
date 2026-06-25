@@ -1,5 +1,11 @@
 // Simple in-memory rate limiter for VPS deployment
 // Uses sliding window algorithm
+//
+// ВНИМАНИЕ: счётчики хранятся в памяти процесса. Это корректно работает только
+// при ОДНОМ инстансе приложения (PM2 в режиме fork, instances: 1 — см.
+// ecosystem.config.cjs). Если перейти на cluster или несколько инстансов,
+// лимиты «размажутся» по воркерам и перестанут защищать от брутфорса —
+// тогда нужен общий стор (Redis и т.п.).
 
 interface RateLimitEntry {
   count: number
@@ -83,22 +89,14 @@ export function rateLimit(
 
 // Predefined rate limit configs
 export const rateLimitConfigs = {
-  // API endpoints
-  chatCreate: { windowMs: 60 * 1000, maxRequests: 5 }, // 5 chats per minute
-  chatSend: { windowMs: 60 * 1000, maxRequests: 30 }, // 30 messages per minute
-  chatMessages: { windowMs: 60 * 1000, maxRequests: 60 }, // 60 polls per minute (for long polling)
-  
   // Admin endpoints (stricter)
   admin: { windowMs: 60 * 1000, maxRequests: 10 },
 
   // Admin login (very strict to slow down brute-force on passwords)
   adminLogin: { windowMs: 5 * 60 * 1000, maxRequests: 5 }, // 5 attempts per 5 minutes
-  
+
   // Contact form
   contact: { windowMs: 60 * 1000, maxRequests: 3 }, // 3 submissions per minute
-  
-  // Telegram webhook (more permissive for incoming messages)
-  telegramWebhook: { windowMs: 60 * 1000, maxRequests: 100 },
 } as const
 
 // Helper to get client IP from request.

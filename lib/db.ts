@@ -37,25 +37,6 @@ async function ensureSchema(): Promise<void> {
   initPromise = (async () => {
     const p = getPool()
     await p.query(`
-      CREATE TABLE IF NOT EXISTS chats (
-        id TEXT PRIMARY KEY,
-        user_name TEXT NOT NULL,
-        position TEXT NOT NULL,
-        manager_id TEXT,
-        client_id TEXT,
-        status TEXT DEFAULT 'waiting',
-        created_at TIMESTAMPTZ DEFAULT NOW(),
-        updated_at TIMESTAMPTZ DEFAULT NOW()
-      );
-
-      CREATE TABLE IF NOT EXISTS messages (
-        id BIGSERIAL PRIMARY KEY,
-        chat_id TEXT NOT NULL REFERENCES chats(id),
-        sender TEXT NOT NULL,
-        text TEXT NOT NULL,
-        created_at TIMESTAMPTZ DEFAULT NOW()
-      );
-
       CREATE TABLE IF NOT EXISTS managers (
         id TEXT PRIMARY KEY,
         telegram_id TEXT NOT NULL UNIQUE,
@@ -64,11 +45,6 @@ async function ensureSchema(): Promise<void> {
         last_assigned TIMESTAMPTZ,
         order_index INTEGER DEFAULT 0,
         created_at TIMESTAMPTZ DEFAULT NOW()
-      );
-
-      CREATE TABLE IF NOT EXISTS manager_queue (
-        id BIGSERIAL PRIMARY KEY,
-        current_index INTEGER DEFAULT 0
       );
 
       CREATE TABLE IF NOT EXISTS messenger_accounts (
@@ -143,18 +119,9 @@ async function ensureSchema(): Promise<void> {
       CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
       CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
       CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
-      CREATE INDEX IF NOT EXISTS idx_chats_client_id ON chats(client_id);
-      CREATE INDEX IF NOT EXISTS idx_chats_manager_status ON chats(manager_id, status);
-      CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);
       CREATE INDEX IF NOT EXISTS idx_client_bindings_client_id ON client_bindings(client_id);
       CREATE INDEX IF NOT EXISTS idx_messenger_accounts_type ON messenger_accounts(messenger_type);
     `)
-
-    // Инициализация очереди менеджеров
-    const mq = await p.query('SELECT 1 FROM manager_queue LIMIT 1')
-    if (mq.rowCount === 0) {
-      await p.query('INSERT INTO manager_queue (current_index) VALUES (0)')
-    }
 
     // Инициализация очередей мессенджеров
     for (const type of ['telegram', 'whatsapp', 'max']) {
@@ -197,25 +164,6 @@ export { query as dbQuery, queryOne as dbQueryOne }
 // Теперь они используют асинхронные хелперы напрямую, поэтому db() не нужен.
 
 // ============ Types ============
-export interface Chat {
-  id: string
-  user_name: string
-  position: string
-  manager_id: string | null
-  client_id: string | null
-  status: string
-  created_at: string
-  updated_at: string
-}
-
-export interface Message {
-  id: number
-  chat_id: string
-  sender: string
-  text: string
-  created_at: string
-}
-
 export interface Manager {
   id: string
   telegram_id: string
@@ -259,115 +207,7 @@ export interface Lead {
   updated_at: string
   }
 
-// ============ Chat Functions ============
-export async function createChat(id: string, userName: string, position: string, clientId?: string) {
-  return query('INSERT INTO chats (id, user_name, position, client_id) VALUES ($1, $2, $3, $4)', [
-    id,
-    userName,
-    position,
-    clientId || null,
-  ])
-}
-
-export async function getChat(id: string): Promise<Chat | undefined> {
-  return queryOne<Chat>('SELECT * FROM chats WHERE id = $1', [id])
-}
-
-export async function getChatByClientId(clientId: string): Promise<Chat | undefined> {
-  return queryOne<Chat>('SELECT * FROM chats WHERE client_id = $1 ORDER BY created_at DESC LIMIT 1', [clientId])
-}
-
-export async function updateChatStatus(id: string, status: string, managerId?: string) {
-  if (managerId) {
-    return query('UPDATE chats SET status = $1, manager_id = $2, updated_at = NOW() WHERE id = $3', [
-      status,
-      managerId,
-      id,
-    ])
-  }
-  return query('UPDATE chats SET status = $1, updated_at = NOW() WHERE id = $2', [status, id])
-}
-
-export async function getAllChats(status?: string): Promise<Chat[]> {
-  if (status) {
-    return query<Chat>('SELECT * FROM chats WHERE status = $1 ORDER BY updated_at DESC', [status])
-  }
-  return query<Chat>('SELECT * FROM chats ORDER BY updated_at DESC')
-}
-
-// ============ Message Functions ============
-export async function addMessage(chatId: string, sender: string, text: string) {
-  return query('INSERT INTO messages (chat_id, sender, text) VALUES ($1, $2, $3)', [chatId, sender, text])
-}
-
-export async function getMessages(chatId: string): Promise<Message[]> {
-  return query<Message>('SELECT * FROM messages WHERE chat_id = $1 ORDER BY created_at ASC', [chatId])
-}
-
 // ============ Manager Functions ============
-export async function getNextManager(): Promise<Manager | null> {
-  // Атомарный round-robin: блокируем строку очереди (FOR UPDATE), чтобы при
-  // одновременных заявках двум клиентам не достался один и тот же менеджер
-  // и индекс не «перепрыгивал».
-  await ensureSchema()
-  const client = await getPool().connect()
-  try {
-    await client.query('BEGIN')
-
-    const queueRes = await client.query<{ id: number; current_index: number }>(
-      'SELECT id, current_index FROM manager_queue ORDER BY id LIMIT 1 FOR UPDATE',
-    )
-    const queue = queueRes.rows[0]
-
-    const managersRes = await client.query<Manager>(
-      'SELECT * FROM managers WHERE is_available = 1 ORDER BY order_index',
-    )
-    const managers = managersRes.rows
-
-    if (!queue || managers.length === 0) {
-      await client.query('COMMIT')
-      return null
-    }
-
-    const nextIndex = queue.current_index % managers.length
-    const manager = managers[nextIndex]
-
-    await client.query('UPDATE manager_queue SET current_index = $1 WHERE id = $2', [
-      (queue.current_index + 1) % managers.length,
-      queue.id,
-    ])
-    await client.query('UPDATE managers SET last_assigned = NOW() WHERE id = $1', [manager.id])
-
-    await client.query('COMMIT')
-    return manager
-  } catch (err) {
-    await client.query('ROLLBACK')
-    throw err
-  } finally {
-    client.release()
-  }
-}
-
-export async function getManagerByClientBinding(clientId: string): Promise<Manager | null> {
-  const binding = await queryOne<{ manager_id: string | null }>(
-    'SELECT manager_id FROM client_bindings WHERE client_id = $1 AND messenger_type IS NULL',
-    [clientId],
-  )
-  if (binding?.manager_id) {
-    return (
-      (await queryOne<Manager>('SELECT * FROM managers WHERE id = $1 AND is_available = 1', [binding.manager_id])) ??
-      null
-    )
-  }
-  return null
-}
-
-export async function bindClientToManager(clientId: string, managerId: string) {
-  // Ручной upsert: UNIQUE(client_id, messenger_type) с NULL ненадёжен для ON CONFLICT.
-  await query('DELETE FROM client_bindings WHERE client_id = $1 AND messenger_type IS NULL', [clientId])
-  return query('INSERT INTO client_bindings (client_id, manager_id) VALUES ($1, $2)', [clientId, managerId])
-}
-
 export async function addManager(id: string, telegramId: string, name: string, orderIndex: number) {
   return query(
     `INSERT INTO managers (id, telegram_id, name, order_index) VALUES ($1, $2, $3, $4)
@@ -418,16 +258,6 @@ export async function getAllManagers(): Promise<Manager[]> {
 
 export async function setManagerAvailability(id: string, isAvailable: boolean) {
   return query('UPDATE managers SET is_available = $1 WHERE id = $2', [isAvailable ? 1 : 0, id])
-}
-
-export async function getChatByManagerTelegramId(telegramId: string): Promise<Chat | undefined> {
-  return queryOne<Chat>(
-    `SELECT c.* FROM chats c
-     JOIN managers m ON c.manager_id = m.id
-     WHERE m.telegram_id = $1 AND c.status = 'active'
-     ORDER BY c.updated_at DESC LIMIT 1`,
-    [telegramId],
-  )
 }
 
 // ============ Messenger Account Functions ============
@@ -720,12 +550,5 @@ export async function getRecentLeads(limit = 30, offset = 0): Promise<Lead[]> {
   const safeLimit = Math.min(Math.max(1, Math.floor(limit)), 500)
   const safeOffset = Math.max(0, Math.floor(offset))
   return query<Lead>('SELECT * FROM leads ORDER BY created_at DESC LIMIT $1 OFFSET $2', [safeLimit, safeOffset])
-}
-
-export async function getActiveChatByManagerTelegramId(telegramId: string): Promise<Chat | undefined> {
-  return queryOne<Chat>(
-    `SELECT * FROM chats WHERE manager_id = $1 AND status = 'active' ORDER BY updated_at DESC LIMIT 1`,
-    [telegramId],
-  )
 }
 

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { addManager, createAdminUser, getAdminUserByUsername, countAdminUsers } from '@/lib/db'
 import { checkRateLimit, rateLimitConfigs, getClientIp } from '@/lib/rate-limit'
-import { getTelegramApiUrl } from '@/lib/telegram'
 import { hashPassword } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
@@ -64,28 +63,6 @@ export async function POST(request: NextRequest) {
           await addManager(m.id || `manager_${Date.now()}_${i}`, m.telegramId, m.name, i)
         }
         return NextResponse.json({ success: true, count: managers.length })
-      }
-
-      case 'setup_webhook': {
-        const token = body.botToken || process.env.TELEGRAM_BOT_TOKEN
-        
-        if (!token) {
-          return NextResponse.json({ error: 'Bot token required' }, { status: 400 })
-        }
-
-        const url = getTelegramApiUrl('setWebhook', token)
-
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            url: body.webhookUrl,
-            allowed_updates: ['message', 'callback_query']
-          })
-        })
-
-        const result = await response.json()
-        return NextResponse.json(result)
       }
 
       default:
