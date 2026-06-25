@@ -14,6 +14,7 @@ import {
 } from "./icons"
 import { Messengers, type MessengersOptions } from "./messengers"
 import { useRegion } from "@/hooks/use-geo"
+import { useMessengerLink } from "@/hooks/use-messenger"
 import { siteConfig } from "@/lib/config"
 import { RUSSIAN_CITIES } from "@/lib/cities"
 
@@ -56,6 +57,9 @@ const fade = {
 
 export function LeadHero() {
   const { city: detectedCity, ready } = useRegion("Москва")
+
+  // Быстрый путь: переход в Telegram без заполнения анкеты.
+  const quickTelegram = useMessengerLink("telegram", { source: "hero-quick" })
 
   const [step, setStep] = useState<Step>(1)
   const [name, setName] = useState("")
@@ -189,6 +193,27 @@ export function LeadHero() {
                         <IconArrow className="w-4 h-4" />
                       </button>
                     </form>
+
+                    {(quickTelegram.loading || quickTelegram.available) && (
+                      <div className="mt-4 flex items-center gap-3 max-w-2xl">
+                        <span className="h-px flex-1 bg-primary-foreground/20" />
+                        <span className="text-xs text-primary-foreground/60">или без анкеты</span>
+                        <span className="h-px flex-1 bg-primary-foreground/20" />
+                      </div>
+                    )}
+
+                    {(quickTelegram.loading || quickTelegram.available) && (
+                      <a
+                        href={quickTelegram.link || siteConfig.social.telegramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => quickTelegram.trackClick()}
+                        className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary-foreground/90 underline underline-offset-4 decoration-primary-foreground/40 hover:text-primary-foreground hover:decoration-primary-foreground transition-colors"
+                      >
+                        Просто написать нам в Telegram
+                        <span aria-hidden>{"\u2192"}</span>
+                      </a>
+                    )}
 
                     <p className="mt-4 text-xs text-primary-foreground/60 max-w-md">
                       Продолжая, вы принимаете{" "}
@@ -368,7 +393,7 @@ export function LeadHero() {
                       Класс, {firstName}!
                     </h2>
                     <p className="mt-3 text-base sm:text-lg text-primary-foreground/85 text-pretty max-w-md">
-                      Напишите нам в удобный мессенджер — анкета уже в сообщении, и наш менеджер подберёт для вас вакансию.
+                      Мы сохранили ваши ответы. Напишите нам в Telegram — менеджер уже видит вашу анкету и быстро подберёт вакансию.
                     </p>
 
                     <div className="mt-6 rounded-2xl bg-card p-5 sm:p-6 shadow-sm max-w-md">

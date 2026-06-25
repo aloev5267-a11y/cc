@@ -1,6 +1,7 @@
 import { StructuredData } from "@/components/structured-data"
 import { CookieConsent } from "@/components/cookie-consent"
 import { SupportChat } from "@/components/support-chat"
+import { FloatingTelegram } from "@/components/floating-telegram"
 import { YandexMetrika } from "@/components/yandex-metrika"
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
@@ -80,6 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <CookieConsent />
         <Toaster position="top-center" richColors />
+        <FloatingTelegram />
         <SupportChat />
       </body>
     </html>
