@@ -398,7 +398,7 @@ export function LeadHero() {
 
                     <div className="mt-6 rounded-2xl bg-card p-5 sm:p-6 shadow-sm max-w-md">
                       {/* Сводка анкеты */}
-                      <div className="mb-4 flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 pb-4 mb-4 border-b border-border">
                         {[city.trim(), fieldLabel, experienceLabel, scheduleLabel]
                           .filter(Boolean)
                           .map((chip) => (

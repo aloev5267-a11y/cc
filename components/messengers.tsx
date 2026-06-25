@@ -73,16 +73,16 @@ function TelegramPrimaryButton({ options }: { options?: MessengersOptions }) {
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => messenger.trackClick()}
-      className="group flex items-center gap-4 h-16 px-5 rounded-2xl font-bold bg-sky-500 text-white shadow-lg shadow-sky-500/25 transition-all duration-200 hover:bg-sky-600 hover:scale-[1.01]"
+      className="group flex items-center gap-3 sm:gap-4 min-h-16 py-3 px-4 sm:px-5 rounded-2xl font-bold bg-sky-500 text-white shadow-lg shadow-sky-500/25 transition-all duration-200 hover:bg-sky-600 hover:scale-[1.01]"
     >
       <span className="flex items-center justify-center w-11 h-11 rounded-xl bg-white/20 shrink-0">
         <IconTelegram className="w-6 h-6" />
       </span>
-      <span className="flex flex-col text-left leading-tight">
-        <span className="text-base">Написать в Telegram</span>
-        <span className="text-xs font-medium text-white/85">Обычно отвечаем за пару минут</span>
+      <span className="flex flex-col text-left leading-tight min-w-0 flex-1">
+        <span className="text-base sm:text-lg">Написать в Telegram</span>
+        <span className="text-xs font-medium text-white/85 mt-0.5">Обычно отвечаем за пару минут</span>
       </span>
-      <span className="ml-auto text-xl transition-transform group-hover:translate-x-1">{"\u2192"}</span>
+      <span className="text-xl shrink-0 transition-transform group-hover:translate-x-1">{"\u2192"}</span>
     </a>
   )
 }
@@ -98,10 +98,10 @@ function SecondaryButton({ type, options }: { type: SecondaryType; options?: Mes
         type="button"
         onClick={() => notifyMessengerUnavailable(type)}
         aria-disabled="true"
-        className="flex items-center justify-center gap-2 h-11 px-3 rounded-xl text-sm font-semibold border border-border bg-muted text-muted-foreground opacity-60 cursor-not-allowed"
+        className="flex flex-col items-center justify-center gap-1.5 min-h-16 py-2.5 px-2 rounded-xl text-xs font-semibold text-center border border-border bg-muted text-muted-foreground opacity-60 cursor-not-allowed"
       >
-        <config.icon className={`w-4 h-4 shrink-0 ${config.accent}`} />
-        <span className="truncate">{config.label}</span>
+        <config.icon className={`w-5 h-5 ${config.accent}`} />
+        <span>{config.label}</span>
       </button>
     )
   }
@@ -114,10 +114,10 @@ function SecondaryButton({ type, options }: { type: SecondaryType; options?: Mes
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => messenger.trackClick()}
-      className="flex items-center justify-center gap-2 h-11 px-3 rounded-xl text-sm font-semibold border border-border bg-card text-foreground transition-all duration-200 hover:border-foreground/20 hover:bg-muted"
+      className="flex flex-col items-center justify-center gap-1.5 min-h-16 py-2.5 px-2 rounded-xl text-xs font-semibold text-center border border-border bg-card text-foreground transition-all duration-200 hover:border-foreground/20 hover:bg-muted"
     >
-      <config.icon className={`w-4 h-4 shrink-0 ${config.accent}`} />
-      <span className="truncate">{config.label}</span>
+      <config.icon className={`w-5 h-5 ${config.accent}`} />
+      <span>{config.label}</span>
     </a>
   )
 }
@@ -151,10 +151,10 @@ function LiveChatButton({ options }: { options?: MessengersOptions }) {
       type="button"
       onClick={handleClick}
       aria-busy={opening}
-      className="flex items-center justify-center gap-2 h-11 px-3 rounded-xl text-sm font-semibold border border-border bg-card text-foreground transition-all duration-200 hover:border-foreground/20 hover:bg-muted"
+      className="flex flex-col items-center justify-center gap-1.5 min-h-16 py-2.5 px-2 rounded-xl text-xs font-semibold text-center border border-border bg-card text-foreground transition-all duration-200 hover:border-foreground/20 hover:bg-muted"
     >
-      <IconHeadphones className="w-4 h-4 shrink-0 text-primary" />
-      <span className="truncate">Онлайн-чат</span>
+      <IconHeadphones className="w-5 h-5 text-primary" />
+      <span>Онлайн-чат</span>
     </button>
   )
 }
