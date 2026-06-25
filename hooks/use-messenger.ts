@@ -131,13 +131,20 @@ export function useMessengerLink(
     if (!account) return null
     const encoded = message ? encodeURIComponent(message) : null
     switch (type) {
-      case 'telegram':
+      case 'telegram': {
+        // У username в админке может быть лишний "@" (например "@courier_yex").
+        // В ссылке t.me он недопустим — Telegram не открывает профиль. Срезаем его.
+        const username = account.id.trim().replace(/^@+/, '')
         // Предзаполняем текст сообщения анкетой — менеджер сразу видит данные.
-        return encoded ? `https://t.me/${account.id}?text=${encoded}` : `https://t.me/${account.id}`
-      case 'whatsapp':
-        return encoded ? `https://wa.me/${account.id}?text=${encoded}` : `https://wa.me/${account.id}`
+        return encoded ? `https://t.me/${username}?text=${encoded}` : `https://t.me/${username}`
+      }
+      case 'whatsapp': {
+        // wa.me принимает только цифры номера (без "+", пробелов и скобок).
+        const phone = account.id.replace(/\D/g, '')
+        return encoded ? `https://wa.me/${phone}?text=${encoded}` : `https://wa.me/${phone}`
+      }
       case 'max':
-        return `https://max.ru/${account.id}`
+        return `https://max.ru/${account.id.trim().replace(/^@+/, '')}`
       default:
         return null
     }
