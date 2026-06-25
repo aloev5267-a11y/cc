@@ -17,6 +17,7 @@ import {
   IconCode,
 } from "@/components/icons"
 import { siteConfig } from "./config"
+import { RUSSIAN_CITIES } from "./cities"
 
 export type QuizOption = { label: string; value: string }
 
@@ -114,7 +115,8 @@ const cityQuestion: QuizQuestion = {
   summaryLabel: "Город",
   type: "input",
   placeholder: "Введите ваш город",
-  suggestions: RU_CITIES.slice(0, 6),
+  // Полный справочник городов РФ для автоподсказки.
+  suggestions: RUSSIAN_CITIES,
 }
 
 const startQuestion: QuizQuestion = {
@@ -514,7 +516,7 @@ export const categories: Category[] = [
     roleVariants: ["Специалист поддержки (удалённо)", "Менеджер по продажам (удалённо)", "Контент-менеджер", "Ассистент руководителя", "Оператор чата"],
     employers: [
       { name: "СКБ Контур", kind: "Разработчик онлайн-сервисов" },
-      { name: "Skyeng", kind: "Онлайн-школа английского" },
+      { name: "Skyeng", kind: "Онлайн-школа ��нглийского" },
       { name: "Нетология", kind: "Образовательная платформа" },
       { name: "Т-Банк", kind: "Банк" },
       { name: "EPAM", kind: "ИТ-компания", foreign: true },

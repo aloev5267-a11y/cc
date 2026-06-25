@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { normalizeCityToRussian } from "@/lib/cities"
 
 // Определение страны посетителя на собственной VPS.
 // Платформенных заголовков (x-vercel-ip-country) тут нет, поэтому берём реальный IP
@@ -75,7 +76,9 @@ async function lookupGeo(ip: string): Promise<GeoData> {
       if (data.countryCode && /^[A-Z]{2}$/i.test(data.countryCode)) {
         return {
           country: data.countryCode.toUpperCase(),
-          city: data.cityName?.trim() || null,
+          // Гео-сервис отдаёт город латиницей — приводим к корректному
+          // русскому названию (или null, если уверенно сопоставить не вышло).
+          city: normalizeCityToRussian(data.cityName),
         }
       }
     }
@@ -107,7 +110,7 @@ export async function GET(request: NextRequest) {
   const cfCity = request.headers.get("cf-ipcity")
   if (cfCountry && cfCountry !== "XX" && /^[A-Z]{2}$/i.test(cfCountry)) {
     const country = cfCountry.toUpperCase()
-    const city = cfCity ? decodeURIComponent(cfCity) : null
+    const city = normalizeCityToRussian(cfCity ? decodeURIComponent(cfCity) : null)
     return NextResponse.json({ country, city, isRussia: country === "RU" })
   }
 

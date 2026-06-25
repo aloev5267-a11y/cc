@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
 import {
@@ -15,30 +15,18 @@ import {
 import { Messengers, type MessengersOptions } from "./messengers"
 import { useRegion } from "@/hooks/use-geo"
 import { siteConfig } from "@/lib/config"
+import { RUSSIAN_CITIES } from "@/lib/cities"
 
-const POPULAR_CITIES = [
-  "Москва",
-  "Санкт-Петербург",
-  "Новосибирск",
-  "Екатеринбург",
-  "Казань",
-  "Нижний Новгород",
-  "Челябинск",
-  "Самара",
-  "Краснодар",
-  "Ростов-на-Дону",
-  "Уфа",
-  "Воронеж",
-]
-
-// Сферы работы — то, что соискатель ищет
+// Сферы работы — то, что соискатель ищет.
+// Пока подбираем только курьеров, склад и водителей — остальные направления
+// помечены disabled и станут активными позже.
 const FIELDS = [
-  { id: "courier", label: "Курьер", icon: IconBriefcase },
-  { id: "warehouse", label: "Склад", icon: IconBriefcase },
-  { id: "driver", label: "Водитель", icon: IconBriefcase },
-  { id: "sales", label: "Продажи", icon: IconBriefcase },
-  { id: "service", label: "Сервис и общепит", icon: IconBriefcase },
-  { id: "other", label: "Другое", icon: IconBriefcase },
+  { id: "courier", label: "Курьер", icon: IconBriefcase, disabled: false },
+  { id: "warehouse", label: "Склад", icon: IconBriefcase, disabled: false },
+  { id: "driver", label: "Водитель", icon: IconBriefcase, disabled: false },
+  { id: "sales", label: "Продажи", icon: IconBriefcase, disabled: true },
+  { id: "service", label: "Сервис и общепит", icon: IconBriefcase, disabled: true },
+  { id: "other", label: "Другое", icon: IconBriefcase, disabled: false },
 ]
 
 // Опыт работы
@@ -72,17 +60,24 @@ export function LeadHero() {
   const [step, setStep] = useState<Step>(1)
   const [name, setName] = useState("")
   const [city, setCity] = useState("")
+  const [cityTouched, setCityTouched] = useState(false)
   const [field, setField] = useState<string | null>(null)
   const [experience, setExperience] = useState<string | null>(null)
   const [schedule, setSchedule] = useState<string | null>(null)
 
-  // Подставляем определённый по гео город как значение по умолчанию.
-  const effectiveCity = city || (ready ? detectedCity : "")
+  // Один раз подставляем определённый по гео город как значение по умолчанию.
+  // После того как пользователь начал править поле (cityTouched), гео больше
+  // не вмешивается — иначе при попытке стереть город он бы подставлялся заново.
+  useEffect(() => {
+    if (ready && !cityTouched && detectedCity) {
+      setCity(detectedCity)
+    }
+  }, [ready, cityTouched, detectedCity])
 
   const firstName = name.trim().split(/\s+/)[0] || ""
 
   const canContinueStep1 = name.trim().length >= 2
-  const canContinueStep2 = Boolean(effectiveCity.trim() && field && experience)
+  const canContinueStep2 = Boolean(city.trim() && field && experience)
 
   const fieldLabel = FIELDS.find((f) => f.id === field)?.label
   const experienceLabel = EXPERIENCE.find((e) => e.id === experience)?.label
@@ -94,7 +89,7 @@ export function LeadHero() {
       `Здравствуйте! Меня зовут ${name.trim() || "соискатель"}.`,
       `Ищу работу через ${siteConfig.name}, помогите подобрать вакансию.`,
     ]
-    if (effectiveCity.trim()) lines.push(`Город: ${effectiveCity.trim()}`)
+    if (city.trim()) lines.push(`Город: ${city.trim()}`)
     if (fieldLabel) lines.push(`Сфера: ${fieldLabel}`)
     if (experienceLabel) lines.push(`Опыт: ${experienceLabel}`)
     if (scheduleLabel) lines.push(`График: ${scheduleLabel}`)
@@ -103,7 +98,7 @@ export function LeadHero() {
       message: lines.join("\n"),
       metadata: {
         Имя: name.trim() || "—",
-        Город: effectiveCity.trim() || "—",
+        Город: city.trim() || "—",
         Сфера: fieldLabel ?? "—",
         Опыт: experienceLabel ?? "—",
         График: scheduleLabel ?? "—",
@@ -111,7 +106,7 @@ export function LeadHero() {
       source: "hero-lead",
       page: "home",
     }
-  }, [name, effectiveCity, fieldLabel, experienceLabel, scheduleLabel])
+  }, [name, city, fieldLabel, experienceLabel, scheduleLabel])
 
   return (
     <section className="relative isolate overflow-hidden bg-background pt-20 md:pt-24 pb-10 md:pb-14">
@@ -163,10 +158,10 @@ export function LeadHero() {
                         e.preventDefault()
                         if (canContinueStep1) setStep(2)
                       }}
-                      className="mt-8 flex flex-col sm:flex-row gap-3 max-w-xl"
+                      className="mt-8 flex flex-col gap-3 w-full max-w-2xl"
                     >
-                      <div className="flex-1 flex items-center gap-3 bg-card rounded-2xl px-5 h-14 shadow-sm">
-                        <IconUser className="w-5 h-5 text-muted-foreground shrink-0" />
+                      <div className="group flex items-center gap-3 bg-card rounded-2xl pl-5 pr-2 h-16 shadow-lg ring-1 ring-black/5 transition-shadow focus-within:ring-2 focus-within:ring-primary-foreground/50">
+                        <IconUser className="w-6 h-6 text-primary shrink-0" />
                         <input
                           type="text"
                           value={name}
@@ -174,13 +169,21 @@ export function LeadHero() {
                           placeholder="Ваше имя"
                           aria-label="Ваше имя"
                           autoFocus
-                          className="flex-1 min-w-0 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base"
+                          className="flex-1 min-w-0 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-lg"
                         />
+                        <button
+                          type="submit"
+                          disabled={!canContinueStep1}
+                          className="hidden sm:inline-flex items-center justify-center gap-2 h-12 px-7 rounded-xl bg-primary text-primary-foreground font-semibold shrink-0 transition-all hover:opacity-90 disabled:opacity-40"
+                        >
+                          Продолжить
+                          <IconArrow className="w-4 h-4" />
+                        </button>
                       </div>
                       <button
                         type="submit"
                         disabled={!canContinueStep1}
-                        className="inline-flex items-center justify-center gap-2 h-14 px-8 rounded-2xl bg-card text-primary font-semibold shrink-0 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
+                        className="sm:hidden inline-flex items-center justify-center gap-2 h-14 px-8 rounded-2xl bg-card text-primary font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
                       >
                         Продолжить
                         <IconArrow className="w-4 h-4" />
@@ -220,13 +223,16 @@ export function LeadHero() {
                         </label>
                         <input
                           list="cities"
-                          value={effectiveCity}
-                          onChange={(e) => setCity(e.target.value)}
+                          value={city}
+                          onChange={(e) => {
+                            setCity(e.target.value)
+                            setCityTouched(true)
+                          }}
                           placeholder="Начните вводить город"
                           className="w-full rounded-xl border border-border bg-background px-4 h-11 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                         <datalist id="cities">
-                          {POPULAR_CITIES.map((c) => (
+                          {RUSSIAN_CITIES.map((c) => (
                             <option key={c} value={c} />
                           ))}
                         </datalist>
@@ -241,6 +247,21 @@ export function LeadHero() {
                         <div className="flex flex-wrap gap-2">
                           {FIELDS.map((f) => {
                             const active = field === f.id
+                            if (f.disabled) {
+                              return (
+                                <span
+                                  key={f.id}
+                                  aria-disabled="true"
+                                  title="Это направление пока недоступно"
+                                  className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium border border-dashed border-border bg-muted/50 text-muted-foreground cursor-not-allowed"
+                                >
+                                  {f.label}
+                                  <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                                    скоро
+                                  </span>
+                                </span>
+                              )
+                            }
                             return (
                               <button
                                 key={f.id}
@@ -353,7 +374,7 @@ export function LeadHero() {
                     <div className="mt-6 rounded-2xl bg-card p-5 sm:p-6 shadow-sm max-w-md">
                       {/* Сводка анкеты */}
                       <div className="mb-4 flex flex-wrap gap-2">
-                        {[effectiveCity.trim(), fieldLabel, experienceLabel, scheduleLabel]
+                        {[city.trim(), fieldLabel, experienceLabel, scheduleLabel]
                           .filter(Boolean)
                           .map((chip) => (
                             <span

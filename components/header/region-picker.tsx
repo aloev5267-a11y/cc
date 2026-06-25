@@ -3,21 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { IconMapPin, IconCheck, IconClose } from "../icons"
 import { useRegion } from "@/hooks/use-geo"
-
-const POPULAR_CITIES = [
-  "Москва",
-  "Санкт-Петербург",
-  "Новосибирск",
-  "Екатеринбург",
-  "Казань",
-  "Нижний Новгород",
-  "Челябинск",
-  "Самара",
-  "Краснодар",
-  "Ростов-на-Дону",
-  "Уфа",
-  "Воронеж",
-]
+import { RUSSIAN_CITIES } from "@/lib/cities"
 
 export function RegionPicker() {
   const { city, detectedCity, confirmed, ready, confirm, selectCity } = useRegion("Москва")
@@ -40,9 +26,9 @@ export function RegionPicker() {
   // Показываем подтверждение определённого города, как на hh.ru.
   const showConfirm = ready && !confirmed && detectedCity
 
-  const filtered = POPULAR_CITIES.filter((c) =>
-    c.toLowerCase().includes(query.trim().toLowerCase()),
-  )
+  // Фильтруем по запросу и ограничиваем выдачу, чтобы не рендерить весь список сразу.
+  const q = query.trim().toLowerCase()
+  const filtered = (q ? RUSSIAN_CITIES.filter((c) => c.toLowerCase().includes(q)) : RUSSIAN_CITIES).slice(0, 60)
 
   return (
     <div ref={containerRef} className="relative">
