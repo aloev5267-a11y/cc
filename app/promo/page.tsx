@@ -19,6 +19,13 @@ export const metadata: Metadata = {
     description: "Узнайте свой бонус за выход на работу и подберите вакансию рядом с домом.",
     url: `${siteUrlSafe()}/promo`,
     type: "website",
+    images: [{ url: `${siteUrlSafe()}/og-promo.png`, width: 1200, height: 630, alt: `Колесо бонусов ${siteConfig.name}`, type: "image/png" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Колесо бонусов ${siteConfig.name}`,
+    description: "Узнайте свой бонус за выход на работу и подберите вакансию рядом с домом.",
+    images: [`${siteUrlSafe()}/og-promo.png`],
   },
 }
 

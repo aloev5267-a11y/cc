@@ -44,6 +44,8 @@ export async function POST(request: NextRequest) {
       email: data.email || null,
       message: data.message || null,
       preferredContact: data.preferredContact || null,
+      // Рекламные метки — чтобы видеть в БД, с какой кампании пришла заявка.
+      utm: data.utm && Object.keys(data.utm).length > 0 ? data.utm : null,
     })
     await createLead(clientId, 'form', undefined, undefined, metadata)
 
@@ -58,6 +60,7 @@ export async function POST(request: NextRequest) {
         data.email ? `Email: ${escapeHtml(data.email)}` : null,
         data.preferredContact ? `Предпочтительный способ связи: ${escapeHtml(data.preferredContact)}` : null,
         data.message ? `Сообщение: ${escapeHtml(data.message)}` : null,
+        data.utm?.utm_source ? `Кампания: ${escapeHtml(data.utm.utm_source)} / ${escapeHtml(data.utm.utm_campaign || '—')}` : null,
       ].filter(Boolean)
       // Fire-and-forget: НЕ блокируем ответ пользователю из-за уведомления.
       // Если Telegram/прокси тормозит — заявка уже сохранена в БД, а пользователь

@@ -20,8 +20,9 @@ import {
   IconCheck,
   IconArrow,
 } from "@/components/icons"
+import { MarketingGuide } from "@/components/admin/marketing-guide"
 
-type Tab = "dashboard" | "managers" | "messengers" | "users" | "settings"
+type Tab = "dashboard" | "managers" | "messengers" | "users" | "settings" | "guide"
 
 interface Manager {
   id: string
@@ -280,6 +281,7 @@ export default function AdminPage() {
             { id: "managers" as Tab, label: "Менеджеры чата", icon: IconMessage },
             { id: "messengers" as Tab, label: "Мессенджеры", icon: IconTelegram },
             { id: "users" as Tab, label: "Пользователи", icon: IconUsers },
+            { id: "guide" as Tab, label: "Гайд по рекламе", icon: IconChart },
             { id: "settings" as Tab, label: "Настройки", icon: IconSettings },
           ].map((item) => (
             <button
@@ -322,6 +324,9 @@ export default function AdminPage() {
           )}
           {activeTab === "users" && (
             <UsersTab users={adminUsers} onRefresh={loadUsers} key="users" />
+          )}
+          {activeTab === "guide" && (
+            <MarketingGuide key="guide" />
           )}
           {activeTab === "settings" && (
             <SettingsTab key="settings" />

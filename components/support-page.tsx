@@ -9,6 +9,7 @@ import { siteConfig } from "@/lib/config"
 import { faqItems } from "@/lib/faq"
 import { openLiveChat, trackLiveChatLead } from "@/lib/livechat"
 import { trackLead } from "@/lib/metrika"
+import { getUtmParams } from "@/lib/utm"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
 import { 
   IconMail, 
@@ -116,6 +117,7 @@ export function SupportPage() {
 
     const subjectLabel = subjectLabels[formData.subject] || "Общий вопрос"
     const message = `Тема: ${subjectLabel}\n${formData.message}`.trim()
+    const utm = getUtmParams()
 
     try {
       const res = await fetch("/api/contact", {
@@ -128,6 +130,7 @@ export function SupportPage() {
           email: formData.email || "",
           message,
           source: "contact_form",
+          ...(Object.keys(utm).length > 0 ? { utm } : {}),
         }),
       })
 
@@ -142,7 +145,7 @@ export function SupportPage() {
 
       // Единая цель "ЛИД" в Метрике — заявка с формы теперь учитывается в
       // статистике и оптимизации рекламных кампаний (как и клики по мессенджерам).
-      trackLead({ channel: "form", source: "support-form" })
+      trackLead({ channel: "form", source: "support-form", ...utm })
       setSubmitted(true)
     } catch {
       toast.error("Ошибка сети", {
@@ -298,7 +301,7 @@ export function SupportPage() {
                       <option value="general">Общий вопрос</option>
                       <option value="jobseeker">Поиск работы</option>
                       <option value="application">Статус моей заявки</option>
-                      <option value="employer">По��бор персонала (работодателям)</option>
+                      <option value="employer">Подбор персонала (работодателям)</option>
                       <option value="other">Другое</option>
                     </select>
                   </div>
@@ -335,7 +338,7 @@ export function SupportPage() {
                   </div>
                   <h3 className="text-xl font-bold mb-2">Сообщение отправлено!</h3>
                   <p className="text-muted-foreground mb-6">
-                    Мы ответим вам в ближайшее время — как правил��, в течение рабочего дня.
+                    Мы ответим вам в ближайшее время — как правило, в течение рабочего дня.
                   </p>
                   <button
                     onClick={() => {

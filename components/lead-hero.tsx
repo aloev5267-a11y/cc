@@ -69,6 +69,46 @@ export function LeadHero() {
   const [experience, setExperience] = useState<string | null>(null)
   const [schedule, setSchedule] = useState<string | null>(null)
 
+  // Восстанавливаем ранее заполненную анкету (если пользователь возвращался).
+  // Грузим один раз при монтировании; если город уже был сохранён — считаем поле
+  // «тронутым», чтобы гео не перетирало выбор пользователя.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem("elwork-survey")
+      if (!raw) return
+      const saved = JSON.parse(raw) as {
+        name?: string
+        city?: string
+        field?: string | null
+        experience?: string | null
+        schedule?: string | null
+      }
+      if (saved.name) setName(saved.name)
+      if (saved.city) {
+        setCity(saved.city)
+        setCityTouched(true)
+      }
+      if (saved.field) setField(saved.field)
+      if (saved.experience) setExperience(saved.experience)
+      if (saved.schedule) setSchedule(saved.schedule)
+    } catch {
+      // Повреждённые данные игнорируем.
+    }
+  }, [])
+
+  // Сохраняем анкету при любом изменении полей — вернувшийся пользователь
+  // не заполняет всё заново.
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        "elwork-survey",
+        JSON.stringify({ name, city, field, experience, schedule }),
+      )
+    } catch {
+      // localStorage недоступен (приватный режим) — молча игнорируем.
+    }
+  }, [name, city, field, experience, schedule])
+
   // Один раз подставляем определённый по гео город как значение по умолчанию.
   // После того как пользователь начал править поле (cityTouched), гео больше
   // не вмешивается — иначе при попытке стереть город он бы подставлялся заново.

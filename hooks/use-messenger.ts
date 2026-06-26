@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
 import { trackLead } from '@/lib/metrika'
+import { getUtmParams } from '@/lib/utm'
 
 interface MessengerAccount {
   id: string
@@ -102,8 +103,15 @@ export function useMessengerLink(
   // POST отправляется ВСЕГДА — даже если аккаунт ещё не загрузился или не настроен,
   // чтобы ни один переход в мессенджер не потерялся (серверная фиксация лида).
   const trackClick = useCallback(() => {
+    // Рекламные метки (UTM/yclid/gclid) — чтобы понимать, с какой кампании пришёл лид.
+    const utm = getUtmParams()
+
     // Единая цель "ЛИД" в Яндекс.Метрике — на любой клик по мессенджеру.
-    trackLead({ channel: type, ...(source ? { source } : {}) })
+    trackLead({ channel: type, ...(source ? { source } : {}), ...utm })
+
+    // Метки добавляем в metadata лида, чтобы они сохранились в БД и попали в
+    // уведомление менеджеру.
+    const enrichedMetadata = { ...(metadata || {}), ...utm }
 
     // Фоном создаём заявку. Переход в мессенджер происходит мгновенно через href —
     // этот POST его не задерживает.
@@ -114,7 +122,7 @@ export function useMessengerLink(
       body: JSON.stringify({
         messengerType: type,
         ...(source ? { source } : {}),
-        ...(metadata && Object.keys(metadata).length > 0 ? { metadata } : {}),
+        ...(Object.keys(enrichedMetadata).length > 0 ? { metadata: enrichedMetadata } : {}),
       }),
     })
       .then(() => {

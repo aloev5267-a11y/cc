@@ -10,6 +10,8 @@ export const contactRequestSchema = z.object({
   message: z.string().max(5000).optional().or(z.literal('')),
   source: z.enum(['contact_form']).default('contact_form'),
   preferredContact: z.enum(['phone', 'email', 'telegram', 'whatsapp']).optional(),
+  // Рекламные метки (UTM/yclid/gclid) — строки до 200 символов каждая.
+  utm: z.record(z.string().max(200)).optional(),
 })
 
 export type ContactRequest = z.infer<typeof contactRequestSchema>
