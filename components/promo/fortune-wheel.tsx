@@ -109,12 +109,18 @@ export function FortuneWheel() {
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex w-full flex-col items-center">
       {/* Колесо */}
-      <div className="relative w-[300px] h-[300px] sm:w-[380px] sm:h-[380px]">
+      <div className="relative mx-auto aspect-square w-full max-w-[320px] sm:max-w-[380px]">
+        {/* Мягкое свечение под колесом */}
+        <div className="pointer-events-none absolute inset-2 rounded-full bg-primary/20 blur-2xl" aria-hidden="true" />
+
+        {/* Внешнее кольцо-обод */}
+        <div className="pointer-events-none absolute -inset-2 rounded-full border-4 border-primary/15" aria-hidden="true" />
+
         {/* Стрелка-указатель сверху */}
-        <div className="absolute left-1/2 -top-1 z-20 -translate-x-1/2">
-          <div className="h-0 w-0 border-l-[14px] border-r-[14px] border-t-[26px] border-l-transparent border-r-transparent border-t-primary drop-shadow-md" />
+        <div className="absolute left-1/2 -top-2 z-20 -translate-x-1/2">
+          <div className="h-0 w-0 border-l-[15px] border-r-[15px] border-t-[28px] border-l-transparent border-r-transparent border-t-primary drop-shadow-lg" />
         </div>
 
         {/* Вращающийся круг */}
@@ -170,7 +176,7 @@ export function FortuneWheel() {
       </div>
 
       {/* Подсказка / результат */}
-      <div className="mt-8 w-full max-w-md text-center">
+      <div className="mt-6 w-full max-w-md text-center">
         <AnimatePresence mode="wait">
           {result ? (
             <motion.div
@@ -217,7 +223,7 @@ export function FortuneWheel() {
 
       {/* Блок VPN — показываем только для РФ-аудитории */}
       {isRussia && (
-        <div className="mt-8 w-full max-w-md rounded-3xl border border-border bg-secondary/60 p-5 text-left">
+        <div className="mt-6 w-full max-w-md rounded-3xl border border-border bg-secondary/60 p-5 text-left">
           <div className="flex items-start gap-3">
             <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
               <IconShield className="w-5 h-5" />

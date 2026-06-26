@@ -33,11 +33,11 @@ export default function PromoPage() {
     <main className="flex min-h-screen flex-col bg-background">
       <Header />
 
-      <section className="relative flex-1 overflow-hidden">
+      <section className="relative flex-1 overflow-x-clip">
         {/* Мягкий синий фон-акцент */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/10 via-background to-background" />
 
-        <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-8 sm:py-10 lg:grid-cols-2 lg:gap-12 lg:py-12">
+        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-12 lg:py-16">
           {/* Левая колонка — оффер */}
           <div className="text-center lg:text-left">
             <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-primary">
@@ -70,7 +70,7 @@ export default function PromoPage() {
           </div>
 
           {/* Правая колонка — колесо */}
-          <div className="flex justify-center lg:justify-end">
+          <div className="flex min-w-0 justify-center lg:justify-end">
             <FortuneWheel />
           </div>
         </div>
