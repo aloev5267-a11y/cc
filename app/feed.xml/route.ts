@@ -37,6 +37,9 @@ export async function GET() {
       const price = v.salaryFrom * 1000
       const name = `${v.title} — ${v.company}`
       const description = `${v.description} Доход: ${v.salary}. График: ${v.schedule}. Город: ${v.city}.`
+      // Изображение категории — Яндекс требует <picture> у каждого оффера,
+      // иначе товарная кампания/смарт-баннеры не принимают фид.
+      const picture = `${base}/feed/${v.categoryKey}.png`
 
       return [
         `      <offer id="${escapeXml(v.id)}" available="true">`,
@@ -44,6 +47,7 @@ export async function GET() {
         `        <price>${price}</price>`,
         `        <currencyId>RUR</currencyId>`,
         `        <categoryId>${categoryId.get(v.categoryKey)}</categoryId>`,
+        `        <picture>${escapeXml(picture)}</picture>`,
         `        <name>${escapeXml(name)}</name>`,
         `        <vendor>${escapeXml(v.company)}</vendor>`,
         `        <description>${escapeXml(description)}</description>`,
