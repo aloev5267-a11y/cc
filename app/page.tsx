@@ -7,6 +7,7 @@ import { FindWork } from "@/components/careers"
 import { HireStaff } from "@/components/hire-staff"
 import { CTA } from "@/components/cta"
 import { Footer } from "@/components/footer"
+import { PromoPopup } from "@/components/promo-popup"
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
       <HireStaff source="employer-home" />
       <CTA />
       <Footer />
+      <PromoPopup />
     </main>
   )
 }
