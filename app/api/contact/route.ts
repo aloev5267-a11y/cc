@@ -59,8 +59,12 @@ export async function POST(request: NextRequest) {
         data.preferredContact ? `Предпочтительный способ связи: ${escapeHtml(data.preferredContact)}` : null,
         data.message ? `Сообщение: ${escapeHtml(data.message)}` : null,
       ].filter(Boolean)
-      // Не блокируем ответ пользователю из-за уведомления
-      await sendTelegramMessage(adminChatId, lines.join('\n'))
+      // Fire-and-forget: НЕ блокируем ответ пользователю из-за уведомления.
+      // Если Telegram/прокси тормозит — заявка уже сохранена в БД, а пользователь
+      // получит мгновенный ответ. Ошибку только логируем.
+      void sendTelegramMessage(adminChatId, lines.join('\n')).catch((err) => {
+        console.error('[Contact API] Telegram notify failed:', err)
+      })
     }
 
     const response = NextResponse.json({ success: true })

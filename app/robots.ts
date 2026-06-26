@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { siteUrl } from '@/lib/config'
 
-// Запрещённые к индексации служебные разделы.
-const disallow = ['/admin', '/admin/', '/api/', '/_next/']
+// Запрещённые к индексации служебные и рекламные разделы.
+// /promo — посадочная под платный трафик, в органике ей делать нечего.
+const disallow = ['/admin', '/admin/', '/api/', '/_next/', '/promo']
 
 export default function robots(): MetadataRoute.Robots {
   return {

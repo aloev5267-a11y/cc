@@ -24,13 +24,13 @@ type Prize = {
 }
 
 const PRIZES: Prize[] = [
-  { id: "bonus5000", label: "Бонус 5 000 ₽ за выход на смену", short: "5 000 ₽", weight: 2 },
+  { id: "bonus5000", label: "Бонус до 5 000 ₽ за выход на смену", short: "до 5 000 ₽", weight: 2 },
   { id: "daily", label: "Выплаты каждый день", short: "Каждый день", weight: 4 },
   { id: "advance", label: "Аванс уже в первый день", short: "Аванс", weight: 3 },
   { id: "priority", label: "Приоритетная смена — выбираешь сам", short: "Своя смена", weight: 4 },
   { id: "taxi", label: "Промокод на такси до работы", short: "Такси", weight: 3 },
   { id: "fast", label: "Трудоустройство за 1 день", short: "За 1 день", weight: 4 },
-  { id: "firstday", label: "Бонус 3 000 ₽ в первый день", short: "3 000 ₽", weight: 3 },
+  { id: "firstday", label: "Бонус до 3 000 ₽ в первый день", short: "до 3 000 ₽", weight: 3 },
   { id: "merch", label: "Фирменный мерч ElWork", short: "Мерч", weight: 2 },
 ]
 

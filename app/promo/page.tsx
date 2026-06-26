@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   description:
     "Узнайте свой бонус при трудоустройстве через ElWork: выплаты каждый день, аванс в первый день, оформление за 1 день. Работа курьером, на складе и водителем. Подбор вакансии в Telegram.",
   alternates: { canonical: "/promo" },
+  // Рекламный лендинг — закрываем от индексации, чтобы он не попадал в органику
+  // и не привлекал внимание алгоритмов/модерации как «кликбейт». Ссылки при этом
+  // разрешаем обходить (follow), чтобы вес переходил на основные страницы.
+  robots: { index: false, follow: true },
   openGraph: {
     title: `Колесо бонусов ${siteConfig.name}`,
     description: "Узнайте свой бонус за выход на работу и подберите вакансию рядом с домом.",
@@ -37,7 +41,7 @@ export default function PromoPage() {
         {/* Мягкий синий фон-акцент */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/10 via-background to-background" />
 
-        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-12 lg:py-16">
+        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pb-12 pt-10 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-12 lg:py-16">
           {/* Левая колонка — оффер */}
           <div className="text-center lg:text-left">
             <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-primary">

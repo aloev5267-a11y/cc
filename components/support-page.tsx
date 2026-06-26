@@ -8,6 +8,7 @@ import { Footer } from "./footer"
 import { siteConfig } from "@/lib/config"
 import { faqItems } from "@/lib/faq"
 import { openLiveChat, trackLiveChatLead } from "@/lib/livechat"
+import { trackLead } from "@/lib/metrika"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
 import { 
   IconMail, 
@@ -95,11 +96,61 @@ export function SupportPage() {
     message: ''
   })
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
   const [activeQuestion, setActiveQuestion] = useState<number | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Человекочитаемые названия тем — добавляем в текст заявки, чтобы менеджер
+  // сразу видел, о чём вопрос (в схеме API отдельного поля для темы нет).
+  const subjectLabels: Record<string, string> = {
+    general: "Общий вопрос",
+    jobseeker: "Поиск работы",
+    application: "Статус заявки",
+    employer: "Подбор персонала (работодателям)",
+    other: "Другое",
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
+    if (sending) return
+    setSending(true)
+
+    const subjectLabel = subjectLabels[formData.subject] || "Общий вопрос"
+    const message = `Тема: ${subjectLabel}\n${formData.message}`.trim()
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email || "",
+          message,
+          source: "contact_form",
+        }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null)
+        toast.error(data?.error || "Не удалось отправить сообщение", {
+          description: "Попробуйте ещё раз или напишите нам в мессенджер.",
+        })
+        setSending(false)
+        return
+      }
+
+      // Единая цель "ЛИД" в Метрике — заявка с формы теперь учитывается в
+      // статистике и оптимизации рекламных кампаний (как и клики по мессенджерам).
+      trackLead({ channel: "form", source: "support-form" })
+      setSubmitted(true)
+    } catch {
+      toast.error("Ошибка сети", {
+        description: "Проверьте соединение и попробуйте ещё раз.",
+      })
+    } finally {
+      setSending(false)
+    }
   }
 
   // Открыть онлайн-чат с темой "Поддержка" и зафиксировать лид (канал 'chat').
@@ -266,10 +317,11 @@ export function SupportPage() {
 
                   <button
                     type="submit"
-                    className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
+                    disabled={sending}
+                    className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    Отправить сообщение
-                    <IconSend className="w-5 h-5" />
+                    {sending ? "Отправляем…" : "Отправить сообщение"}
+                    {!sending && <IconSend className="w-5 h-5" />}
                   </button>
                 </form>
               ) : (
@@ -283,7 +335,7 @@ export function SupportPage() {
                   </div>
                   <h3 className="text-xl font-bold mb-2">Сообщение отправлено!</h3>
                   <p className="text-muted-foreground mb-6">
-                    Мы ответим вам в ближайшее время — как правило, в течение рабочего дня.
+                    Мы ответим вам в ближайшее время — как правил��, в течение рабочего дня.
                   </p>
                   <button
                     onClick={() => {
