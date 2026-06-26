@@ -6,13 +6,13 @@ import { siteConfig } from "@/lib/config"
 import { IconWallet, IconClock, IconCheck } from "@/components/icons"
 
 export const metadata: Metadata = {
-  title: `Колесо бонусов ${siteConfig.name} — крути и забирай работу с бонусом`,
+  title: `Колесо бонусов ${siteConfig.name} — работа с бонусом за выход на смену`,
   description:
-    "Крути колесо и получи гарантированный бонус: выплаты каждый день, аванс в первый день, трудоустройство за 1 день. Работа курьером, на складе и водителем. Забери бонус в Telegram.",
+    "Узнайте свой бонус при трудоустройстве через ElWork: выплаты каждый день, аванс в первый день, оформление за 1 день. Работа курьером, на складе и водителем. Подбор вакансии в Telegram.",
   alternates: { canonical: "/promo" },
   openGraph: {
     title: `Колесо бонусов ${siteConfig.name}`,
-    description: "Крути колесо — бонус получает каждый. Забери работу с бонусом уже сегодня.",
+    description: "Узнайте свой бонус за выход на работу и подберите вакансию рядом с домом.",
     url: `${siteUrlSafe()}/promo`,
     type: "website",
   },
@@ -23,60 +23,56 @@ function siteUrlSafe() {
 }
 
 const TRUST = [
-  { icon: IconWallet, label: "Выплаты", value: "каждый день" },
-  { icon: IconClock, label: "Оформление", value: "за 1 день" },
-  { icon: IconCheck, label: "Бонус", value: "каждому" },
+  { icon: IconWallet, label: "Выплаты каждый день" },
+  { icon: IconClock, label: "Оформление за 1 день" },
+  { icon: IconCheck, label: "Бонус каждому при выходе" },
 ]
 
 export default function PromoPage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="flex min-h-screen flex-col bg-background">
       <Header />
 
-      <section className="relative overflow-hidden">
-        {/* Мягкий синий фон-акцент сверху */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-primary/10 to-transparent" />
+      <section className="relative flex-1 overflow-hidden">
+        {/* Мягкий синий фон-акцент */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/10 via-background to-background" />
 
-        <div className="relative mx-auto max-w-5xl px-4 py-12 sm:py-16">
-          <div className="text-center">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-8 sm:py-10 lg:grid-cols-2 lg:gap-12 lg:py-12">
+          {/* Левая колонка — оффер */}
+          <div className="text-center lg:text-left">
             <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-primary">
-              Только для новых соискателей
+              Бонус для новых соискателей
             </span>
-            <h1 className="mt-5 text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground text-balance">
-              Крути колесо.{" "}
-              <span className="text-primary">Забери бонус</span> и работу.
+
+            <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground text-balance sm:text-5xl">
+              Узнайте свой <span className="text-primary">бонус</span> за выход на работу
             </h1>
-            <p className="mx-auto mt-4 max-w-xl text-pretty text-base sm:text-lg text-muted-foreground leading-relaxed">
-              Никакого развода — бонус получает каждый. Курьер, склад, водитель: подберём вакансию рядом с домом и поможем выйти на смену уже на этой неделе.
+
+            <p className="mx-auto mt-4 max-w-lg text-pretty text-base leading-relaxed text-muted-foreground lg:mx-0">
+              Курьер, склад, водитель — подберём вакансию рядом с домом и поможем выйти на смену уже на этой неделе. Бонус закрепляем за вашей анкетой при трудоустройстве.
+            </p>
+
+            {/* Компактные преимущества */}
+            <ul className="mx-auto mt-6 flex max-w-lg flex-col gap-2.5 lg:mx-0">
+              {TRUST.map((t) => (
+                <li key={t.label} className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <t.icon className="h-5 w-5" />
+                  </span>
+                  <span className="text-sm font-semibold text-foreground">{t.label}</span>
+                </li>
+              ))}
+            </ul>
+
+            <p className="mx-auto mt-6 max-w-lg text-xs leading-relaxed text-muted-foreground lg:mx-0">
+              Бонусы предоставляются при трудоустройстве через {siteConfig.name} и зависят от вакансии и работодателя. Участие бесплатное для соискателя, не является лотереей или азартной игрой.
             </p>
           </div>
 
-          {/* Колесо */}
-          <div className="mt-10 flex justify-center">
+          {/* Правая колонка — колесо */}
+          <div className="flex justify-center lg:justify-end">
             <FortuneWheel />
           </div>
-
-          {/* Доверительные метрики */}
-          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
-            {TRUST.map((t) => (
-              <div
-                key={t.label}
-                className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4"
-              >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <t.icon className="w-5 h-5" />
-                </span>
-                <div>
-                  <p className="text-xs text-muted-foreground">{t.label}</p>
-                  <p className="text-base font-bold text-foreground">{t.value}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="mx-auto mt-8 max-w-lg text-center text-xs text-muted-foreground">
-            Бонусы предоставляются при трудоустройстве через {siteConfig.name} и зависят от вакансии и работодателя. Участие бесплатное для соискателя.
-          </p>
         </div>
       </section>
 

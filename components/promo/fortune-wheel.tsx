@@ -30,7 +30,7 @@ const PRIZES: Prize[] = [
   { id: "priority", label: "Приоритетная смена — выбираешь сам", short: "Своя смена", weight: 4 },
   { id: "taxi", label: "Промокод на такси до работы", short: "Такси", weight: 3 },
   { id: "fast", label: "Трудоустройство за 1 день", short: "За 1 день", weight: 4 },
-  { id: "referral", label: "Бонус 3 000 ₽ за друга", short: "3 000 ₽ другу", weight: 3 },
+  { id: "firstday", label: "Бонус 3 000 ₽ в первый день", short: "3 000 ₽", weight: 3 },
   { id: "merch", label: "Фирменный мерч ElWork", short: "Мерч", weight: 2 },
 ]
 
@@ -182,11 +182,11 @@ export function FortuneWheel() {
             >
               <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary">
                 <IconCheck className="w-4 h-4" />
-                Твой бонус
+                Ваш бонус при трудоустройстве
               </span>
               <p className="mt-3 text-2xl font-extrabold text-foreground text-balance">{result.label}</p>
               <p className="mt-2 text-sm text-muted-foreground">
-                Забери бонус — напиши нам в Telegram, менеджер уже видит твой приз и подберёт работу рядом с домом.
+                Напишите нам в Telegram — менеджер закрепит бонус за вашей анкетой и подберёт работу рядом с домом.
               </p>
 
               <a
@@ -209,7 +209,7 @@ export function FortuneWheel() {
               exit={{ opacity: 0 }}
               className="text-base text-muted-foreground"
             >
-              Крути колесо — бонус получает <span className="font-bold text-foreground">каждый</span>. Проигравших нет.
+              Нажмите на колесо и узнайте, какой <span className="font-bold text-foreground">бонус</span> мы закрепим за вами при выходе на работу.
             </motion.p>
           )}
         </AnimatePresence>
