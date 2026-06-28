@@ -234,6 +234,12 @@ export const IconMax = ({ className = "w-6 h-6" }: { className?: string }) => (
   </svg>
 )
 
+export const IconVk = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M21.547 7h-3.29a.743.743 0 0 0-.655.392s-1.312 2.416-1.734 3.23C14.734 12.813 14 12.126 14 11.11V7.603A1.104 1.104 0 0 0 12.896 6.5h-2.474a1.982 1.982 0 0 0-1.75.813s1.255-.204 1.255 1.49c0 .42.022 1.626.04 2.64a.73.73 0 0 1-1.272.503 21.54 21.54 0 0 1-2.498-4.543.693.693 0 0 0-.63-.403h-2.99a.49.49 0 0 0-.47.684C3.18 11.07 6.39 18 10.04 18h1.523a.85.85 0 0 0 .85-.85v-1.39a.744.744 0 0 1 1.275-.51l1.515 1.633a1.18 1.18 0 0 0 .87.385h2.795c.96 0 .96-.667.437-1.404-.36-.51-1.65-1.918-1.65-1.918a1.106 1.106 0 0 1-.11-1.184c.612-.81 1.61-2.137 2.034-2.7.345-.456.79-1.108 1.137-1.605.319-.457.13-.835-.563-.835z" />
+  </svg>
+)
+
 // Additional icons for contact and footer
 export const IconMail = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="1.5">

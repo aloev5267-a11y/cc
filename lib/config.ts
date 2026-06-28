@@ -45,6 +45,8 @@ export const siteConfig = {
   social: {
     telegram: process.env.NEXT_PUBLIC_TELEGRAM_HANDLE || '@elwork',
     telegramUrl: process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/elwork',
+    vk: process.env.NEXT_PUBLIC_VK_HANDLE || 'elwork',
+    vkUrl: process.env.NEXT_PUBLIC_VK_URL || 'https://vk.me/elwork',
     whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || '+78005007030',
     whatsappUrl: process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/78005007030',
     max: process.env.NEXT_PUBLIC_MAX_HANDLE || '@elwork',

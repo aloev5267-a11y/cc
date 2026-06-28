@@ -8,6 +8,7 @@ import Link from "next/link"
 import {
   IconUsers,
   IconTelegram,
+  IconVk,
   IconWhatsapp,
   IconMax,
   IconMessage,
@@ -63,6 +64,7 @@ interface Stats {
   }
   messengers: {
     telegram: number
+    vk: number
     whatsapp: number
     max: number
     activeTotal: number
@@ -393,11 +395,16 @@ function DashboardTab({ stats }: { stats: Stats | null }) {
 
         <div className="bg-card border border-border rounded-2xl p-6">
           <h3 className="font-bold mb-4">Мессенджеры</h3>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-muted rounded-xl">
               <IconTelegram className="w-8 h-8 mx-auto mb-2 text-blue-500" />
               <div className="font-bold text-2xl">{stats.messengers.telegram}</div>
               <div className="text-xs text-muted-foreground">Telegram</div>
+            </div>
+            <div className="text-center p-4 bg-muted rounded-xl">
+              <IconVk className="w-8 h-8 mx-auto mb-2 text-[#0077FF]" />
+              <div className="font-bold text-2xl">{stats.messengers.vk}</div>
+              <div className="text-xs text-muted-foreground">ВКонтакте</div>
             </div>
             <div className="text-center p-4 bg-muted rounded-xl">
               <IconWhatsapp className="w-8 h-8 mx-auto mb-2 text-green-500" />
@@ -726,11 +733,12 @@ function MessengersTab({ accounts, onRefresh }: { accounts: MessengerAccount[]; 
     onRefresh()
   }
 
-  const messengerGroups = {
-    telegram: accounts.filter(a => a.messenger_type === "telegram"),
-    whatsapp: accounts.filter(a => a.messenger_type === "whatsapp"),
-    max: accounts.filter(a => a.messenger_type === "max"),
-  }
+    const messengerGroups = {
+      telegram: accounts.filter(a => a.messenger_type === "telegram"),
+      vk: accounts.filter(a => a.messenger_type === "vk"),
+      whatsapp: accounts.filter(a => a.messenger_type === "whatsapp"),
+      max: accounts.filter(a => a.messenger_type === "max"),
+    }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-6">
@@ -749,13 +757,14 @@ function MessengersTab({ accounts, onRefresh }: { accounts: MessengerAccount[]; 
       </div>
 
       <div className="space-y-6">
-        {(["telegram", "whatsapp", "max"] as const).map((type) => (
+        {(["telegram", "vk", "whatsapp", "max"] as const).map((type) => (
           <div key={type} className="bg-card border border-border rounded-2xl overflow-hidden">
             <div className="px-4 py-3 bg-muted flex items-center gap-3">
               {type === "telegram" && <IconTelegram className="w-5 h-5 text-blue-500" />}
+              {type === "vk" && <IconVk className="w-5 h-5 text-[#0077FF]" />}
               {type === "whatsapp" && <IconWhatsapp className="w-5 h-5 text-green-500" />}
               {type === "max" && <IconMax className="w-5 h-5" />}
-              <span className="font-bold capitalize">{type}</span>
+              <span className="font-bold capitalize">{type === "vk" ? "ВКонтакте" : type}</span>
               <span className="text-sm text-muted-foreground">({messengerGroups[type].length} аккаунтов)</span>
             </div>
             <table className="w-full">
@@ -859,6 +868,7 @@ function MessengersTab({ accounts, onRefresh }: { accounts: MessengerAccount[]; 
                     disabled={!!editingId}
                   >
                     <option value="telegram">Telegram</option>
+                    <option value="vk">ВКонтакте</option>
                     <option value="whatsapp">WhatsApp</option>
                     <option value="max">MAX</option>
                   </select>
@@ -876,14 +886,24 @@ function MessengersTab({ accounts, onRefresh }: { accounts: MessengerAccount[]; 
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    {formData.messenger_type === "telegram" ? "Username (без @)" : "Номер телефона"}
+                    {formData.messenger_type === "telegram"
+                      ? "Username (без @)"
+                      : formData.messenger_type === "vk"
+                        ? "Адрес сообщества или ID"
+                        : "Номер телефона"}
                   </label>
                   <input
                     type="text"
                     value={formData.account_id}
                     onChange={(e) => setFormData({ ...formData, account_id: e.target.value })}
                     className="w-full px-4 py-3 bg-muted rounded-xl border border-border focus:border-primary focus:outline-none"
-                    placeholder={formData.messenger_type === "telegram" ? "username" : "79001234567"}
+                    placeholder={
+                      formData.messenger_type === "telegram"
+                        ? "username"
+                        : formData.messenger_type === "vk"
+                          ? "elwork или 123456789"
+                          : "79001234567"
+                    }
                     required
                   />
                 </div>

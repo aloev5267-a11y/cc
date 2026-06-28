@@ -10,11 +10,12 @@ interface MessengerAccount {
   name: string
 }
 
-type MessengerType = 'telegram' | 'whatsapp' | 'max'
+type MessengerType = 'telegram' | 'vk' | 'whatsapp' | 'max'
 
 // Человекочитаемые названия мессенджеров для уведомлений
 const messengerLabels: Record<MessengerType, string> = {
   telegram: 'Telegram',
+  vk: 'ВКонтакте',
   whatsapp: 'WhatsApp',
   max: 'Max',
 }
@@ -150,6 +151,17 @@ export function useMessengerLink(
         // wa.me принимает только цифры номера (без "+", пробелов и скобок).
         const phone = account.id.replace(/\D/g, '')
         return encoded ? `https://wa.me/${phone}?text=${encoded}` : `https://wa.me/${phone}`
+      }
+      case 'vk': {
+        // ВКонтакте не поддерживает предзаполнение текста (?text=).
+        // В админке указывают либо короткое имя сообщества (vk.me/elwork),
+        // либо числовой id сообщества (тогда открываем чат с группой по id).
+        const handle = account.id.trim().replace(/^@+/, '').replace(/^https?:\/\/(vk\.com|vk\.me)\//i, '')
+        if (/^-?\d+$/.test(handle)) {
+          const digits = handle.replace(/^-/, '')
+          return `https://vk.com/im?sel=-${digits}`
+        }
+        return `https://vk.me/${handle}`
       }
       case 'max':
         return `https://max.ru/${account.id.trim().replace(/^@+/, '')}`

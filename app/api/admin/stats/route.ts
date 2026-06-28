@@ -27,6 +27,7 @@ export async function GET() {
       },
       messengers: {
         telegram: messengerAccounts.filter(a => a.messenger_type === 'telegram').length,
+        vk: messengerAccounts.filter(a => a.messenger_type === 'vk').length,
         whatsapp: messengerAccounts.filter(a => a.messenger_type === 'whatsapp').length,
         max: messengerAccounts.filter(a => a.messenger_type === 'max').length,
         activeTotal: messengerAccounts.filter(a => a.is_active === 1).length,

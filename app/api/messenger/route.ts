@@ -8,7 +8,7 @@ import { generateClientId } from '@/lib/server-utils'
 // 'chat' — переход в онлайн-чат (например, когда возраст не подошёл под вакансию).
 // Для 'chat' аккаунт мессенджера не нужен, но клик всё равно фиксируется как lead.
 const messengerRequestSchema = z.object({
-  messengerType: z.enum(['telegram', 'whatsapp', 'max', 'chat']),
+  messengerType: z.enum(['telegram', 'vk', 'whatsapp', 'max', 'chat']),
   // Источник лида (например, "vacancy-quiz"). По умолчанию = тип мессенджера.
   source: z.string().max(60).optional(),
   // Произвольные данные опроса (город, транспорт и т.д.) — до 20 полей.
@@ -19,9 +19,9 @@ const messengerRequestSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const messengerType = searchParams.get('type') as 'telegram' | 'whatsapp' | 'max'
+    const messengerType = searchParams.get('type') as 'telegram' | 'vk' | 'whatsapp' | 'max'
     
-    if (!messengerType || !['telegram', 'whatsapp', 'max'].includes(messengerType)) {
+    if (!messengerType || !['telegram', 'vk', 'whatsapp', 'max'].includes(messengerType)) {
       return NextResponse.json({ error: 'Invalid messenger type' }, { status: 400 })
     }
 

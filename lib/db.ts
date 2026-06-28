@@ -124,7 +124,7 @@ async function ensureSchema(): Promise<void> {
     `)
 
     // Инициализация очередей мессенджеров
-    for (const type of ['telegram', 'whatsapp', 'max']) {
+    for (const type of ['telegram', 'vk', 'whatsapp', 'max']) {
       await p.query(
         'INSERT INTO messenger_queue (messenger_type, current_index) VALUES ($1, 0) ON CONFLICT (messenger_type) DO NOTHING',
         [type],

@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Messenger type, account ID, and name required' }, { status: 400 })
     }
 
-    if (!['telegram', 'whatsapp', 'max'].includes(messenger_type)) {
+    if (!['telegram', 'vk', 'whatsapp', 'max'].includes(messenger_type)) {
       return NextResponse.json({ error: 'Invalid messenger type' }, { status: 400 })
     }
 
