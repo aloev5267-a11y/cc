@@ -4,6 +4,7 @@ import { SupportChat } from "@/components/support-chat"
 import { FloatingTelegram } from "@/components/floating-telegram"
 import { YandexMetrika } from "@/components/yandex-metrika"
 import { UtmCapture } from "@/components/utm-capture"
+import { MessengerGateProvider } from "@/components/messenger-gate"
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
@@ -80,11 +81,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} font-sans antialiased`}>
         <YandexMetrika />
         <UtmCapture />
-        {children}
-        <CookieConsent />
-        <Toaster position="top-center" richColors />
-        <FloatingTelegram />
-        <SupportChat />
+        <MessengerGateProvider>
+          {children}
+          <CookieConsent />
+          <Toaster position="top-center" richColors />
+          <FloatingTelegram />
+          <SupportChat />
+        </MessengerGateProvider>
       </body>
     </html>
   )

@@ -23,6 +23,7 @@ import {
   IconMessage,
   IconHeadphones
 } from "./icons"
+import { useMessengerGate } from "./messenger-gate"
 
 // Плитка контакта-мессенджера для страницы поддержки. Использует ту же единую
 // структуру, что и хедер/футер/формы: аккаунт берётся из админки (round-robin
@@ -43,8 +44,10 @@ function MessengerContactTile({
   delay: number
 }) {
   const messenger = useMessengerLink(type)
+  const { handleMessengerClick } = useMessengerGate()
   const cfg = supportMessengers[type]
   const Icon = cfg.icon
+  const href = messenger.link || cfg.fallbackUrl
 
   if (!messenger.loading && !messenger.available) {
     return (
@@ -70,10 +73,10 @@ function MessengerContactTile({
 
   return (
     <motion.a
-      href={messenger.link || cfg.fallbackUrl}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => messenger.trackClick()}
+      onClick={(e) => handleMessengerClick(e, type, href, () => messenger.trackClick())}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}

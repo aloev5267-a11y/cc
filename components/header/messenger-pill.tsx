@@ -2,9 +2,11 @@
 
 import { IconTelegram, IconVk, IconWhatsapp, IconMax } from "../icons"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
+import { useMessengerGate } from "../messenger-gate"
 import { siteConfig } from "@/lib/config"
 
 export function MessengerPill() {
+  const { handleMessengerClick } = useMessengerGate()
   const telegram = useMessengerLink('telegram')
   const vk = useMessengerLink('vk')
   const whatsapp = useMessengerLink('whatsapp')
@@ -85,7 +87,7 @@ export function MessengerPill() {
             target="_blank"
             rel="noopener noreferrer"
             title={m.label}
-            onClick={() => m.messenger.trackClick()}
+            onClick={(e) => handleMessengerClick(e, m.type, m.href, () => m.messenger.trackClick())}
             className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 ${m.color}`}
           >
             <m.icon className="w-4 h-4" />

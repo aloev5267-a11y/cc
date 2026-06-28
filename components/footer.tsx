@@ -10,6 +10,7 @@ import {
   IconMail,
   IconMapPin,
 } from "./icons"
+import { useMessengerGate } from "./messenger-gate"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
 import { LogoMark } from "./logo"
 
@@ -44,6 +45,7 @@ const footerColumns = [
 ]
 
 function NotificationBots() {
+  const { handleMessengerClick } = useMessengerGate()
   const telegram = useMessengerLink("telegram")
   const vk = useMessengerLink("vk")
   const whatsapp = useMessengerLink("whatsapp")
@@ -83,7 +85,7 @@ function NotificationBots() {
             className="w-12 h-12 bg-secondary rounded-2xl flex items-center justify-center text-foreground/70 hover:bg-primary hover:text-primary-foreground transition-colors"
             aria-label={b.label}
             title={b.label}
-            onClick={() => b.messenger.trackClick()}
+            onClick={(e) => handleMessengerClick(e, b.type, b.href, () => b.messenger.trackClick())}
           >
             <b.icon className="w-5 h-5" />
           </a>

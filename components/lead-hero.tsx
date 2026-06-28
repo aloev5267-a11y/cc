@@ -13,6 +13,7 @@ import {
   IconStar,
 } from "./icons"
 import { Messengers, type MessengersOptions } from "./messengers"
+import { useMessengerGate } from "./messenger-gate"
 import { useRegion } from "@/hooks/use-geo"
 import { useMessengerLink } from "@/hooks/use-messenger"
 import { siteConfig } from "@/lib/config"
