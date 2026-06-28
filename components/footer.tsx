@@ -4,6 +4,7 @@ import Link from "next/link"
 import { siteConfig } from "@/lib/config"
 import {
   IconTelegram,
+  IconVk,
   IconWhatsapp,
   IconMax,
   IconMail,
@@ -44,11 +45,13 @@ const footerColumns = [
 
 function NotificationBots() {
   const telegram = useMessengerLink("telegram")
+  const vk = useMessengerLink("vk")
   const whatsapp = useMessengerLink("whatsapp")
   const max = useMessengerLink("max")
 
   const bots = [
     { type: "telegram" as const, icon: IconTelegram, href: telegram.link || siteConfig.social.telegramUrl, label: "Telegram", messenger: telegram },
+    { type: "vk" as const, icon: IconVk, href: vk.link || siteConfig.social.vkUrl, label: "ВКонтакте", messenger: vk },
     { type: "whatsapp" as const, icon: IconWhatsapp, href: whatsapp.link || siteConfig.social.whatsappUrl, label: "WhatsApp", messenger: whatsapp },
     { type: "max" as const, icon: IconMax, href: max.link || siteConfig.social.maxUrl, label: "Max", messenger: max },
   ]

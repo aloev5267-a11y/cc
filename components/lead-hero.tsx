@@ -58,8 +58,10 @@ const fade = {
 export function LeadHero() {
   const { city: detectedCity, ready } = useRegion("Москва")
 
-  // Быстрый путь: переход в Telegram без заполнения анкеты.
+  // Быстрый путь: переход без заполнения анкеты. Telegram и ВКонтакте —
+  // два равноправных приоритетных канала.
   const quickTelegram = useMessengerLink("telegram", { source: "hero-quick" })
+  const quickVk = useMessengerLink("vk", { source: "hero-quick" })
 
   const [step, setStep] = useState<Step>(1)
   const [name, setName] = useState("")
@@ -242,18 +244,32 @@ export function LeadHero() {
                       </div>
                     )}
 
-                    {(quickTelegram.loading || quickTelegram.available) && (
-                      <a
-                        href={quickTelegram.link || siteConfig.social.telegramUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => quickTelegram.trackClick()}
-                        className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary-foreground/90 underline underline-offset-4 decoration-primary-foreground/40 hover:text-primary-foreground hover:decoration-primary-foreground transition-colors"
-                      >
-                        Просто написать нам в Telegram
-                        <span aria-hidden>{"\u2192"}</span>
-                      </a>
-                    )}
+                    <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
+                      {(quickTelegram.loading || quickTelegram.available) && (
+                        <a
+                          href={quickTelegram.link || siteConfig.social.telegramUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => quickTelegram.trackClick()}
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-primary-foreground/90 underline underline-offset-4 decoration-primary-foreground/40 hover:text-primary-foreground hover:decoration-primary-foreground transition-colors"
+                        >
+                          Написать в Telegram
+                          <span aria-hidden>{"\u2192"}</span>
+                        </a>
+                      )}
+                      {(quickVk.loading || quickVk.available) && (
+                        <a
+                          href={quickVk.link || siteConfig.social.vkUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => quickVk.trackClick()}
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-primary-foreground/90 underline underline-offset-4 decoration-primary-foreground/40 hover:text-primary-foreground hover:decoration-primary-foreground transition-colors"
+                        >
+                          Написать ВКонтакте
+                          <span aria-hidden>{"\u2192"}</span>
+                        </a>
+                      )}
+                    </div>
 
                     <p className="mt-4 text-xs text-primary-foreground/60 max-w-md">
                       Продолжая, вы принимаете{" "}

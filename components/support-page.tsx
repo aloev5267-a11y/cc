@@ -14,6 +14,7 @@ import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messen
 import { 
   IconMail, 
   IconTelegram, 
+  IconVk,
   IconWhatsapp,
   IconMax,
   IconSend,
@@ -29,6 +30,7 @@ import {
 // при отсутствии активных менеджеров — мягкое уведомление.
 const supportMessengers = {
   telegram: { icon: IconTelegram, label: "Telegram", color: "text-sky-500", fallbackUrl: siteConfig.social.telegramUrl },
+  vk: { icon: IconVk, label: "ВКонтакте", color: "text-[#0077FF]", fallbackUrl: siteConfig.social.vkUrl },
   whatsapp: { icon: IconWhatsapp, label: "WhatsApp", color: "text-green-500", fallbackUrl: siteConfig.social.whatsappUrl },
   max: { icon: IconMax, label: "Max", color: "text-violet-500", fallbackUrl: siteConfig.social.maxUrl },
 } as const
@@ -37,7 +39,7 @@ function MessengerContactTile({
   type,
   delay,
 }: {
-  type: "telegram" | "whatsapp" | "max"
+  type: "telegram" | "vk" | "whatsapp" | "max"
   delay: number
 }) {
   const messenger = useMessengerLink(type)
@@ -136,7 +138,7 @@ export function SupportPage() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => null)
-        toast.error(data?.error || "Не удалось отправить сообщение", {
+        toast.error(data?.error || "Не удал��сь отправить сообщение", {
           description: "Попробуйте ещё раз или напишите нам в мессенджер.",
         })
         setSending(false)
@@ -201,7 +203,7 @@ export function SupportPage() {
         {/* Contact options */}
         <section className="py-12 border-t border-b border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
               {/* Онлайн-чат — быстрый ответ прямо на сайте */}
               <motion.button
                 type="button"
@@ -238,8 +240,9 @@ export function SupportPage() {
 
               {/* Мессенджеры — единая структура (управление из админки + фиксация лида) */}
               <MessengerContactTile type="telegram" delay={0.2} />
-              <MessengerContactTile type="whatsapp" delay={0.3} />
-              <MessengerContactTile type="max" delay={0.4} />
+              <MessengerContactTile type="vk" delay={0.3} />
+              <MessengerContactTile type="whatsapp" delay={0.4} />
+              <MessengerContactTile type="max" delay={0.5} />
             </div>
           </div>
         </section>

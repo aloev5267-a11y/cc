@@ -41,6 +41,7 @@ const organizationSchema = {
   "telephone": phone,
   "sameAs": [
     siteConfig.social.telegramUrl,
+    siteConfig.social.vkUrl,
     siteConfig.social.whatsappUrl,
     siteConfig.social.maxUrl,
   ],

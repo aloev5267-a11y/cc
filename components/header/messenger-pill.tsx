@@ -1,11 +1,12 @@
 "use client"
 
-import { IconTelegram, IconWhatsapp, IconMax } from "../icons"
+import { IconTelegram, IconVk, IconWhatsapp, IconMax } from "../icons"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
 import { siteConfig } from "@/lib/config"
 
 export function MessengerPill() {
   const telegram = useMessengerLink('telegram')
+  const vk = useMessengerLink('vk')
   const whatsapp = useMessengerLink('whatsapp')
   const max = useMessengerLink('max')
 
@@ -17,6 +18,14 @@ export function MessengerPill() {
       label: "Telegram",
       color: "bg-sky-500/10 text-sky-500 hover:bg-sky-500/20",
       messenger: telegram,
+    },
+    {
+      type: 'vk' as const,
+      icon: IconVk,
+      href: vk.link || siteConfig.social.vkUrl,
+      label: "ВКонтакте",
+      color: "bg-[#0077FF]/10 text-[#0077FF] hover:bg-[#0077FF]/20",
+      messenger: vk,
     },
     {
       type: 'whatsapp' as const,
