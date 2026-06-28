@@ -93,7 +93,7 @@ export function jobPostingSchema(vacancy: Vacancy) {
   })()
 
   const { min, max } = parseSalary(vacancy.salary)
-  const isRemote = /удал[её]н/i.test(vacancy.city) || vacancy.categoryKey === "remote"
+  const isRemote = /удал[её]н/i.test(vacancy.city)
   const cityName = vacancy.city.replace(/\s*\(.*\)\s*/, "").trim()
 
   const schema: Record<string, unknown> = {

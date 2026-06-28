@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
 import { toast } from "sonner"
 import { IconTelegram, IconWhatsapp, IconMax, IconHeadphones } from "./icons"
 import { useMessengerLink, notifyMessengerUnavailable } from "@/hooks/use-messenger"
 import { openLiveChat, trackLiveChatLead } from "@/lib/livechat"
+import { ChatWithNotification } from "./chat-with-notification"
 import { siteConfig } from "@/lib/config"
 
 // Кнопки перехода в мессенджеры. Telegram — приоритетный канал: он вынесен
@@ -123,39 +123,39 @@ function SecondaryButton({ type, options }: { type: SecondaryType; options?: Mes
 }
 
 // Кнопка онлайн-чата (LiveChat). Вторичный канал в общем ряду.
+// Открытие чата возможно ТОЛЬКО после разрешения уведомлений — логика вынесена
+// в обёртку ChatWithNotification (жёсткий режим).
 function LiveChatButton({ options }: { options?: MessengersOptions }) {
-  const [opening, setOpening] = useState(false)
+  const subject = options?.source || options?.page || "Заявка с сайта"
 
-  const handleClick = async () => {
-    if (opening) return
-    setOpening(true)
-
-    const subject = options?.source || options?.page || "Заявка с сайта"
-    trackLiveChatLead(options?.source, options?.metadata)
-
-    const opened = await openLiveChat({
-      subject,
-      message: options?.message,
-    })
-
+  // Фактическое открытие чата. Вызывается обёрткой только при наличии разрешения.
+  const openChat = async () => {
+    const opened = await openLiveChat({ subject, message: options?.message })
     if (!opened) {
       toast.error("Онлайн-чат пока недоступен", {
         description: "Чат не успел загрузиться. Пожалуйста, напишите нам в Telegram выше.",
       })
     }
-    setOpening(false)
+    return opened
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      aria-busy={opening}
-      className="flex flex-col items-center justify-center gap-1.5 min-h-16 py-2.5 px-2 rounded-xl text-xs font-semibold text-center border border-border bg-card text-foreground transition-all duration-200 hover:border-foreground/20 hover:bg-muted"
+    <ChatWithNotification
+      onOpenChat={openChat}
+      onBeforeOpen={() => trackLiveChatLead(options?.source, options?.metadata)}
     >
-      <IconHeadphones className="w-5 h-5 text-primary" />
-      <span>Онлайн-чат</span>
-    </button>
+      {({ open, opening }) => (
+        <button
+          type="button"
+          onClick={open}
+          aria-busy={opening}
+          className="flex flex-col items-center justify-center gap-1.5 min-h-16 py-2.5 px-2 rounded-xl text-xs font-semibold text-center border border-border bg-card text-foreground transition-all duration-200 hover:border-foreground/20 hover:bg-muted"
+        >
+          <IconHeadphones className="w-5 h-5 text-primary" />
+          <span>Онлайн-чат</span>
+        </button>
+      )}
+    </ChatWithNotification>
   )
 }
 
