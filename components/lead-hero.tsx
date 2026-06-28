@@ -63,6 +63,7 @@ export function LeadHero() {
   // два равноправных приоритетных канала.
   const quickTelegram = useMessengerLink("telegram", { source: "hero-quick" })
   const quickVk = useMessengerLink("vk", { source: "hero-quick" })
+  const { handleMessengerClick } = useMessengerGate()
 
   const [step, setStep] = useState<Step>(1)
   const [name, setName] = useState("")
@@ -251,7 +252,14 @@ export function LeadHero() {
                           href={quickTelegram.link || siteConfig.social.telegramUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          onClick={() => quickTelegram.trackClick()}
+                          onClick={(e) =>
+                            handleMessengerClick(
+                              e,
+                              "telegram",
+                              quickTelegram.link || siteConfig.social.telegramUrl,
+                              () => quickTelegram.trackClick(),
+                            )
+                          }
                           className="inline-flex items-center gap-2 text-sm font-semibold text-primary-foreground/90 underline underline-offset-4 decoration-primary-foreground/40 hover:text-primary-foreground hover:decoration-primary-foreground transition-colors"
                         >
                           Написать в Telegram

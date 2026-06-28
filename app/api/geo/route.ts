@@ -105,6 +105,15 @@ async function lookupGeo(ip: string): Promise<GeoData> {
 }
 
 export async function GET(request: NextRequest) {
+  // 0) Отладочный override для QA: cookie geo_override=RU|US принудительно задаёт страну.
+  // Реальные гео-заголовки провайдера ниже всё равно в приоритете при обычном заходе,
+  // этот override нужен только чтобы проверить поведение «как из России» на тесте.
+  const override = request.cookies.get("geo_override")?.value
+  if (override && /^[A-Z]{2}$/i.test(override)) {
+    const country = override.toUpperCase()
+    return NextResponse.json({ country, city: null, isRussia: country === "RU" })
+  }
+
   // 1) Если перед сайтом всё же стоит Cloudflare — используем его заголовки (мгновенно, без запросов).
   const cfCountry = request.headers.get("cf-ipcountry")
   const cfCity = request.headers.get("cf-ipcity")
